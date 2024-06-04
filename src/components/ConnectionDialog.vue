@@ -2,9 +2,8 @@
   <div class="dialog-container">
     <el-row>
       <el-col>
-        <span class="dialog-title">Visualise connection</span>
         <el-row v-if="inDrawing">
-          <span class="dialog-subtitle">Finalise drawing</span>
+          <span class="dialog-title">Finalise drawing</span>
           <el-button-group>
             <el-button
               type="primary"
@@ -19,6 +18,7 @@
           </el-button-group>
         </el-row>
         <el-row v-else>
+          <span class="dialog-title">Visualise connection</span>
           <el-button
             type="primary"
             plain
@@ -29,7 +29,7 @@
         </el-row>
       </el-col>
     </el-row>
-    <el-row v-if="hasConnection">
+    <el-row v-if="connectionExist">
       <el-col>
         <b><span>Related Features</span></b>
         <el-row v-for="(value, key) in connectionEntry" :key="key">
@@ -47,9 +47,9 @@
 import {
   ElRow as Row,
   ElCol as Col,
-  ElCard as Card,
-  ElButton as Button,
   ElButtonGroup as ButtonGroup,
+  ElButton as Button,
+  ElCard as Card,
 } from "element-plus";
 
 export default {
@@ -64,12 +64,13 @@ export default {
   props: {
     connectionEntry: {
       type: Object,
+      default: {},
     },
     inDrawing: {
       type: Boolean,
       default: false,
     },
-    hasConnection: {
+    connectionExist: {
       type: Boolean,
       default: false,
     },
