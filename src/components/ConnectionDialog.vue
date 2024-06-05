@@ -116,12 +116,6 @@ export default {
   color: rgb(131, 0, 191);
 }
 
-.dialog-subtitle {
-  margin-top: 5px;
-  font-size: 15px;
-  color: rgb(131, 0, 191);
-}
-
 .el-button {
   margin: 5px 0px;
 }

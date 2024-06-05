@@ -296,6 +296,14 @@ export default {
     hoverVisibilities: {
       type: Array,
       required: true,
+      default: [
+        { value: false, ref: "editPopover" },
+        { value: false, ref: "deletePopover" },
+        { value: false, ref: "pointPopover" },
+        { value: false, ref: "lineStringPopover" },
+        { value: false, ref: "polygonPopover" },
+        { value: false, ref: "connectionPopover" },
+      ],
     },
   },
   data: function () {

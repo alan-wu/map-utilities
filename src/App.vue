@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { Setting as ElIconSetting } from "@element-plus/icons-vue";
 import AnnotationToolbar from "./components/AnnotationToolbar.vue";
 
@@ -38,6 +38,10 @@ const drawnTypes = [
 onMounted(() => {
   console.log("🚀 ~ onMounted ~ appRef:", appRef.value);
 });
+
+watch(drawnType, () => {
+  finaliseNewDrawn()
+})
 
 function toolbarEvent(type, name) {
   console.log("🚀 ~ toolbarEvent ~ type, name:", type, name);
@@ -79,7 +83,7 @@ function removeConnection() {
 function featureTooltip(value) {
   console.log("🚀 ~ featureTooltip ~ value:", value);
 }
-function finaliseDrawn() {
+function finaliseNewDrawn() {
   activeDrawTool.value = undefined;
   newlyDrawnEntry.value = {};
   connectionEntry.value = {};
@@ -125,7 +129,7 @@ function finaliseDrawn() {
         <el-row v-show="isFlatmap">
           <el-col
             :span="8"
-            v-if="
+            v-show="
               (!activeDrawTool || activeDrawTool === 'Point') &&
               (drawnType === 'All tools' ||
                 drawnType === 'Point' ||
@@ -138,7 +142,7 @@ function finaliseDrawn() {
           </el-col>
           <el-col
             :span="8"
-            v-if="
+            v-show="
               (!activeDrawTool || activeDrawTool === 'LineString') &&
               (drawnType === 'All tools' ||
                 drawnType === 'LineString' ||
@@ -151,7 +155,7 @@ function finaliseDrawn() {
           </el-col>
           <el-col
             :span="8"
-            v-if="
+            v-show="
               (!activeDrawTool || activeDrawTool === 'Polygon') &&
               (drawnType === 'All tools' ||
                 drawnType === 'Polygon' ||
@@ -162,14 +166,19 @@ function finaliseDrawn() {
               Draw New Polygon
             </el-button>
           </el-col>
-          <el-col :span="8" v-if="activeDrawTool">
+          <el-col :span="8" v-show="activeDrawTool">
             <el-button @click="finishNewDrawn" size="small">
               Finish New Drawn
             </el-button>
           </el-col>
+          <el-col :span="8" v-show="Object.keys(newlyDrawnEntry).length > 0">
+            <el-button @click="finaliseNewDrawn" size="small">
+              Finalise New Drawn
+            </el-button>
+          </el-col>
           <el-col
             :span="8"
-            v-if="
+            v-show="
               (!activeDrawTool || activeDrawTool === 'LineString') &&
               (drawnType === 'All tools' ||
                 drawnType === 'LineString' ||
@@ -180,7 +189,7 @@ function finaliseDrawn() {
               Add Connection
             </el-button>
           </el-col>
-          <el-col :span="8" v-if="Object.keys(connectionEntry).length > 0">
+          <el-col :span="8" v-show="Object.keys(connectionEntry).length > 0">
             <el-button @click="removeConnection" size="small">
               Remove Connection
             </el-button>
@@ -208,8 +217,8 @@ function finaliseDrawn() {
       :hoverVisibilities="hoverVisibilities"
       @clickToolbar="toolbarEvent"
       @featureTooltip="featureTooltip"
-      @confirmDrawn="finaliseDrawn"
-      @cancelDrawn="finaliseDrawn"
+      @confirmDrawn="finaliseNewDrawn"
+      @cancelDrawn="finaliseNewDrawn"
       ref="toolbarPopover"
     />
     <AnnotationToolbar
