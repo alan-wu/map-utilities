@@ -111,6 +111,71 @@ function finaliseNewDrawn() {
   newlyDrawnEntry.value = {};
   connectionEntry.value = {};
 }
+/**
+ * Tooltip
+ */
+const tooltipDisplay = ref(false);
+const tooltipEntry = ref({});
+const featuresAlert = ref(undefined);
+const annotationDisplay = ref(false);
+const annotationEntry = ref({});
+
+provide(/* key */ "getFeaturesAlert", /* value */ () => featuresAlert.value);
+provide(/* key */ "$annotator", /* value */ undefined);
+provide(/* key */ "userApiKey", /* value */ undefined);
+
+function addTooltipEntry() {
+  tooltipDisplay.value = true;
+  tooltipEntry.value = {
+    destinations: [null],
+    origins: [null],
+    components: ["pudendal nerve"],
+    destinationsWithDatasets: [
+      { id: "UBERON:0004917", name: "urethral sphincter" },
+    ],
+    originsWithDatasets: [
+      { id: "UBERON:0022278", name: "nucleus of pudendal nerve" },
+    ],
+    componentsWithDatasets: [{ id: "UBERON:0011390", name: "pudendal nerve" }],
+    title:
+      "Nucleus of the pudendal nerve to urethral sphincter via pudendal nerve",
+    featureId: ["ilxtr:sparc-nlp/mmset1/1"],
+    hyperlinks: [
+      {
+        url: "https://pubmed.ncbi.nlm.nih.gov/?term=%2F%2Fdoi.org%2F10.1155%252F2012%252F816274",
+        id: "pubmed",
+      },
+    ],
+    provenanceTaxonomy: ["NCBITaxon:9606"],
+    provenanceTaxonomyLabel: ["Homo sapiens"],
+  };
+}
+function removeTooltipEntry() {
+  tooltipDisplay.value = false;
+  tooltipEntry.value = {};
+}
+function addAnnotationEntry() {
+  tooltipDisplay.value = true;
+  annotationDisplay.value = true;
+  annotationEntry.value = {
+    id: "digestive_8-1",
+    featureId: 4958,
+    label: "liver",
+    models: "UBERON:0002107",
+    type: "feature",
+    mapUUID: "b650201e-f27a-54a1-84fc-6ec2e7cf4c15",
+    resourceId:
+      "https://mapcore-demo.org/devel/flatmap/v4/flatmap/b650201e-f27a-54a1-84fc-6ec2e7cf4c15",
+  };
+}
+function removeAnnotationEntry() {
+  tooltipDisplay.value = false;
+  annotationDisplay.value = false;
+  annotationEntry.value = {};
+}
+function commitAnnotationEvent(value) {
+  console.log("🚀 ~ commitAnnotationEvent ~ value:", value);
+}
 </script>
 
 <template>
@@ -287,6 +352,14 @@ function finaliseNewDrawn() {
       @show-next="onHelpModeShowNext"
       @finish-help-mode="onFinishHelpMode"
     />
+    <Tooltip
+      v-show="tooltipDisplay"
+      class="tooltip"
+      :entry="tooltipEntry"
+      :annotationDisplay="annotationDisplay"
+      :annotationEntry="annotationEntry"
+      @annotation="commitAnnotationEvent"
+    />
   </div>
 </template>
 
@@ -303,5 +376,11 @@ function finaliseNewDrawn() {
 .help-mode-dialog {
   position: absolute;
   top: 50%;
+}
+.tooltip {
+  width: 400px;
+  position: absolute;
+  left: calc(50% - 200px);
+  top: calc(50% - 100px);
 }
 </style>
