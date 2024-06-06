@@ -1,10 +1,10 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 
-import AnnotationToolbar from "./components/AnnotationToolbar.vue";
+import DrawToolbar from "./components/DrawToolbar.vue";
 import HelpModeDialog from "./components/HelpModeDialog.vue";
 
 const app = createApp(App);
-app.component("AnnotationToolbar", AnnotationToolbar);
+app.component("DrawToolbar", DrawToolbar);
 app.component("HelpModeDialog", HelpModeDialog);
 app.mount("#app");

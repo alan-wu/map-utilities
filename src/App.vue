@@ -2,7 +2,7 @@
 import { ref, onMounted, watch } from "vue";
 import { Setting as ElIconSetting } from "@element-plus/icons-vue";
 
-import AnnotationToolbar from "./components/AnnotationToolbar.vue";
+import DrawToolbar from "./components/DrawToolbar.vue";
 import HelpModeDialog from "./components/HelpModeDialog.vue";
 
 const flatmapToolbarOptions = [
@@ -150,7 +150,7 @@ function finaliseNewDrawn() {
         </el-row>
         <el-row>
           <el-col>
-            <h3>AnnotationToolbar</h3>
+            <h3>DrawToolbar</h3>
           </el-col>
           <el-col>
             <el-switch
@@ -252,7 +252,7 @@ function finaliseNewDrawn() {
         </el-button>
       </template>
     </el-popover>
-    <AnnotationToolbar
+    <DrawToolbar
       v-if="isFlatmap"
       :mapCanvas="{
         containerHTML: appRef,
@@ -271,7 +271,7 @@ function finaliseNewDrawn() {
       @cancelDrawn="finaliseNewDrawn"
       ref="toolbarPopover"
     />
-    <AnnotationToolbar
+    <DrawToolbar
       v-else
       :toolbarOptions="scaffoldToolbarOptions"
       :activeDrawTool="activeDrawTool"

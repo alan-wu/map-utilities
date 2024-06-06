@@ -209,7 +209,7 @@ const draggable = (scopeElement, dragElement) => {
 };
 
 export default {
-  name: "AnnotationToolbar",
+  name: "DrawToolbar",
   components: {
     MapSvgIcon,
     MapSvgSpriteColor,
