@@ -1,7 +1,9 @@
 <script setup>
 import { ref, onMounted, watch } from "vue";
 import { Setting as ElIconSetting } from "@element-plus/icons-vue";
+
 import AnnotationToolbar from "./components/AnnotationToolbar.vue";
+import HelpModeDialog from "./components/HelpModeDialog.vue";
 
 const flatmapToolbarOptions = [
   "Edit",
@@ -34,15 +36,36 @@ const drawnTypes = [
   { value: "Polygon", label: "Polygon" },
   { value: "None", label: "None" },
 ];
+const helpMode = ref(false);
+const helpModeActiveItem = ref(0);
+const helpModeLastItem = ref(false);
+const useHelpModeDialog = ref(false);
 
 onMounted(() => {
   console.log("🚀 ~ onMounted ~ appRef:", appRef.value);
 });
 
 watch(drawnType, () => {
-  finaliseNewDrawn()
-})
+  finaliseNewDrawn();
+});
 
+function showHelpModeDialog(type, name) {
+  helpMode.value = true;
+  useHelpModeDialog.value = true;
+}
+function onHelpModeShowNext() {
+  console.log(
+    "🚀 ~ onHelpModeShowNext ~ helpModeActiveItem:",
+    helpModeActiveItem.value
+  );
+  helpModeActiveItem.value += 1;
+}
+function onFinishHelpMode() {
+  helpMode.value = false;
+  // reset help mode to default values
+  helpModeActiveItem.value = 0;
+  helpModeLastItem.value = false;
+}
 function toolbarEvent(type, name) {
   console.log("🚀 ~ toolbarEvent ~ type, name:", type, name);
   connectionEntry.value = {};
@@ -102,6 +125,33 @@ function finaliseNewDrawn() {
     >
       <div class="options-container">
         <el-row>
+          <el-col>
+            <h3>HelpModeDialog</h3>
+          </el-col>
+          <el-col>
+            <el-button @click="showHelpModeDialog" size="small">
+              Show HelpMode Dialog
+            </el-button>
+            <el-button
+              v-if="helpMode && useHelpModeDialog"
+              @click="onHelpModeShowNext"
+              size="small"
+            >
+              Show Next
+            </el-button>
+            <el-button
+              v-if="helpMode && useHelpModeDialog"
+              @click="onFinishHelpMode"
+              size="small"
+            >
+              Hide HelpMode Dialog
+            </el-button>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col>
+            <h3>AnnotationToolbar</h3>
+          </el-col>
           <el-col>
             <el-switch
               v-model="isFlatmap"
@@ -230,6 +280,13 @@ function finaliseNewDrawn() {
       @clickToolbar="toolbarEvent"
       ref="toolbarPopover"
     />
+    <HelpModeDialog
+      v-if="helpMode && useHelpModeDialog"
+      class="help-mode-dialog"
+      :lastItem="helpModeLastItem"
+      @show-next="onHelpModeShowNext"
+      @finish-help-mode="onFinishHelpMode"
+    />
   </div>
 </template>
 
@@ -242,5 +299,9 @@ function finaliseNewDrawn() {
 }
 .options-container {
   text-align: center;
+}
+.help-mode-dialog {
+  position: absolute;
+  top: 50%;
 }
 </style>
