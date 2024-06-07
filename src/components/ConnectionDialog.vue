@@ -52,6 +52,11 @@ import {
   ElCard as Card,
 } from "element-plus";
 
+const capitalise = function (str) {
+  if (str) return str.charAt(0).toUpperCase() + str.slice(1);
+  return "";
+};
+
 export default {
   name: "ConnectionDialog",
   components: {
@@ -85,7 +90,7 @@ export default {
       return this.tooltipId === value ? "always" : "hover";
     },
     capitalise: function (label) {
-      return label[0].toUpperCase() + label.slice(1);
+      return capitalise(label)
     },
     handleTooltip: function (value) {
       this.tooltipId = this.tooltipId === value ? undefined : value;
