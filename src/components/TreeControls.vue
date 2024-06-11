@@ -66,25 +66,8 @@
 </template>
 
 <script>
-/* eslint-disable no-alert, no-console */
-import {
-  ElTree as Tree,
-  ElColorPicker as ColorPicker,
-  ElRow as Row,
-  ElCol as Col,
-} from "element-plus";
-
-/**
- * A vue component for toggling visibility of various regions.
- */
 export default {
   name: "TreeControls",
-  components: {
-    Tree,
-    ColorPicker,
-    Row,
-    Col,
-  },
   props: {
     mapType: {
       type: String,

@@ -43,15 +43,6 @@
 </template>
 
 <script>
-/* eslint-disable no-alert, no-console */
-import {
-  ElRow as Row,
-  ElCol as Col,
-  ElButtonGroup as ButtonGroup,
-  ElButton as Button,
-  ElCard as Card,
-} from "element-plus";
-
 const capitalise = function (str) {
   if (str) return str.charAt(0).toUpperCase() + str.slice(1);
   return "";
@@ -59,13 +50,6 @@ const capitalise = function (str) {
 
 export default {
   name: "ConnectionDialog",
-  components: {
-    Row,
-    Col,
-    ButtonGroup,
-    Button,
-    Card,
-  },
   props: {
     connectionEntry: {
       type: Object,

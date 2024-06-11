@@ -24,13 +24,8 @@
 </template>
 
 <script>
-import { ElButton as Button } from "element-plus";
-
 export default {
   name: "HelpModeDialog",
-  components: {
-    Button,
-  },
   props: {
     multiflatmapRef: {
       type: Object,

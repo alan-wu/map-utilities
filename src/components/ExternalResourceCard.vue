@@ -20,15 +20,11 @@
 /* eslint-disable no-alert, no-console */
 import { shallowRef } from "vue";
 import { Notebook as ElIconNotebook } from "@element-plus/icons-vue";
-import { ElButton as Button } from "element-plus";
 
 import EventBus from "./EventBus";
 
 export default {
   name: "ExternalResourceCard",
-  components: {
-    Button,
-  },
   props: {
     resources: {
       type: Array,

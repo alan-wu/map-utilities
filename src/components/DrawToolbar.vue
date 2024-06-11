@@ -148,7 +148,6 @@
 /* eslint-disable no-alert, no-console */
 import { MapSvgIcon, MapSvgSpriteColor } from "@abi-software/svg-sprite";
 import "@abi-software/svg-sprite/dist/style.css";
-import ConnectionDialog from "./ConnectionDialog.vue";
 
 /**
  * @param scopeElement    Draggable scope area (Optional)

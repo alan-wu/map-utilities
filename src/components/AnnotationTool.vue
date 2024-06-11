@@ -146,40 +146,8 @@
 </template>
 
 <script>
-/* eslint-disable no-alert, no-console */
-import {
-  ArrowUp as ElIconArrowUp,
-  ArrowDown as ElIconArrowDown,
-  Edit as ElIconEdit,
-  Close as ElIconClose,
-  Delete as ElIconDelete,
-  Finished as ElIconFinished,
-} from "@element-plus/icons-vue";
-import {
-  ElButton as Button,
-  ElCol as Col,
-  ElInput as Input,
-  ElMain as Main,
-  ElRow as Row,
-  ElSelect as Select,
-} from "element-plus";
-
 export default {
   name: "AnnotationTool",
-  components: {
-    Button,
-    Col,
-    Input,
-    Main,
-    Row,
-    Select,
-    ElIconArrowUp,
-    ElIconArrowDown,
-    ElIconEdit,
-    ElIconClose,
-    ElIconDelete,
-    ElIconFinished,
-  },
   props: {
     annotationEntry: {
       type: Object,

@@ -4,11 +4,6 @@ import { ref, provide, onMounted, watch } from "vue";
 import flatmapTreeData from "../static/FlatmapTreeData.json";
 import scaffoldTreeData from "../static/ScaffoldTreeData.json";
 
-import DrawToolbar from "./components/DrawToolbar.vue";
-import HelpModeDialog from "./components/HelpModeDialog.vue";
-import Tooltip from "./components/Tooltip.vue";
-import TreeControls from "./components/TreeControls.vue";
-
 /**
  * DrawToolbar
  */
@@ -462,7 +457,7 @@ function changeHover(value) {
     <Tooltip
       v-show="tooltipDisplay"
       class="tooltip"
-      :entry="tooltipEntry"
+      :tooltipEntry="tooltipEntry"
       :annotationDisplay="annotationDisplay"
       :annotationEntry="annotationEntry"
       @annotation="commitAnnotationEvent"
@@ -505,7 +500,7 @@ function changeHover(value) {
 .tooltip {
   width: 400px;
   position: absolute;
-  left: calc(50% - 200px);
   top: calc(50% - 100px);
+  left: calc(50% - 200px);
 }
 </style>

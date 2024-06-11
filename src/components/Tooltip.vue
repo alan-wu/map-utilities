@@ -7,24 +7,16 @@
       />
     </template>
     <template v-else>
-      <provenance-popup :entry="entry" />
+      <provenance-popup :tooltipEntry="tooltipEntry" />
     </template>
   </div>
 </template>
 
 <script>
-/* eslint-disable no-alert, no-console */
-import AnnotationTool from "./AnnotationTool.vue";
-import ProvenancePopup from "./ProvenancePopup.vue";
-
 export default {
   name: "Tooltip",
-  components: {
-    AnnotationTool,
-    ProvenancePopup,
-  },
   props: {
-    entry: {
+    tooltipEntry: {
       type: Object,
     },
     annotationDisplay: {
