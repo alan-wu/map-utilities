@@ -1,0 +1,89 @@
+[
+  {
+    "label": "Root",
+    "regionPath": "",
+    "id": null,
+    "children": [
+      {
+        "label": "epicardium",
+        "id": "re1/pr8",
+        "isPrimitives": true,
+        "regionPath": "",
+        "isTextureSlides": false,
+        "defaultColour": "#b2b2b2",
+        "activeColour": "#b2b2b2"
+      },
+      {
+        "label": "ICN",
+        "id": "re1/pr4",
+        "isPrimitives": true,
+        "regionPath": "",
+        "isTextureSlides": false,
+        "defaultColour": "#ffff00",
+        "activeColour": "#ffff00"
+      },
+      {
+        "label": "left atrium",
+        "id": "re1/pr6",
+        "isPrimitives": true,
+        "regionPath": "",
+        "isTextureSlides": false,
+        "defaultColour": "#00cc00",
+        "activeColour": "#00cc00"
+      },
+      {
+        "label": "left ventricle.mesh2d",
+        "id": "re1/pr2",
+        "isPrimitives": true,
+        "regionPath": "",
+        "isTextureSlides": false,
+        "defaultColour": "#0000ff",
+        "activeColour": "#0000ff"
+      },
+      {
+        "label": "right atrium.mesh2d",
+        "id": "re1/pr7",
+        "isPrimitives": true,
+        "regionPath": "",
+        "isTextureSlides": false,
+        "defaultColour": "#00ffff",
+        "activeColour": "#00ffff"
+      },
+      {
+        "label": "right ventricle.mesh2d",
+        "id": "re1/pr3",
+        "isPrimitives": true,
+        "regionPath": "",
+        "isTextureSlides": false,
+        "defaultColour": "#a52dff",
+        "activeColour": "#a52dff"
+      },
+      {
+        "label": "_helper",
+        "id": "re2",
+        "children": [
+          {
+            "label": "boundingBox",
+            "id": "re2/pr9",
+            "isPrimitives": true,
+            "regionPath": "_helper",
+            "isTextureSlides": false,
+            "defaultColour": "#40e0d0",
+            "activeColour": "#40e0d0"
+          }
+        ],
+        "regionPath": "/_helper",
+        "isRegion": true
+      },
+      {
+        "label": "_Unnamed",
+        "id": "re1/pr5",
+        "isPrimitives": true,
+        "regionPath": "",
+        "isTextureSlides": false,
+        "defaultColour": "#ffffff",
+        "activeColour": "#ffffff"
+      }
+    ]
+  }
+]

@@ -1,10 +1,13 @@
 <script setup>
 import { ref, provide, onMounted, watch } from "vue";
 
+import flatmapTreeData from "../static/FlatmapTreeData.json";
+import scaffoldTreeData from "../static/ScaffoldTreeData.json";
 
 import DrawToolbar from "./components/DrawToolbar.vue";
 import HelpModeDialog from "./components/HelpModeDialog.vue";
 import Tooltip from "./components/Tooltip.vue";
+import TreeControls from "./components/TreeControls.vue";
 
 /**
  * DrawToolbar
@@ -184,6 +187,64 @@ function removeAnnotationEntry() {
 function commitAnnotationEvent(value) {
   console.log("🚀 ~ commitAnnotationEvent ~ value:", value);
 }
+/**
+ * TreeControls
+ */
+const isReady = ref(true);
+const mapType = ref("flatmap");
+const flatmapTreeDataEntry = flatmapTreeData;
+const scaffoldTreeDataEntry = scaffoldTreeData[0].children;
+const treeDataEntry = ref(flatmapTreeDataEntry);
+
+function switchTreeEntry(value) {
+  isReady.value = false;
+  if (value === "flatmap") {
+    mapType.value = "flatmap";
+    treeDataEntry.value = flatmapTreeDataEntry;
+  } else if (value === "scaffold") {
+    mapType.value = "scaffold";
+    treeDataEntry.value = scaffoldTreeDataEntry;
+  }
+  isReady.value = true;
+}
+function setColourField(treeData, nodeData, activeColour) {
+  treeData
+    .filter((data) => {
+      // Filtering if single node is provided and it does not have children field
+      if (nodeData && !data.children) {
+        return data.id === nodeData.id;
+      } else {
+        return true;
+      }
+    })
+    .map((data) => {
+      if (data.children) {
+        // Using recursive to process nested data if children field exists
+        setColourField(data.children, nodeData, activeColour);
+      } else {
+        // Active colour used for current display
+        data["activeColour"] = activeColour;
+      }
+    });
+}
+function setColour(nodeData, value) {
+  if (nodeData && nodeData.isPrimitives) {
+    const activeColour = value ? value : nodeData.defaultColour;
+    setColourField(treeDataEntry.value, nodeData, activeColour)
+  }
+}
+function checkAll(value) {
+  console.log("🚀 ~ checkAll ~ value:", value);
+}
+function checkChanged(value) {
+  console.log("🚀 ~ checkChanged ~ value:", value);
+}
+function changeActive(value) {
+  console.log("🚀 ~ changeActive ~ value:", value);
+}
+function changeHover(value) {
+  console.log("🚀 ~ changeHover ~ value:", value);
+}
 </script>
 
 <template>
@@ -349,6 +410,19 @@ function commitAnnotationEvent(value) {
         </el-button>
       </el-col>
     </el-row>
+    <el-row>
+      <el-col>
+        <h3>TreeControls - {{ mapType }}</h3>
+      </el-col>
+      <el-col>
+        <el-button @click="switchTreeEntry('flatmap')" size="small">
+          Add Flatmap Tree Entry
+        </el-button>
+        <el-button @click="switchTreeEntry('scaffold')" size="small">
+          Add Scaffold Tree Entry
+        </el-button>
+      </el-col>
+    </el-row>
 
     <DrawToolbar
       v-show="isFlatmap"
@@ -392,6 +466,30 @@ function commitAnnotationEvent(value) {
       :annotationDisplay="annotationDisplay"
       :annotationEntry="annotationEntry"
       @annotation="commitAnnotationEvent"
+    />
+    <TreeControls
+      v-show="mapType === 'flatmap'"
+      mapType="flatmap"
+      title="Systems"
+      :treeData="treeDataEntry"
+      active=""
+      hover=""
+      @checkAll="checkAll"
+      @checkChanged="checkChanged"
+      @changeActive="changeActive"
+      @changeHover="changeHover"
+    />
+    <TreeControls
+      v-show="mapType === 'scaffold'"
+      mapType="scaffold"
+      title="Regions"
+      :isReady="isReady"
+      :treeData="treeDataEntry"
+      :active="[]"
+      :hover="[]"
+      :showColourPicker="true"
+      @setColour="setColour"
+      @checkChanged="checkChanged"
     />
   </div>
 </template>
