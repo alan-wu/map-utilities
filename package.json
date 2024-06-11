@@ -1,12 +1,28 @@
 {
   "name": "@abi-software/map-utilities",
-  "version": "0.0.0",
-  "private": true,
-  "type": "module",
+  "version": "0.0.0-beta.4",
+  "files": [
+    "dist/*",
+    "src/*",
+    "public/*",
+    "*.json",
+    "*.js"
+  ],
   "scripts": {
     "serve": "vite",
     "build-bundle": "vite build",
     "preview": "vite preview"
+  },
+  "type": "module",
+  "main": "./dist/map-utilities.umd.cjs",
+  "module": "./dist/map-utilities.js",
+  "exports": {
+    ".": {
+      "import": "./dist/map-utilities.js",
+      "require": "./dist/map-utilities.umd.cjs"
+    },
+    "./dist/style.css": "./dist/style.css",
+    "./src/*": "./src/*"
   },
   "dependencies": {
     "@abi-software/svg-sprite": "^1.0.0",
