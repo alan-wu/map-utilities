@@ -8,7 +8,6 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AnnotationPopup: typeof import('./components/Tooltip/AnnotationPopup.vue')['default']
-    AnnotationTool: typeof import('./components/Tooltip/AnnotationTool.vue')['default']
     ConnectionDialog: typeof import('./components/DrawToolbar/ConnectionDialog.vue')['default']
     DrawToolbar: typeof import('./components/DrawToolbar/DrawToolbar.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
