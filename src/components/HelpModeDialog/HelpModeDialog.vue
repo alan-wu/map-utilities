@@ -27,18 +27,30 @@
 export default {
   name: "HelpModeDialog",
   props: {
+    /**
+     * MultiFlatmapRef from multiflatmapvuer. Provide this when using with MultiFlatmap.
+     */
     multiflatmapRef: {
       type: Object,
       default: null,
     },
+    /**
+     * FlatmapRef from flatmapvuer. Provide this when using with Flatmap.
+     */
     flatmapRef: {
       type: Object,
       default: null,
     },
+    /**
+     * ScaffoldRef from scaffoldvuer. Provide this when using with Scaffold.
+     */
     scaffoldRef: {
       type: Object,
       default: null,
     },
+    /**
+     * The flag for last tooltip item.
+     */
     lastItem: {
       type: Boolean,
       default: false,
@@ -61,14 +73,32 @@ export default {
     },
   },
   methods: {
+    /**
+     * This function will be called on clicking Next button.
+     *
+     * @public
+     */
     showNext: function () {
+      /**
+       * This event is emitted after clicking Next button.
+       */
       this.$emit("show-next");
     },
+    /**
+     * This function will be called on clicking Finish button.
+     *
+     * @public
+     */
     finishHelpMode: function () {
+      /**
+       * This event is emitted after clicking Finish button.
+       */
       this.$emit("finish-help-mode");
     },
     /**
      * This function must be called on 'shown-map-tooltip' event.
+     *
+     * @public
      */
     toggleTooltipPinHighlight: function () {
       const currentFlatmapEl = this.getCurrentFlatmap();
@@ -95,6 +125,8 @@ export default {
     },
     /**
      * This function must be called on 'shown-tooltip' event.
+     *
+     * @public
      */
     toggleTooltipHighlight: function () {
       this.resetHighlightedItems();

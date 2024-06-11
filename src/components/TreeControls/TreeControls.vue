@@ -69,6 +69,9 @@
 export default {
   name: "TreeControls",
   props: {
+    /**
+     * The type of map that the TreeControls is used. Either "flatmap" or "scaffold".
+     */
     mapType: {
       type: String,
       required: true,
@@ -77,9 +80,15 @@ export default {
       type: Boolean,
       default: true,
     },
+    /**
+     * The title of the TreeControls.
+     */
     title: {
       type: String,
     },
+    /**
+     * The data of the tree.
+     */
     treeData: {
       type: Array,
       default: function () {
@@ -90,10 +99,16 @@ export default {
       type: Boolean,
       default: false,
     },
+    /**
+     * The active node of the tree.
+     */
     active: {
       type: [String, Array],
       required: true,
     },
+    /**
+     * The hover node of the tree.
+     */
     hover: {
       type: [String, Array],
       required: true,
