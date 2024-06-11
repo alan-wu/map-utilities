@@ -169,7 +169,7 @@
 </template>
 
 <script>
-import EventBus from "../EventBus";
+import EventBus from "../EventBus.js";
 
 const titleCase = (str) => {
   return str.replace(/\w\S*/g, (t) => {

@@ -1,10 +1,10 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 
-import DrawToolbar from "./DrawToolbar/DrawToolbar.vue";
-import HelpModeDialog from "./HelpModeDialog/HelpModeDialog.vue";
-import Tooltip from "./Tooltip/Tooltip.vue";
-import TreeControls from "./TreeControls/TreeControls.vue";
+import DrawToolbar from "./components/DrawToolbar/DrawToolbar.vue";
+import HelpModeDialog from "./components/HelpModeDialog/HelpModeDialog.vue";
+import Tooltip from "./components/Tooltip/Tooltip.vue";
+import TreeControls from "./components/TreeControls/TreeControls.vue";
 
 const app = createApp(App);
 

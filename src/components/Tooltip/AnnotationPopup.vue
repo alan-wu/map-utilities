@@ -147,7 +147,7 @@
 
 <script>
 export default {
-  name: "AnnotationTool",
+  name: "AnnotationPopup",
   props: {
     annotationEntry: {
       type: Object,
