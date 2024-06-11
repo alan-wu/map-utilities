@@ -74,7 +74,7 @@ export default {
       return this.tooltipId === value ? "always" : "hover";
     },
     capitalise: function (label) {
-      return capitalise(label)
+      return capitalise(label);
     },
     handleTooltip: function (value) {
       this.tooltipId = this.tooltipId === value ? undefined : value;
