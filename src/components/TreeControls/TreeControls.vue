@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="selections-container">
     <el-row v-if="title">
       <el-col :span="12">
         <div class="title-text">
@@ -219,6 +219,10 @@ export default {
   }
 }
 
+.selections-container {
+  padding-top: 5px;
+}
+
 .title-text {
   width: 59px;
   height: 20px;
@@ -236,6 +240,7 @@ export default {
   background: #ffffff;
   margin-top: 6px;
   scrollbar-width: thin;
+  overflow: hidden;
 
   :deep(.el-tree) {
     max-height: 240px;
