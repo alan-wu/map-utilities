@@ -15,7 +15,7 @@ const flatmapToolbarOptions = [
   "Polygon",
   "Connection",
 ];
-const scaffoldToolbarOptions = ["Edit", "Point", "LineString"];
+const scaffoldToolbarOptions = ["Edit", "Delete", "Point", "LineString"];
 const activeDrawTool = ref(undefined);
 const activeDrawMode = ref(undefined);
 const hoverVisibilities = [
@@ -410,11 +410,11 @@ function changeHover(value) {
         <h3>TreeControls - {{ mapType }}</h3>
       </el-col>
       <el-col>
-        <el-button @click="switchTreeEntry('flatmap')" size="small">
-          Add Flatmap Tree Entry
+        <el-button v-show="mapType==='scaffold'" @click="switchTreeEntry('flatmap')" size="small">
+          Display Flatmap Tree
         </el-button>
-        <el-button @click="switchTreeEntry('scaffold')" size="small">
-          Add Scaffold Tree Entry
+        <el-button v-show="mapType==='flatmap'" @click="switchTreeEntry('scaffold')" size="small">
+          Display Scaffold Tree
         </el-button>
       </el-col>
     </el-row>

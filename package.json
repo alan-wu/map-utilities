@@ -9,7 +9,7 @@
     "*.js"
   ],
   "scripts": {
-    "serve": "vite",
+    "serve": "vite --host",
     "build-bundle": "vite build",
     "preview": "vite preview"
   },
