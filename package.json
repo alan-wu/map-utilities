@@ -1,0 +1,40 @@
+{
+  "name": "@abi-software/map-utilities",
+  "version": "0.0.0-beta.4",
+  "files": [
+    "dist/*",
+    "src/*",
+    "public/*",
+    "*.json",
+    "*.js"
+  ],
+  "scripts": {
+    "serve": "vite --host",
+    "build-bundle": "vite build",
+    "preview": "vite preview"
+  },
+  "type": "module",
+  "main": "./dist/map-utilities.umd.cjs",
+  "module": "./dist/map-utilities.js",
+  "exports": {
+    ".": {
+      "import": "./dist/map-utilities.js",
+      "require": "./dist/map-utilities.umd.cjs"
+    },
+    "./dist/style.css": "./dist/style.css",
+    "./src/*": "./src/*"
+  },
+  "dependencies": {
+    "@abi-software/svg-sprite": "^1.0.0",
+    "@element-plus/icons-vue": "^2.3.1",
+    "element-plus": "^2.7.3",
+    "mitt": "^3.0.1",
+    "vue": "^3.4.21"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.4",
+    "sass": "^1.77.4",
+    "unplugin-vue-components": "^0.27.0",
+    "vite": "^5.2.8"
+  }
+}
