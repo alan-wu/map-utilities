@@ -9,7 +9,7 @@
           :icon="ElIconNotebook"
           @click="openUrl(resource.url)"
         >
-          Open publications in pubmed
+          Open publications in PubMed
         </el-button>
       </div>
     </template>
@@ -51,6 +51,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.resource-container {
+  margin-top: 0.5em;
+}
+
 .attribute-title {
   font-size: 16px;
   font-weight: 600;

@@ -15,7 +15,7 @@
     <div class="block" v-else>
       <div class="title">{{ tooltipEntry.featureId }}</div>
     </div>
-    <div v-if="featuresAlert">
+    <div v-if="featuresAlert" class="attribute-title-container">
       <span class="attribute-title">Alert</span>
       <el-popover
         width="250"
@@ -53,7 +53,7 @@
       <div v-show="showDetails" class="content-container scrollbar">
         {{ tooltipEntry.paths }}
         <div v-if="tooltipEntry.origins && tooltipEntry.origins.length > 0" class="block">
-          <div>
+          <div class="attribute-title-container">
             <span class="attribute-title">Origin</span>
             <el-popover
               width="250"
@@ -93,7 +93,9 @@
           v-if="tooltipEntry.components && tooltipEntry.components.length > 0"
           class="block"
         >
-          <div class="attribute-title">Components</div>
+          <div class="attribute-title-container">
+            <div class="attribute-title">Components</div>
+          </div>
           <div
             v-for="(component, i) in tooltipEntry.components"
             class="attribute-content"
@@ -111,7 +113,7 @@
           v-if="tooltipEntry.destinations && tooltipEntry.destinations.length > 0"
           class="block"
         >
-          <div>
+          <div class="attribute-title-container">
             <span class="attribute-title">Destination</span>
             <el-popover
               width="250"
@@ -292,18 +294,18 @@ export default {
   text-align: left;
   // width: 16em;
   line-height: 1.5em !important;
-  font-size: 1em;
+  font-size: 18px;
   font-family: Helvetica;
-  font-weight: 500;
-  /* font-weight: bold; */
+  font-weight: bold;
   padding-bottom: 8px;
+  color: $app-primary-color;
 }
 
 .block {
   margin-bottom: 0.5em;
 
   .main > &:first-of-type {
-    margin-right: 0.5em;
+    margin-right: 1em;
   }
 }
 
@@ -374,12 +376,8 @@ export default {
   min-width: 16rem;
 }
 
-.title {
-  font-size: 18px;
-  font-weight: 500;
-  font-weight: bold;
-  padding-bottom: 8px;
-  color: rgb(131, 0, 191);
+.attribute-title-container {
+  margin-bottom: 0.5em;
 }
 
 .attribute-title {
@@ -392,6 +390,10 @@ export default {
 .attribute-content {
   font-size: 14px;
   font-weight: 500;
+
+  &:last-of-type {
+    margin-bottom: 0.5em;
+  }
 }
 
 .popover-container {
