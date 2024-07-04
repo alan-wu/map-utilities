@@ -117,6 +117,10 @@ function onFinishHelpMode() {
   helpModeActiveItem.value = 0;
   helpModeLastItem.value = false;
 }
+function onActionClick(value) {
+  console.log("🚀 ~ onActionClick ~ value:", value);
+}
+
 /**
  * Tooltip
  */
@@ -461,6 +465,7 @@ function changeHover(value) {
       :annotationDisplay="annotationDisplay"
       :annotationEntry="annotationEntry"
       @annotation="commitAnnotationEvent"
+      @onActionClick="onActionClick"
     />
     <TreeControls
       v-show="mapType === 'flatmap'"
