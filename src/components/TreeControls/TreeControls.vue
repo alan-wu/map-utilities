@@ -7,7 +7,24 @@
         </div>
       </el-col>
     </el-row>
-    <div class="tree-container">
+    <div class="tree-container" ref="treeContainer">
+      <div :class="['tree-tooltip', tooltipAtBottom ? 'bottom' : '']" >
+        <el-popover
+          ref="tooltip"
+          :visible="tooltipVisible"
+          placement="top"
+          :show-arrow="false"
+          :teleported="false"
+          trigger="manual"
+          popper-class="tree-tooltip-popper"
+          virtual-triggering
+          :width="260"
+        >
+          <template #default>
+            <div class="tooltip-text">{{ tooltipLabel }}</div>
+          </template>
+        </el-popover>
+      </div>
       <el-tree
         ref="regionTree"
         v-loading="!isReady"
@@ -20,6 +37,7 @@
         :render-after-expand="false"
         :default-expanded-keys="expandedKeys"
         @check="checkChanged"
+        :indent="8"
         :class="[mapType === 'flatmap' ? 'hide_grandchildren_checkbox': '']"
       >
         <template #default="{ node, data }">
@@ -31,7 +49,9 @@
               hoverItem: nodeIsHover(data),
             }"
             @click="changeActiveByNode(data)"
-            @mouseover="changeHoverByNode(data)"
+            @mouseover="changeHoverByNode(data, false)"
+            @mouseenter="displayTooltip(node.label, true, $event)"
+            @mouseleave="displayTooltip('', false, $event)"
           >
             <div :style="getBackgroundStyles(data)">
               {{ node.label }}
@@ -45,7 +65,9 @@
               hoverItem: hover.includes(data.id),
             }"
             @click="changeActiveByNode(data, true)"
-            @mouseover="changeHoverByNode(data, true)"
+            @mouseover="changeHoverByNode(data, true, $event)"
+            @mouseenter="displayTooltip(node.label, true, $event)"
+            @mouseleave="displayTooltip('', false, $event)"
           >
             <el-color-picker
               v-if="data.isPrimitives"
@@ -119,6 +141,9 @@ export default {
     return {
       defaultExpandedKeys: ["All"],
       myPopperClass: "hide-scaffold-colour-popup",
+      tooltipVisible: false,
+      tooltipLabel: "",
+      tooltipAtBottom: false,
     };
   },
   computed: {
@@ -202,6 +227,13 @@ export default {
         this.$emit("checkChanged", node, data);
       }
     },
+    displayTooltip: function (tooltipLabel, visible, e) {
+      this.tooltipVisible = visible;
+      this.tooltipLabel = tooltipLabel;
+      this.tooltipAtBottom = 
+        0.5 > (e.layerY / this.$refs.treeContainer.clientHeight) ? true : false;
+      console.log(this.tooltipAtBottom);
+    }
   },
   unmounted: function () {
     this.sortedPrimitiveGroups = undefined;
@@ -242,6 +274,7 @@ export default {
   margin-top: 6px;
   scrollbar-width: thin;
   overflow: hidden;
+  position:relative;
 
   :deep(.el-tree) {
     max-height: 240px;
@@ -349,5 +382,25 @@ export default {
 
 .node-options {
   text-align: right;
+}
+
+:deep(.tree-tooltip-popper.el-popover) {
+  text-transform: none !important; // need to overide the tooltip text transform
+  border: 1px solid $app-primary-color;
+  padding: 4px;
+  font-size: 12px;
+  .el-popper__arrow {
+    &:before {
+      border-color: $app-primary-color;
+      background-color: #ffffff;
+    }
+  }
+}
+
+.tree-tooltip {
+  position:absolute;
+  &.bottom {
+    top: 70% ;
+  }
 }
 </style>

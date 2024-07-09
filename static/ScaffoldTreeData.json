@@ -76,7 +76,7 @@
             "id": "re3",
             "children": [
               {
-                "label": "grandChild",
+                "label": "grandChild with super duper long text to test things out",
                 "id": "re2/pr10",
                 "isPrimitives": true,
                 "regionPath": "_helper/grand",
