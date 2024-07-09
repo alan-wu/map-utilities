@@ -20,6 +20,7 @@
         :render-after-expand="false"
         :default-expanded-keys="expandedKeys"
         @check="checkChanged"
+        :class="[mapType === 'flatmap' ? 'hide_grandchildren_checkbox': '']"
       >
         <template #default="{ node, data }">
           <span
@@ -272,13 +273,15 @@ export default {
   }
 }
 
-:deep(
-    .el-tree-node__children
+.hide_grandchildren_checkbox {
+  :deep(
       .el-tree-node__children
-      .el-tree-node__content
-      > label.el-checkbox
-  ) {
-  display: none;
+        .el-tree-node__children
+        .el-tree-node__content
+        > label.el-checkbox
+    ) {
+    display: none;
+  }
 }
 
 :deep(.el-checkbox__label) {
