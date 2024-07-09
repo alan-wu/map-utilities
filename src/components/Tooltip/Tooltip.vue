@@ -13,6 +13,8 @@
 </template>
 
 <script>
+import EventBus from '../EventBus.js';
+
 export default {
   name: "Tooltip",
   props: {
@@ -26,6 +28,12 @@ export default {
     annotationEntry: {
       type: Object,
     },
+  },
+  mounted: function() {
+    // Emit events from child components
+    EventBus.on("onActionClick", (data) => {
+      this.$emit("onActionClick", data);
+    });
   },
 };
 </script>
