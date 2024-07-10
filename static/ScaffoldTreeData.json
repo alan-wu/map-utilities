@@ -70,6 +70,23 @@
             "isTextureSlides": false,
             "defaultColour": "#40e0d0",
             "activeColour": "#40e0d0"
+          },
+          {
+            "label": "boundingBox",
+            "id": "re3",
+            "children": [
+              {
+                "label": "grandChild with super duper long text to test things out",
+                "id": "re2/pr10",
+                "isPrimitives": true,
+                "regionPath": "_helper/grand",
+                "isTextureSlides": false,
+                "defaultColour": "#40e0d0",
+                "activeColour": "#40e0d0"
+              }
+            ],
+            "regionPath": "/_helper/grand",
+            "isRegion": true
           }
         ],
         "regionPath": "/_helper",
