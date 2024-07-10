@@ -53,7 +53,7 @@
             @mouseenter="displayTooltip(node.label, true, $event)"
             @mouseleave="displayTooltip('', false, $event)"
           >
-            <div :style="getBackgroundStyles(data)">
+            <div :style="getBackgroundStyles(data)" class="lastChildInItem">
               {{ node.label }}
             </div>
           </span>
@@ -77,10 +77,12 @@
               :popper-class="myPopperClass"
               @change="setColour(data, $event)"
             />
-            <span>{{ node.label }}</span>
-            <span v-if="data.isTextureSlides" class="node-options">
-              (Texture)
-            </span>
+            <div class="lastChildInItem">
+              <span>{{ node.label }}</span>
+              <span v-if="data.isTextureSlides" class="node-options">
+                (Texture)
+              </span>
+            </div>
           </span>
         </template>
       </el-tree>
@@ -231,21 +233,18 @@ export default {
       const hoverItem = e.target;
       const containerItem = hoverItem.closest('.el-tree-node__content');
       const containerItemWidth = containerItem.clientWidth;
-      const children = containerItem.children;
+      const xOffset = containerItem.getBoundingClientRect().x;
+      const lastElement = containerItem.querySelector('.lastChildInItem');
       let childrenWidth = 0;
-
-      for (let i = 0; i < children.length; i += 1) {
-        const item = children[i];
-        const itemWidth = item.clientWidth;
-        childrenWidth += itemWidth;
+      if (lastElement) {
+        const rect = lastElement.getBoundingClientRect();
+        childrenWidth = rect.x + rect.width - xOffset;
       }
-
       const longLabel = childrenWidth > containerItemWidth;
       this.tooltipVisible = longLabel && visible;
       this.tooltipLabel = tooltipLabel;
       this.tooltipAtBottom =
         0.5 > (e.layerY / this.$refs.treeContainer.clientHeight) ? true : false;
-      console.log(this.tooltipAtBottom);
     }
   },
   unmounted: function () {
