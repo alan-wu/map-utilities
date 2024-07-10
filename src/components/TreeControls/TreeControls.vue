@@ -228,9 +228,22 @@ export default {
       }
     },
     displayTooltip: function (tooltipLabel, visible, e) {
-      this.tooltipVisible = visible;
+      const hoverItem = e.target;
+      const containerItem = hoverItem.closest('.el-tree-node__content');
+      const containerItemWidth = containerItem.clientWidth;
+      const children = containerItem.children;
+      let childrenWidth = 0;
+
+      for (let i = 0; i < children.length; i += 1) {
+        const item = children[i];
+        const itemWidth = item.clientWidth;
+        childrenWidth += itemWidth;
+      }
+
+      const longLabel = childrenWidth > containerItemWidth;
+      this.tooltipVisible = longLabel && visible;
       this.tooltipLabel = tooltipLabel;
-      this.tooltipAtBottom = 
+      this.tooltipAtBottom =
         0.5 > (e.layerY / this.$refs.treeContainer.clientHeight) ? true : false;
       console.log(this.tooltipAtBottom);
     }
