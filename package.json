@@ -11,7 +11,11 @@
   "scripts": {
     "serve": "vite --host",
     "build-bundle": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "version": "npm run build-bundle;",
+    "release:beta": "npm version prerelease --preid=beta; npm publish --tag beta",
+    "release:minor": "npm version minor; npm publish",
+    "release:patch": "npm version patch;  npm publish"
   },
   "type": "module",
   "main": "./dist/map-utilities.umd.cjs",
