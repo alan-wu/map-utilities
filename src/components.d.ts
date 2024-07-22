@@ -29,7 +29,6 @@ declare module 'vue' {
     ElPopover: typeof import('element-plus/es')['ElPopover']
     ElRow: typeof import('element-plus/es')['ElRow']
     ElSelect: typeof import('element-plus/es')['ElSelect']
-    ElSwitch: typeof import('element-plus/es')['ElSwitch']
     ElTree: typeof import('element-plus/es')['ElTree']
     ExternalResourceCard: typeof import('./components/Tooltip/ExternalResourceCard.vue')['default']
     HelpModeDialog: typeof import('./components/HelpModeDialog/HelpModeDialog.vue')['default']
