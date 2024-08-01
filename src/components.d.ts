@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AnnotationPopup: typeof import('./components/Tooltip/AnnotationPopup.vue')['default']
     ConnectionDialog: typeof import('./components/DrawToolbar/ConnectionDialog.vue')['default']
+    CopyToClipboard: typeof import('./components/CopyToClipboard/CopyToClipboard.vue')['default']
     DrawToolbar: typeof import('./components/DrawToolbar/DrawToolbar.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElButtonGroup: typeof import('element-plus/es')['ElButtonGroup']
@@ -19,6 +20,7 @@ declare module 'vue' {
     ElIconArrowDown: typeof import('@element-plus/icons-vue')['ArrowDown']
     ElIconArrowUp: typeof import('@element-plus/icons-vue')['ArrowUp']
     ElIconClose: typeof import('@element-plus/icons-vue')['Close']
+    ElIconCopyDocument: typeof import('@element-plus/icons-vue')['CopyDocument']
     ElIconDelete: typeof import('@element-plus/icons-vue')['Delete']
     ElIconEdit: typeof import('@element-plus/icons-vue')['Edit']
     ElIconFinished: typeof import('@element-plus/icons-vue')['Finished']
@@ -29,6 +31,7 @@ declare module 'vue' {
     ElPopover: typeof import('element-plus/es')['ElPopover']
     ElRow: typeof import('element-plus/es')['ElRow']
     ElSelect: typeof import('element-plus/es')['ElSelect']
+    ElTooltip: typeof import('element-plus/es')['ElTooltip']
     ElTree: typeof import('element-plus/es')['ElTree']
     ExternalResourceCard: typeof import('./components/Tooltip/ExternalResourceCard.vue')['default']
     HelpModeDialog: typeof import('./components/HelpModeDialog/HelpModeDialog.vue')['default']
