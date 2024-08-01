@@ -6,11 +6,13 @@
     effect="clipboard-tooltip"
     @hide="resetSettings"
   >
-    <el-button class="copy-clipboard-button"
+    <el-button
+      class="copy-clipboard-button"
+      :class="theme"
       size="small"
       @click="copyToClipboard"
     >
-      <el-icon color="white">
+      <el-icon :color="iconColor">
         <el-icon-copy-document />
       </el-icon>
       <span class="visually-hidden">{{ textLabel }}</span>
@@ -21,6 +23,7 @@
 <script>
 const labelBefore = 'Copy to clipboard';
 const labelAfter = 'Copied!';
+const appPrimaryColor = '#8300bf';
 
 export default {
   name: 'CopyToClipboard',
@@ -28,13 +31,27 @@ export default {
     content: {
       type: String,
       default: '',
-    }
+    },
+    /**
+     * Theme 'primary' or 'dark' or any name not 'light'
+     * will show primary button color.
+     */
+    theme: {
+      type: String,
+      default: 'light',
+    },
   },
   data: function () {
     return {
       textLabel: labelBefore,
       autoHideTimeout: 0,
+      iconColor: appPrimaryColor,
     };
+  },
+  mounted: function () {
+    if (this.theme !== 'light') {
+      this.iconColor = 'white';
+    }
   },
   methods: {
     copyToClipboard: async function () {
@@ -69,6 +86,7 @@ export default {
   .copy-clipboard-button {
     margin-left: 0px !important;
     margin-top: 0px !important;
+    padding: 0.25rem;
     font-size: 14px !important;
     transition: all 0.25s ease;
 
@@ -83,6 +101,21 @@ export default {
     &:hover {
       background: #ac76c5 !important;
       border-color: #ac76c5 !important;
+    }
+
+    &.light {
+      &,
+      &:focus,
+      &:active {
+        color: $app-primary-color !important;
+        background: transparent;
+        border-color: transparent !important;
+      }
+
+      &:hover {
+        background: #f3e6f9 !important;
+        border-color: #f3e6f9 !important;
+      }
     }
   }
 
