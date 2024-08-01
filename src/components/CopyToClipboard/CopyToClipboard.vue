@@ -1,5 +1,11 @@
 <template>
-  <el-tooltip :content="textLabel" placement="bottom" effect="clipboard-tooltip">
+  <el-tooltip
+    :content="textLabel"
+    placement="bottom"
+    :hide-after="autoHideTimeout"
+    effect="clipboard-tooltip"
+    @hide="resetSettings"
+  >
     <el-button class="copy-clipboard-button"
       size="small"
       @click="copyToClipboard"
@@ -27,11 +33,14 @@ export default {
   data: function () {
     return {
       textLabel: labelBefore,
+      autoHideTimeout: 0,
     };
   },
   methods: {
     copyToClipboard: async function () {
       let copiedSuccessfully = true;
+      this.autoHideTimeout = 600;
+
       try {
         await navigator.clipboard.writeText(this.content);
       } catch (err) {
@@ -47,11 +56,10 @@ export default {
       } else {
         this.textLabel = 'Error trying to copy to clipboard!';
       }
-
-      // Back to default text label after 3 seconds.
-      setTimeout(() => {
-        this.textLabel = labelBefore;
-      }, copiedSuccessfully ? 1000 : 3000);
+    },
+    resetSettings: function () {
+      this.autoHideTimeout = 0;
+      this.textLabel = labelBefore;
     },
   }
 }
@@ -93,12 +101,13 @@ export default {
   .el-popper.is-clipboard-tooltip {
     padding: 4px 10px;
     font-family: Asap;
-    color: #333;
-    background: white !important;
-    box-shadow: 2px 2px 6px rgba(0,0,0,0.2);
+    background: #f3ecf6 !important;
+    border: 1px solid $app-primary-color;
 
     & .el-popper__arrow::before {
-      background: white !important;
+      border: 1px solid;
+      border-color: $app-primary-color;
+      background: #f3ecf6;
     }
   }
 </style>
