@@ -33,12 +33,13 @@ export default {
       default: '',
     },
     /**
-     * Theme 'primary' or 'dark' or any name not 'light'
-     * will show primary button color.
+     * `theme: light` will show white button,
+     * to use when the button is over other readable text content.
+     * Default button is transparent.
      */
     theme: {
       type: String,
-      default: 'light',
+      default: '',
     },
   },
   data: function () {
@@ -47,11 +48,6 @@ export default {
       autoHideTimeout: 0,
       iconColor: appPrimaryColor,
     };
-  },
-  mounted: function () {
-    if (this.theme !== 'light') {
-      this.iconColor = 'white';
-    }
   },
   methods: {
     copyToClipboard: async function () {
@@ -93,29 +89,23 @@ export default {
     &,
     &:focus,
     &:active {
-      color: #fff !important;
-      background: $app-primary-color;
-      border-color: $app-primary-color !important;
-    }
-
-    &:hover {
-      background: #ac76c5 !important;
-      border-color: #ac76c5 !important;
+      color: $app-primary-color !important;
+      background: transparent;
+      border-color: transparent !important;
     }
 
     &.light {
       &,
       &:focus,
       &:active {
-        color: $app-primary-color !important;
-        background: transparent;
-        border-color: transparent !important;
+        background: #fff;
+        border-color: #fff !important;
       }
+    }
 
-      &:hover {
-        background: #f3e6f9 !important;
-        border-color: #f3e6f9 !important;
-      }
+    &:hover {
+      background: #f3e6f9 !important;
+      border-color: #f3e6f9 !important;
     }
   }
 
