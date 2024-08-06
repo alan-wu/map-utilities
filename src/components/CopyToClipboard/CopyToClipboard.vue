@@ -55,10 +55,23 @@ export default {
       this.autoHideTimeout = 600;
 
       try {
-        await navigator.clipboard.writeText(this.content);
+        const htmlContent = this.content;
+        const tempElement = document.createElement('div');
+        tempElement.innerHTML = this.content;
+        const plainTextContent = tempElement.textContent || tempElement.innerText || '';
+
+        const htmlBlob = new Blob([htmlContent], { type: 'text/html' });
+        const textBlob = new Blob([plainTextContent], { type: 'text/plain' });
+
+        const clipboardItem = new ClipboardItem({
+          'text/html': htmlBlob,
+          'text/plain': textBlob
+        });
+
+        await navigator.clipboard.write([clipboardItem]);
       } catch (err) {
         console.error(
-          "Error when trying to use navigator.clipboard.writeText()",
+          "Error when trying to use navigator.clipboard.write()",
           err
         );
         copiedSuccessfully = false;
