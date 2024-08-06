@@ -55,7 +55,7 @@ export default {
       this.autoHideTimeout = 600;
 
       try {
-        const htmlContent = this.content;
+        const htmlContent = this.content.replaceAll('\n', '');
         const tempElement = document.createElement('div');
         tempElement.innerHTML = this.content;
         const plainTextContent = tempElement.textContent || tempElement.innerText || '';
