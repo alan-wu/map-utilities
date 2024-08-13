@@ -95,7 +95,7 @@ export default {
   .copy-clipboard-button {
     margin-left: 0px !important;
     margin-top: 0px !important;
-    padding: 0.25rem;
+    padding: 0.25rem !important;
     font-size: 14px !important;
     transition: all 0.25s ease;
 
@@ -103,15 +103,16 @@ export default {
     &:focus,
     &:active {
       color: $app-primary-color !important;
-      background: transparent;
+      background: transparent !important;
       border-color: transparent !important;
+      box-shadow: none !important;
     }
 
     &.light {
       &,
       &:focus,
       &:active {
-        background: #fff;
+        background: #fff !important;
         border-color: #fff !important;
       }
     }
