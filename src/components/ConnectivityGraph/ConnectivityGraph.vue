@@ -1,6 +1,15 @@
 <template>
   <div class="connectivity-graph">
     <div ref="graphCanvas" class="graph-canvas"></div>
+    <div class="node-key">
+      <div class="key-head">Node type:</div>
+      <div>
+        <div><span>Node:</span><span class="key-box" style="background: #80F0F0"/></div>
+        <div><span>Axon:</span><span class="key-box" style="background: green"/></div>
+        <div><span>Dendrite:</span><span class="key-box" style="background: red"/></div>
+        <div><span>Both:</span><span class="key-box" style="background: gray"/></div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -184,10 +193,38 @@ export default {
 .graph-canvas {
   width: 100%;
   height: 100%;
+  position: relative;
 }
 
 .connectivity-graph {
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.06);
   border: solid 1px #e4e7ed;
+}
+
+.node-key {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  border: 1px solid $app-primary-color;
+  padding: 4px;
+  background-color: rgba(240, 240, 240, 0.8);
+
+  div div {
+    width: 90px;
+  }
+}
+
+.key-head {
+  text-align: center;
+  font-weight: bold;
+  border-bottom: 1px solid gray;
+  padding-bottom: 4px;
+  margin-bottom: 4px;
+}
+
+.key-box {
+  float: right;
+  width: 12px;
+  height: 12px;
 }
 </style>
