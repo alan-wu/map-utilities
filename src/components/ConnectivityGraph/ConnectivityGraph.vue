@@ -192,7 +192,8 @@ export default {
 .connectivity-graph,
 .graph-canvas {
   width: 100%;
-  height: 100%;
+  height: 600px;
+  background-color: white;
   position: relative;
 }
 
