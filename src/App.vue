@@ -38,6 +38,7 @@ const drawnTypes = [
   { value: "Polygon", label: "Polygon" },
   { value: "None", label: "None" },
 ];
+const showConnectivityGraph = ref(false);
 
 onMounted(() => {
   console.log("🚀 ~ onMounted ~ appRef:", appRef.value);
@@ -422,6 +423,25 @@ function changeHover(value) {
         </el-button>
       </el-col>
     </el-row>
+    <el-row>
+      <el-col>
+        <h3>Connectivity Graph</h3>
+      </el-col>
+      <el-col>
+        <el-button
+          @click="showConnectivityGraph = true"
+          size="small"
+        >
+          Show connectivity graph
+        </el-button>
+        <el-button
+          @click="showConnectivityGraph = false"
+          size="small"
+        >
+          Hide connectivity graph
+        </el-button>
+      </el-col>
+    </el-row>
 
     <DrawToolbar
       v-show="isFlatmap"
@@ -491,6 +511,11 @@ function changeHover(value) {
       @setColour="setColour"
       @checkChanged="checkChanged"
     />
+    <ConnectivityGraph
+      v-if="showConnectivityGraph"
+      entry="ilxtr:neuron-type-aacar-13"
+      map-server="https://mapcore-demo.org/curation/flatmap/"
+    />
   </div>
 </template>
 
@@ -507,5 +532,10 @@ function changeHover(value) {
   position: absolute;
   top: calc(50% - 100px);
   left: calc(50% - 200px);
+}
+.connectivity-graph {
+  width: 600px;
+  height: 600px;
+  margin-top: 1rem;
 }
 </style>
