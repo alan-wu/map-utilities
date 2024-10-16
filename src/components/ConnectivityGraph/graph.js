@@ -189,7 +189,10 @@ class CytoscapeGraph
                 roots: connectivityGraph.roots
             },
             directed: true,
-            style: GRAPH_STYLE
+            style: GRAPH_STYLE,
+            minZoom: 0.5,
+            maxZoom: 10,
+            wheelSensitivity: 0.4,
         }).on('mouseover', 'node', this.overNode.bind(this))
           .on('mouseout', 'node', this.exitNode.bind(this))
           .on('position', 'node', this.moveNode.bind(this))
