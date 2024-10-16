@@ -26,6 +26,7 @@ const hoverVisibilities = [
   { value: false, refs: "toolbarPopover", ref: "polygonPopover" },
   { value: false, refs: "toolbarPopover", ref: "connectionPopover" },
 ];
+const filterText = ref("")
 const isFlatmap = ref(true);
 const appRef = ref(null);
 const newlyDrawnEntry = ref({});
@@ -467,6 +468,11 @@ function changeHover(value) {
       @annotation="commitAnnotationEvent"
       @onActionClick="onActionClick"
     />
+    <el-input
+      v-model="filterText"
+      style="width: 240px"
+      placeholder="Filter keyword"
+    />
     <TreeControls
       v-show="mapType === 'flatmap'"
       mapType="flatmap"
@@ -478,6 +484,7 @@ function changeHover(value) {
       @checkChanged="checkChanged"
       @changeActive="changeActive"
       @changeHover="changeHover"
+      :filterText="filterText"
     />
     <TreeControls
       v-show="mapType === 'scaffold'"
@@ -490,6 +497,7 @@ function changeHover(value) {
       :showColourPicker="true"
       @setColour="setColour"
       @checkChanged="checkChanged"
+      :filterText="filterText"
     />
   </div>
 </template>

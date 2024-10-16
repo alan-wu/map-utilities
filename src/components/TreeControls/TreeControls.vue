@@ -11,7 +11,7 @@
       <div :class="['tree-tooltip', tooltipAtBottom ? 'bottom' : '']" >
         <el-popover
           ref="tooltip"
-          :visible="tooltipVisible"
+          :visible="tooltipVisible && tooltipLabel !== ''"
           placement="top"
           :show-arrow="false"
           :teleported="false"
@@ -38,6 +38,7 @@
         :default-expanded-keys="expandedKeys"
         @check="checkChanged"
         :indent="8"
+        :filter-node-method="filterNode"
         :class="[mapType === 'flatmap' ? 'hide_grandchildren_checkbox': '']"
       >
         <template #default="{ node, data }">
@@ -94,6 +95,10 @@
 export default {
   name: "TreeControls",
   props: {
+    filterText: {
+      type: String,
+      default: "",
+    },
     /**
      * The type of map that the TreeControls is used. Either "flatmap" or "scaffold".
      */
@@ -178,8 +183,18 @@ export default {
         else this.myPopperClass = "hide-scaffold-colour-popup";
       },
     },
+    filterText: {
+      handler: function (value) {
+        if (this.$refs.regionTree) this.$refs.regionTree.filter(value);
+      },
+    },
   },
   methods: {
+    filterNode: function(value, data) {
+      if (!value) return true;
+      console.log(data)
+      return data.label ? data.label.toLowerCase().includes(value) : false;
+    },
     setColour: function (nodeData, value) {
       this.$emit("setColour", nodeData, value);
     },
@@ -250,6 +265,9 @@ export default {
   unmounted: function () {
     this.sortedPrimitiveGroups = undefined;
   },
+  mounted: function() {
+    if (this.$refs.regionTree) this.$refs.regionTree.filter(this.filterText);
+  }
 };
 </script>
 
