@@ -81,6 +81,22 @@ export class ConnectivityGraph
         }
     }
 
+    reset()
+    //=================
+    {
+        if (this.cy?.cy) {
+            this.cy.cy.reset()
+        }
+    }
+
+    enableZoom(option)
+    //=================
+    {
+        if (this.cy?.cy) {
+            this.cy.cy.userZoomingEnabled(option)
+        }
+    }
+
     get elements()
     //============
     {

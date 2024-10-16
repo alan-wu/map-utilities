@@ -1,13 +1,56 @@
 <template>
   <div class="connectivity-graph">
     <div ref="graphCanvas" class="graph-canvas"></div>
-    <div class="node-key">
-      <div class="key-head">Node type:</div>
-      <div>
-        <div><span>Node:</span><span class="key-box" style="background: #80F0F0"/></div>
-        <div><span>Axon:</span><span class="key-box" style="background: green"/></div>
-        <div><span>Dendrite:</span><span class="key-box" style="background: red"/></div>
-        <div><span>Both:</span><span class="key-box" style="background: gray"/></div>
+    <div class="control-panel">
+      <div class="node-key">
+        <div class="key-head">Node type:</div>
+        <div>
+          <div><span>Node:</span><span class="key-box" style="background: #80F0F0"/></div>
+          <div><span>Axon:</span><span class="key-box" style="background: green"/></div>
+          <div><span>Dendrite:</span><span class="key-box" style="background: red"/></div>
+          <div><span>Both:</span><span class="key-box" style="background: gray"/></div>
+        </div>
+      </div>
+      <div class="tools">
+        <el-tooltip
+          :content="resetLabel"
+          placement="bottom"
+          effect="control-tooltip"
+        >
+          <el-button
+            class="control-button"
+            :class="theme"
+            size="small"
+            @click="reset"
+          >
+            <el-icon color="white">
+              <el-icon-aim />
+            </el-icon>
+            <span class="visually-hidden">{{ resetLabel }}</span>
+          </el-button>
+        </el-tooltip>
+        <el-tooltip
+          :content="zoomLockLabel"
+          placement="bottom"
+          effect="control-tooltip"
+        >
+          <el-button
+            class="control-button"
+            :class="theme"
+            size="small"
+            @click="toggleZoom"
+          >
+            <el-icon color="white">
+              <template v-if="zoomEnabled">
+                <el-icon-lock />
+              </template>
+              <template v-else>
+                <el-icon-unlock />
+              </template>
+            </el-icon>
+            <span class="visually-hidden">{{ zoomLockLabel }}</span>
+          </el-button>
+        </el-tooltip>
       </div>
     </div>
   </div>
@@ -17,6 +60,10 @@
 import { ConnectivityGraph } from './graph';
 
 const MIN_SCHEMA_VERSION = 1.3;
+const RESET_LABEL = 'Reset position';
+const ZOOM_LOCK_LABEL = 'Lock zoom (to scroll)';
+const ZOOM_UNLOCK_LABEL = 'Unlock zoom';
+const APP_PRIMARY_COLOR = '#8300bf';
 
 export default {
   name: 'ConnectivityGraph',
@@ -40,6 +87,10 @@ export default {
       knowledgeByPath: new Map(),
       labelledTerms: new Set(),
       labelCache: new Map(),
+      resetLabel: RESET_LABEL,
+      zoomLockLabel: ZOOM_LOCK_LABEL,
+      iconColor: APP_PRIMARY_COLOR,
+      zoomEnabled: false,
     };
   },
   mounted() {
@@ -183,6 +234,17 @@ export default {
     hideSpinner: function () {
       // hide loading spinner
     },
+    reset: function () {
+      this.connectivityGraph.reset();
+    },
+    /**
+     * Enable/disable user zoom for scrolling
+     */
+    toggleZoom: function () {
+      this.zoomEnabled = !this.zoomEnabled;
+      this.zoomLockLabel = this.zoomEnabled ? ZOOM_UNLOCK_LABEL : ZOOM_LOCK_LABEL;
+      this.connectivityGraph.enableZoom(!this.zoomEnabled);
+    },
   },
 };
 </script>
@@ -201,10 +263,13 @@ export default {
   border: solid 1px #e4e7ed;
 }
 
-.node-key {
+.control-panel {
   position: absolute;
   top: 1rem;
   right: 1rem;
+}
+
+.node-key {
   border: 1px solid $app-primary-color;
   padding: 4px;
   background-color: rgba(240, 240, 240, 0.8);
@@ -227,4 +292,57 @@ export default {
   width: 12px;
   height: 12px;
 }
+
+.tools {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+.control-button {
+  margin: 0 !important;
+  padding: 0.25rem !important;
+  font-size: 14px !important;
+  border-color: $app-primary-color !important;
+  background: $app-primary-color !important;
+  transition: all 0.25s ease;
+
+  &,
+  &:focus,
+  &:active {
+    box-shadow: none !important;
+  }
+
+  &:hover {
+    background: $lightPurple !important;
+  }
+}
+
+.visually-hidden {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+</style>
+
+<style lang="scss">
+  .el-popper.is-control-tooltip {
+    padding: 4px 10px;
+    font-family: Asap;
+    background: #f3ecf6 !important;
+    border: 1px solid $app-primary-color;
+
+    & .el-popper__arrow::before {
+      border: 1px solid;
+      border-color: $app-primary-color;
+      background: #f3ecf6;
+    }
+  }
 </style>
