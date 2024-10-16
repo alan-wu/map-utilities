@@ -106,7 +106,6 @@ export default {
           }
         }
       }
-      // this.#sourceSelector.innerHTML = sourceList.join('')
       return firstSource;
     },
     setPathList: async function (source) {
