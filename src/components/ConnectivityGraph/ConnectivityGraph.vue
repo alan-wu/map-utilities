@@ -357,7 +357,7 @@ export default {
 .node-key {
   border: 1px solid $app-primary-color;
   padding: 4px;
-  background-color: rgba(240, 240, 240, 0.8);
+  background-color: rgba(#f7faff, 0.85);
 
   div div {
     width: 90px;
