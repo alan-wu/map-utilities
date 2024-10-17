@@ -25,7 +25,7 @@ import cytoscape from 'cytoscape'
 
 //==============================================================================
 
-export class ConnectivityGraph
+export class ConnectivityGraph extends EventTarget
 {
     cyg = null
     nodes = []
@@ -37,8 +37,9 @@ export class ConnectivityGraph
 
     constructor(labelCache, graphCanvas)
     {
-      this.labelCache = labelCache;
-      this.graphCanvas = graphCanvas;
+        super()
+        this.labelCache = labelCache;
+        this.graphCanvas = graphCanvas;
     }
 
     async addConnectivity(knowledge)
@@ -70,6 +71,13 @@ export class ConnectivityGraph
     //================
     {
         this.cyg = new CytoscapeGraph(this, graphCanvas)
+
+        this.cyg.on('tap-node', (event) => {
+            const tapEvent = new CustomEvent('tap-node', {
+                detail: event.detail
+            })
+            this.dispatchEvent(tapEvent);
+        });
     }
 
     clearConnectivity()
@@ -140,6 +148,12 @@ export class ConnectivityGraph
         }
         return result
     }
+
+    on(eventName, callback)
+    //=====================
+    {
+        this.addEventListener(eventName, callback)
+    }
 }
 
 //==============================================================================
@@ -188,13 +202,14 @@ const GRAPH_STYLE = [
 
 //==============================================================================
 
-class CytoscapeGraph
+class CytoscapeGraph extends EventTarget
 {
     cy
     tooltip
 
     constructor(connectivityGraph, graphCanvas)
     {
+        super()
         this.cy = cytoscape({
             container: graphCanvas,
             elements: connectivityGraph.elements,
@@ -211,6 +226,7 @@ class CytoscapeGraph
         }).on('mouseover', 'node', this.overNode.bind(this))
           .on('mouseout', 'node', this.exitNode.bind(this))
           .on('position', 'node', this.moveNode.bind(this))
+          .on('tap', 'node', this.tapNode.bind(this))
 
         this.tooltip = document.createElement('div')
         this.tooltip.className = 'cy-graph-tooltip'
@@ -258,6 +274,23 @@ class CytoscapeGraph
     //==============
     {
         this.tooltip.hidden = true
+    }
+
+    tapNode(event)
+    //============
+    {
+        const node = event.target
+        const data = node.data()
+        const tapEvent = new CustomEvent('tap-node', {
+            detail: data
+        })
+        this.dispatchEvent(tapEvent);
+    }
+
+    on(eventName, callback)
+    //=====================
+    {
+        this.addEventListener(eventName, callback)
     }
 }
 

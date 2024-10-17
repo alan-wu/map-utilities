@@ -181,6 +181,12 @@ export default {
       this.hideSpinner();
 
       this.connectivityGraph.showConnectivity(graphCanvas);
+
+      this.connectivityGraph.on('tap-node', (event) => {
+        const { label } = event.detail;
+        const labels = label.split(`\n`);
+        this.$emit('tap-node', labels);
+      });
     },
     query: async function (sql, params) {
       const url = `${this.mapServer}knowledge/query/`;
