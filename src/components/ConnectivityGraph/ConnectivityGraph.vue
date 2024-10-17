@@ -1,5 +1,5 @@
 <template>
-  <div class="connectivity-graph">
+  <div class="connectivity-graph" v-loading="loading">
     <div ref="graphCanvas" class="graph-canvas"></div>
     <div class="control-panel">
       <div class="node-key">
@@ -82,7 +82,7 @@ export default {
   },
   data: function () {
     return {
-      cy: null,
+      loading: true,
       connectivityGraph: null,
       knowledgeByPath: new Map(),
       labelledTerms: new Set(),
@@ -229,10 +229,10 @@ export default {
       }
     },
     showSpinner: function () {
-      // show loading spinner
+      this.loading = true;
     },
     hideSpinner: function () {
-      // hide loading spinner
+      this.loading = false;
     },
     reset: function () {
       this.connectivityGraph.reset();
