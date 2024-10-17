@@ -60,6 +60,7 @@
 import { ConnectivityGraph } from './graph';
 
 const MIN_SCHEMA_VERSION = 1.3;
+const CACHE_LIFETIME = 24 * 60 * 60 * 1000; // One day
 const RESET_LABEL = 'Reset position';
 const ZOOM_LOCK_LABEL = 'Lock zoom (to scroll)';
 const ZOOM_UNLOCK_LABEL = 'Unlock zoom';
@@ -97,6 +98,7 @@ export default {
     };
   },
   mounted() {
+    this.refreshCache();
     this.loadCacheData();
     this.run().then((res) => {
       this.showGraph(this.entry);
@@ -123,10 +125,37 @@ export default {
         this.schemaVersion = schemaVersion;
       }
     },
+    removeAllCacheData: function () {
+      const keys = [
+        'connectivity-graph-expiry',
+        'connectivity-graph-source',
+        'connectivity-graph-labels',
+        'connectivity-graph-pathlist',
+        'connectivity-graph-schema-version',
+      ];
+      keys.forEach((key) => {
+        sessionStorage.removeItem(key);
+      });
+    },
+    refreshCache: function () {
+      const expiry = sessionStorage.getItem('connectivity-graph-expiry');
+      const now = new Date();
+
+      if (now.getTime() > expiry) {
+        this.removeAllCacheData();
+      }
+    },
+    updateCacheExpiry: function () {
+      const now = new Date();
+      const expiry = now.getTime() + CACHE_LIFETIME;
+
+      sessionStorage.setItem('connectivity-graph-expiry', expiry);
+    },
     run: async function () {
       if (!this.schemaVersion) {
         this.schemaVersion = await this.getSchemaVersion();
         sessionStorage.setItem('connectivity-graph-schema-version', this.schemaVersion);
+        this.updateCacheExpiry();
       }
       if (this.schemaVersion < MIN_SCHEMA_VERSION) {
         console.warn('No Server!');
@@ -136,6 +165,7 @@ export default {
       if (!this.selectedSource) {
         this.selectedSource = await this.setSourceList();
         sessionStorage.setItem('connectivity-graph-source', this.selectedSource);
+        this.updateCacheExpiry();
       }
       await this.setPathList(this.selectedSource)
       this.hideSpinner();
@@ -202,6 +232,7 @@ export default {
       if (!this.pathList.length) {
         this.pathList = await this.loadPathData(source);
         sessionStorage.setItem('connectivity-graph-pathlist', JSON.stringify(this.pathList));
+        this.updateCacheExpiry();
       }
       this.knowledgeByPath.clear();
       this.labelledTerms = new Set();
@@ -252,6 +283,7 @@ export default {
         }
         const labelCacheObj = Object.fromEntries(this.labelCache);
         sessionStorage.setItem('connectivity-graph-labels', JSON.stringify(labelCacheObj));
+        this.updateCacheExpiry();
       }
     },
     cacheNodeLabels: function (node) {
