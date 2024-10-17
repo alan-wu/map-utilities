@@ -84,6 +84,9 @@ export default {
     return {
       loading: true,
       connectivityGraph: null,
+      selectedSource: '',
+      pathList: [],
+      schemaVersion: '',
       knowledgeByPath: new Map(),
       labelledTerms: new Set(),
       labelCache: new Map(),
@@ -94,20 +97,47 @@ export default {
     };
   },
   mounted() {
+    this.loadCacheData();
     this.run().then((res) => {
       this.showGraph(this.entry);
     });
   },
   methods: {
+    loadCacheData: function () {
+      const selectedSource = sessionStorage.getItem('connectivity-graph-source');
+      const labelCache = sessionStorage.getItem('connectivity-graph-labels');
+      const pathList = sessionStorage.getItem('connectivity-graph-pathlist');
+      const schemaVersion = sessionStorage.getItem('connectivity-graph-schema-version');
+
+      if (selectedSource) {
+        this.selectedSource = selectedSource;
+      }
+      if (pathList) {
+        this.pathList = JSON.parse(pathList);
+      }
+      if (labelCache) {
+        const labelCacheObj = JSON.parse(labelCache);
+        this.labelCache = new Map(Object.entries(labelCacheObj));
+      }
+      if (schemaVersion) {
+        this.schemaVersion = schemaVersion;
+      }
+    },
     run: async function () {
-      const schemaVersion = await this.getSchemaVersion();
-      if (schemaVersion < MIN_SCHEMA_VERSION) {
+      if (!this.schemaVersion) {
+        this.schemaVersion = await this.getSchemaVersion();
+        sessionStorage.setItem('connectivity-graph-schema-version', this.schemaVersion);
+      }
+      if (this.schemaVersion < MIN_SCHEMA_VERSION) {
         console.warn('No Server!');
         return;
       }
       this.showSpinner();
-      const selectedSource = await this.setSourceList();
-      await this.setPathList(selectedSource)
+      if (!this.selectedSource) {
+        this.selectedSource = await this.setSourceList();
+        sessionStorage.setItem('connectivity-graph-source', this.selectedSource);
+      }
+      await this.setPathList(this.selectedSource)
       this.hideSpinner();
     },
     showGraph: async function (neuronPath) {
@@ -159,24 +189,33 @@ export default {
       }
       return firstSource;
     },
-    setPathList: async function (source) {
+    loadPathData: async function (source) {
       const data = await this.query(
         `select entity, knowledge from knowledge
           where entity like 'ilxtr:%' and source=?
           order by entity`,
         [source]);
-      const pathList = [];
+      const pathList = data ? data.values : [];
+      return pathList;
+    },
+    setPathList: async function (source) {
+      if (!this.pathList.length) {
+        this.pathList = await this.loadPathData(source);
+        sessionStorage.setItem('connectivity-graph-pathlist', JSON.stringify(this.pathList));
+      }
       this.knowledgeByPath.clear();
       this.labelledTerms = new Set();
-      for (const [key, jsonKnowledge] of data.values) {
+      for (const [key, jsonKnowledge] of this.pathList) {
         const knowledge = JSON.parse(jsonKnowledge);
         if ('connectivity' in knowledge) {
-          pathList.push(key);
           this.knowledgeByPath.set(key, knowledge);
           this.cacheLabels(knowledge);
         }
       }
-      await this.getCachedTermLabels();
+
+      if (!this.labelCache.size) {
+        await this.getCachedTermLabels();
+      }
       return '';
     },
     getSchemaVersion: async function () {
@@ -203,14 +242,16 @@ export default {
     },
     getCachedTermLabels: async function () {
       if (this.labelledTerms.size) {
-        const termLabels = await this.query(`
+        const data = await this.query(`
           select entity, label from labels
           where entity in (?${', ?'.repeat(this.labelledTerms.size-1)})`,
           [...this.labelledTerms.values()]
         );
-        for (const termLabel of termLabels.values) {
+        for (const termLabel of data.values) {
           this.labelCache.set(termLabel[0], termLabel[1]);
         }
+        const labelCacheObj = Object.fromEntries(this.labelCache);
+        sessionStorage.setItem('connectivity-graph-labels', JSON.stringify(labelCacheObj));
       }
     },
     cacheNodeLabels: function (node) {
@@ -305,6 +346,10 @@ export default {
   border-color: $app-primary-color !important;
   background: $app-primary-color !important;
   transition: all 0.25s ease;
+
+  svg {
+    margin: 0;
+  }
 
   &,
   &:focus,
