@@ -27,7 +27,7 @@ import cytoscape from 'cytoscape'
 
 export class ConnectivityGraph
 {
-    cy = null
+    cyg = null
     nodes = []
     edges = []
     axons = []
@@ -69,31 +69,31 @@ export class ConnectivityGraph
     showConnectivity(graphCanvas)
     //================
     {
-        this.cy = new CytoscapeGraph(this, graphCanvas)
+        this.cyg = new CytoscapeGraph(this, graphCanvas)
     }
 
     clearConnectivity()
     //=================
     {
-        if (this.cy) {
-            this.cy.remove()
-            this.cy = null
+        if (this.cyg?.cy) {
+            this.cyg.cy.remove()
+            this.cyg.cy = null
         }
     }
 
     reset()
     //=================
     {
-        if (this.cy?.cy) {
-            this.cy.cy.reset()
+        if (this.cyg?.cy) {
+            this.cyg.cy.reset()
         }
     }
 
     enableZoom(option)
     //=================
     {
-        if (this.cy?.cy) {
-            this.cy.cy.userZoomingEnabled(option)
+        if (this.cyg?.cy) {
+            this.cyg.cy.userZoomingEnabled(option)
         }
     }
 
@@ -195,7 +195,6 @@ class CytoscapeGraph
 
     constructor(connectivityGraph, graphCanvas)
     {
-        // const graphCanvas = document.getElementById('graph-canvas')
         this.cy = cytoscape({
             container: graphCanvas,
             elements: connectivityGraph.elements,

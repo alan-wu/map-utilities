@@ -171,10 +171,6 @@ export default {
       for (const [key, jsonKnowledge] of data.values) {
         const knowledge = JSON.parse(jsonKnowledge);
         if ('connectivity' in knowledge) {
-          const label = knowledge.label || key;
-          const shortLabel = (label === key.slice(6).replace('-prime', "'").replaceAll('-', ' '))
-                              ? ''
-                              : (label.length < 50) ? label : `${label.slice(0, 50)}...`;
           pathList.push(key);
           this.knowledgeByPath.set(key, knowledge);
           this.cacheLabels(knowledge);
