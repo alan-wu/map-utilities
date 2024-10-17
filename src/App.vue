@@ -533,6 +533,10 @@ function changeHover(value) {
   top: calc(50% - 100px);
   left: calc(50% - 200px);
 }
+.toolbar-container {
+  height: 80px;
+  position: relative;
+}
 .connectivity-graph {
   width: 600px;
   height: 600px;
