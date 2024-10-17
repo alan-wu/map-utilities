@@ -410,6 +410,20 @@ export default {
   }
 }
 
+:deep(.cy-graph-tooltip) {
+  padding: 4px 10px;
+  font-family: Asap;
+  font-size: 12px;
+  background: #f3ecf6 !important;
+  border: 1px solid $app-primary-color;
+  border-radius: var(--el-border-radius-base);
+  position: relative;
+  top: 0;
+  left: 0;
+  width: fit-content;
+  z-index: 1;
+}
+
 .visually-hidden {
   clip: rect(0 0 0 0);
   clip-path: inset(50%);

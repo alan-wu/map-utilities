@@ -213,9 +213,9 @@ class CytoscapeGraph
           .on('position', 'node', this.moveNode.bind(this))
 
         this.tooltip = document.createElement('div')
-        this.tooltip.id = 'tooltip'
+        this.tooltip.className = 'cy-graph-tooltip'
         this.tooltip.hidden = true
-        this.graphCanvas?.lastChild?.appendChild(this.tooltip)
+        graphCanvas?.lastChild?.appendChild(this.tooltip)
     }
 
     remove()
