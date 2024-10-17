@@ -167,21 +167,25 @@ export default {
         sessionStorage.setItem('connectivity-graph-source', this.selectedSource);
         this.updateCacheExpiry();
       }
-      await this.setPathList(this.selectedSource)
+      await this.setPathList(this.selectedSource);
       this.hideSpinner();
     },
     showGraph: async function (neuronPath) {
       const graphCanvas = this.$refs.graphCanvas;
+
       this.showSpinner();
+
       this.connectivityGraph = new ConnectivityGraph(this.labelCache, graphCanvas);
       await this.connectivityGraph.addConnectivity(this.knowledgeByPath.get(neuronPath));
+
       this.hideSpinner();
+
       this.connectivityGraph.showConnectivity(graphCanvas);
-      this.currentPath = neuronPath
     },
     query: async function (sql, params) {
       const url = `${this.mapServer}knowledge/query/`;
-      const query = { sql, params }
+      const query = { sql, params };
+
       try {
         const response = await fetch(url, {
           method: 'POST',
@@ -192,9 +196,11 @@ export default {
           },
           body: JSON.stringify(query)
         });
+
         if (!response.ok) {
           throw new Error(`Cannot access ${url}`);
         }
+
         return await response.json();
       } catch {
         return {
@@ -209,14 +215,17 @@ export default {
       // Order with most recent first...
       let firstSource = '';
       const sourceList = [];
+
       for (const source of sources) {
         if (source) {
           sourceList.push(source);
+
           if (firstSource === '') {
             firstSource = source;
           }
         }
       }
+
       return firstSource;
     },
     loadPathData: async function (source) {
@@ -234,8 +243,10 @@ export default {
         sessionStorage.setItem('connectivity-graph-pathlist', JSON.stringify(this.pathList));
         this.updateCacheExpiry();
       }
+
       this.knowledgeByPath.clear();
       this.labelledTerms = new Set();
+
       for (const [key, jsonKnowledge] of this.pathList) {
         const knowledge = JSON.parse(jsonKnowledge);
         if ('connectivity' in knowledge) {
@@ -247,6 +258,7 @@ export default {
       if (!this.labelCache.size) {
         await this.getCachedTermLabels();
       }
+
       return '';
     },
     getSchemaVersion: async function () {
@@ -263,9 +275,11 @@ export default {
             "Content-Type": "application/json"
           }
         });
+
         if (!response.ok) {
           console.error(`Cannot access ${url}`);
         }
+
         return await response.json();
       } catch {
         return null;
@@ -278,9 +292,11 @@ export default {
           where entity in (?${', ?'.repeat(this.labelledTerms.size-1)})`,
           [...this.labelledTerms.values()]
         );
+
         for (const termLabel of data.values) {
           this.labelCache.set(termLabel[0], termLabel[1]);
         }
+
         const labelCacheObj = Object.fromEntries(this.labelCache);
         sessionStorage.setItem('connectivity-graph-labels', JSON.stringify(labelCacheObj));
         this.updateCacheExpiry();
