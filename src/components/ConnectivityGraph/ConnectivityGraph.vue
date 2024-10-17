@@ -294,7 +294,7 @@ export default {
 }
 
 .tools {
-  margin-top: 1rem;
+  margin-top: 0.5rem;
   display: flex;
   flex-direction: row;
   gap: 0.5rem;
