@@ -6,6 +6,15 @@
           {{ title }}
         </div>
       </el-col>
+      <el-col :span="12">
+        <div>
+          <el-input
+            class="tree-filter-input"
+            v-model="filterText"
+            placeholder="Filter keyword"
+          />
+        </div>
+      </el-col>
     </el-row>
     <div class="tree-container" ref="treeContainer">
       <div :class="['tree-tooltip', tooltipAtBottom ? 'bottom' : '']" >
@@ -95,10 +104,6 @@
 export default {
   name: "TreeControls",
   props: {
-    filterText: {
-      type: String,
-      default: "",
-    },
     /**
      * The type of map that the TreeControls is used. Either "flatmap" or "scaffold".
      */
@@ -147,6 +152,7 @@ export default {
   data: function () {
     return {
       defaultExpandedKeys: ["All"],
+      filterText: "",
       myPopperClass: "hide-scaffold-colour-popup",
       tooltipVisible: false,
       tooltipLabel: "",
@@ -192,7 +198,6 @@ export default {
   methods: {
     filterNode: function(value, data) {
       if (!value) return true;
-      console.log(data)
       return data.label ? data.label.toLowerCase().includes(value) : false;
     },
     setColour: function (nodeData, value) {
@@ -283,6 +288,7 @@ export default {
 }
 
 .selections-container {
+  width: 260px;
   padding-top: 5px;
 }
 
@@ -294,6 +300,15 @@ export default {
   font-weight: normal;
   line-height: 20px;
   margin-left: 8px;
+}
+
+:deep(.tree-filter-input) {
+  .el-input__inner {
+      height: 20px;
+    }
+  .el-input__wrapper.is-focus{
+    box-shadow: 0 0 0 1px $app-primary-color;
+  }
 }
 
 .tree-container {
