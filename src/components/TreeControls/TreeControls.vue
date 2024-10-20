@@ -6,7 +6,7 @@
           {{ title }}
         </div>
       </el-col>
-      <el-col :span="12">
+      <el-col v-if="enableFilter" :span="12">
         <div>
           <el-input
             class="tree-filter-input"
@@ -148,6 +148,10 @@ export default {
       type: [String, Array],
       required: true,
     },
+    enableFilter: {
+      type: Boolean,
+      default: true,
+    }
   },
   data: function () {
     return {
