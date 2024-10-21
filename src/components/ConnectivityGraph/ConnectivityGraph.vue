@@ -185,6 +185,9 @@ export default {
       this.connectivityGraph.on('tap-node', (event) => {
         const { label } = event.detail;
         const labels = label.split(`\n`);
+        /**
+         * This event is triggered after a node on the connectivity graph is clicked.
+         */
         this.$emit('tap-node', labels);
       });
     },
