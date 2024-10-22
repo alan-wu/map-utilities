@@ -1,6 +1,8 @@
 <template>
   <div class="connectivity-graph" v-loading="loading">
+
     <div ref="graphCanvas" class="graph-canvas"></div>
+
     <div class="control-panel">
       <div class="node-key">
         <div class="key-head">Node type:</div>
@@ -53,6 +55,11 @@
         </el-tooltip>
       </div>
     </div>
+
+    <div class="connectivity-graph-error" v-if="errorMessage">
+      {{ errorMessage }}
+    </div>
+
   </div>
 </template>
 
@@ -95,6 +102,7 @@ export default {
       zoomLockLabel: ZOOM_LOCK_LABEL,
       iconColor: APP_PRIMARY_COLOR,
       zoomEnabled: false,
+      errorMessage: '',
     };
   },
   mounted() {
@@ -345,6 +353,9 @@ export default {
       this.zoomLockLabel = this.zoomEnabled ? ZOOM_UNLOCK_LABEL : ZOOM_LOCK_LABEL;
       this.connectivityGraph.enableZoom(!this.zoomEnabled);
     },
+    updateErrorMessage: function (message) {
+      this.errorMessage = message;
+    },
   },
 };
 </script>
@@ -437,6 +448,19 @@ export default {
   left: 0;
   width: fit-content;
   z-index: 1;
+}
+
+.connectivity-graph-error {
+  position: absolute;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: fit-content;
+  font-size: 12px;
+  padding: 0.25rem 0.5rem;
+  background-color: var(--el-color-error-light-9);
+  border-radius: var(--el-border-radius-small);
+  border: 1px solid var(--el-color-error);
 }
 
 .visually-hidden {
