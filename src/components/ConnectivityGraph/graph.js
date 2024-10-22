@@ -227,6 +227,7 @@ class CytoscapeGraph extends EventTarget
           .on('mouseout', 'node', this.exitNode.bind(this))
           .on('position', 'node', this.moveNode.bind(this))
           .on('tap', 'node', this.tapNode.bind(this))
+          .on('tap', this.tapNode.bind(this))
 
         this.tooltip = document.createElement('div')
         this.tooltip.className = 'cy-graph-tooltip'
