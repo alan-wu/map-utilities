@@ -353,8 +353,12 @@ export default {
       this.zoomLockLabel = this.zoomEnabled ? ZOOM_UNLOCK_LABEL : ZOOM_LOCK_LABEL;
       this.connectivityGraph.enableZoom(!this.zoomEnabled);
     },
-    updateErrorMessage: function (message) {
-      this.errorMessage = message;
+    showErrorMessage: function (errorMessage) {
+      this.errorMessage = errorMessage;
+      // Show error for 3 seconds
+      setTimeout(() => {
+        this.errorMessage = '';
+      }, 3000);
     },
   },
 };
