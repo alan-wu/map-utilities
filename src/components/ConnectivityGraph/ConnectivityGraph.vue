@@ -418,10 +418,13 @@ export default {
 }
 
 .control-button {
+  width: 24px;
+  height: 24px;
   margin: 0 !important;
-  padding: 0.25rem !important;
-  font-size: 14px !important;
+  padding: 0 !important;
+  font-size: 16px !important;
   border-color: $app-primary-color !important;
+  border-radius: 50%;
   background: $app-primary-color !important;
   transition: all 0.25s ease;
 
@@ -433,10 +436,6 @@ export default {
   &:focus,
   &:active {
     box-shadow: none !important;
-  }
-
-  &:hover {
-    background: $lightPurple !important;
   }
 }
 
