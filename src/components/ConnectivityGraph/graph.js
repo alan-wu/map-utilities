@@ -200,6 +200,15 @@ const GRAPH_STYLE = [
     }
 ]
 
+function capitalizeLabels(input) {
+    return input.split('\n').map(label => {
+        if (label && label[0] >= 'a' && label[0] <= 'z') {
+            return label.charAt(0).toUpperCase() + label.slice(1)
+        }
+        return label
+    }).join('\n')
+}
+
 //==============================================================================
 
 class CytoscapeGraph extends EventTarget
@@ -254,10 +263,14 @@ class CytoscapeGraph extends EventTarget
     //==============
     {
         const node = event.target
-        this.tooltip.innerText = node.data().label
+        const label = capitalizeLabels(node.data().label)
+
+        this.tooltip.innerText = label
         this.tooltip.style.left = `${event.renderedPosition.x}px`
         this.tooltip.style.top = `${event.renderedPosition.y}px`
+        this.tooltip.style.maxWidth = '240px'
         this.tooltip.hidden = false
+
         this.checkRightBoundary(event.renderedPosition.x)
     }
 

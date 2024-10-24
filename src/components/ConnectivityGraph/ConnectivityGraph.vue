@@ -385,25 +385,29 @@ export default {
 }
 
 .node-key {
-  border: 1px solid $app-primary-color;
-  padding: 4px;
+  padding: 0.5rem;
+  font-size: 12px;
+  border: 1px solid var(--el-border-color);
   background-color: rgba(#f7faff, 0.85);
 
   div div {
     width: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 }
 
 .key-head {
   text-align: center;
   font-weight: bold;
-  border-bottom: 1px solid gray;
+  border-bottom: 1px solid var(--el-border-color);
   padding-bottom: 4px;
-  margin-bottom: 4px;
+  margin-bottom: 0.5rem;
 }
 
 .key-box {
-  float: right;
+  display: block;
   width: 12px;
   height: 12px;
 }
