@@ -39,6 +39,9 @@ const drawnTypes = [
   { value: "None", label: "None" },
 ];
 const showConnectivityGraph = ref(false);
+// const connectivityGraphEntry = "ilxtr:neuron-type-aacar-13";
+const connectivityGraphEntry = "ilxtr:sparc-nlp/kidney/134";
+const mapServer = "https://mapcore-demo.org/curation/flatmap/";
 
 onMounted(() => {
   console.log("🚀 ~ onMounted ~ appRef:", appRef.value);
@@ -513,8 +516,8 @@ function changeHover(value) {
     />
     <ConnectivityGraph
       v-if="showConnectivityGraph"
-      entry="ilxtr:neuron-type-aacar-13"
-      map-server="https://mapcore-demo.org/curation/flatmap/"
+      :entry="connectivityGraphEntry"
+      :map-server="mapServer"
     />
   </div>
 </template>
