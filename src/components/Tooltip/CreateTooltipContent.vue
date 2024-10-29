@@ -5,9 +5,7 @@
     </el-header>
     <el-main class="slides-block">
       <span class="create-text">
-        Primitives will be created in the
-        <br>
-        __annotation region
+        Primitives will be created in the __annotation region
       </span>
       <el-row class="row" v-show="showPoint">
         <el-col :offset="0" :span="8">
@@ -165,7 +163,7 @@ export default {
 
 
 .create-container {
-  width: 250px;
+  width: 100%;
   height: auto;
   border-radius: 4px;
   border: solid 1px #d8dce6;
