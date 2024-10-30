@@ -267,6 +267,8 @@ export default {
                 "https://pubmed.ncbi.nlm.nih.gov/"
               );
               evidenceURLs.push(new URL(link));
+            } else {
+              evidenceURLs.push(evidence);
             }
           });
           const userAnnotation = {
