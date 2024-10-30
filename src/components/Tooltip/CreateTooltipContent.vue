@@ -98,9 +98,11 @@ export default {
   },
   watch: {
     "createData.shape": {
-      handler: function (value) {
-        this.group = value;
-        this.$emit("cancel-create");
+      handler: function (newValue, oldValue) {
+        this.group = newValue;
+        if (oldValue !== undefined) {
+          this.$emit("cancel-create");
+        }
       },
       immediate: true,
     },
