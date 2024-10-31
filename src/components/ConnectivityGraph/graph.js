@@ -180,19 +180,20 @@ const GRAPH_STYLE = [
     {
         'selector': 'node',
         'style': {
-            'label': 'data(label)',
+            'label': function(ele) { return trimLabel(ele.data('label')) },
             // 'background-color': '#80F0F0',
             'background-color': 'transparent',
             'background-opacity': '0',
             'text-valign': 'center',
             'text-wrap': 'wrap',
+            'width': '80px',
+            'height': '80px',
             'text-max-width': '80px',
             'font-size': '6px',
             'shape': 'round-rectangle',
             'border-width': 1,
             'border-style': 'solid',
             'border-color': 'gray',
-            'compound-sizing-wrt-labels': 'include',
         }
     },
     {
@@ -227,6 +228,13 @@ const GRAPH_STYLE = [
         }
     }
 ]
+
+function trimLabel(label) {
+    const labels = label.split('\n')
+    const half = labels.length/2
+    const trimLabels = labels.slice(half)
+    return trimLabels.join('\n')
+}
 
 function capitalizeLabels(input) {
     return input.split('\n').map(label => {
