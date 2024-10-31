@@ -4,7 +4,7 @@
     <div ref="graphCanvas" class="graph-canvas"></div>
 
     <div class="control-panel control-panel-tools">
-      <div class="tools">
+      <div class="tools" :class="{'zoom-locked': zoomEnabled}">
         <el-tooltip
           :content="resetLabel"
           placement="bottom"
@@ -48,7 +48,7 @@
 
         <el-tooltip
           :content="zoomInLabel"
-          placement="bottom"
+          placement="left"
           effect="control-tooltip"
         >
           <el-button
@@ -66,7 +66,7 @@
 
         <el-tooltip
           :content="zoomOutLabel"
-          placement="bottom"
+          placement="left"
           effect="control-tooltip"
         >
           <el-button
@@ -513,11 +513,43 @@ export default {
 }
 
 .tools {
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(3, 1fr);
   gap: 0.5rem;
-  align-items: flex-end;
-  justify-content: flex-end;
+
+  :deep(.el-button:nth-child(3)) {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  :deep(.el-button:nth-child(4)) {
+    grid-column: 2;
+    grid-row: 3;
+  }
+
+  :deep(.el-button:nth-child(3)),
+  :deep(.el-button:nth-child(4)) {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(-100%);
+    transition: all 0.25s ease;
+  }
+
+  &.zoom-locked {
+    :deep(.el-button:nth-child(3)),
+    :deep(.el-button:nth-child(4)) {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: initial;
+      transform: translateY(0%);
+    }
+
+    :deep(.el-button:nth-child(4)) {
+      transition-delay: 0.125s;
+    }
+  }
 }
 
 .control-button {
