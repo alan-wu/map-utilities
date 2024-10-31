@@ -163,37 +163,47 @@ const GRAPH_STYLE = [
         'selector': 'node',
         'style': {
             'label': 'data(label)',
-            'background-color': '#80F0F0',
+            // 'background-color': '#80F0F0',
+            'background-color': 'transparent',
+            'background-opacity': '0',
             'text-valign': 'center',
             'text-wrap': 'wrap',
             'text-max-width': '80px',
-            'font-size': '6px'
+            'font-size': '6px',
+            'shape': 'round-rectangle',
+            'border-width': 1,
+            'border-style': 'solid',
+            'border-color': 'gray',
+            'compound-sizing-wrt-labels': 'include',
         }
     },
     {
         'selector': 'node[axon]',
         'style': {
-            'background-color': 'green'
+            // 'background-color': 'green',
+            'shape': 'round-diamond',
         }
     },
     {
         'selector': 'node[dendrite]',
         'style': {
-            'background-color': 'red'
+            // 'background-color': 'red',
+            'shape': 'ellipse',
         }
     },
     {
         'selector': 'node[both-a-d]',
         'style': {
-            'background-color': 'gray'
+            // 'background-color': 'gray',
+            'shape': 'round-rectangle',
         }
     },
     {
         'selector': 'edge',
         'style': {
-            'width': 2,
-            'line-color': '#9dbaea',
-            'target-arrow-color': '#9dbaea',
+            'width': 1,
+            'line-color': 'dimgray',
+            'target-arrow-color': 'dimgray',
             'target-arrow-shape': 'triangle',
             'curve-style': 'bezier'
         }

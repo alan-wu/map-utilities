@@ -5,12 +5,12 @@
 
     <div class="control-panel">
       <div class="node-key">
-        <div class="key-head">Node type:</div>
-        <div>
-          <div><span>Node:</span><span class="key-box" style="background: #80F0F0"/></div>
-          <div><span>Axon:</span><span class="key-box" style="background: green"/></div>
-          <div><span>Dendrite:</span><span class="key-box" style="background: red"/></div>
-          <div><span>Both:</span><span class="key-box" style="background: gray"/></div>
+        <!-- <div class="key-head">Node type:</div> -->
+        <div class="key-box-container">
+          <div><span>Node:</span><span class="key-box key-box-node" /></div>
+          <div><span>Axon:</span><span class="key-box key-box-axon" /></div>
+          <div><span>Dendrite:</span><span class="key-box key-box-dendrite" /></div>
+          <div><span>Both:</span><span class="key-box key-box-both" /></div>
         </div>
       </div>
       <div class="tools">
@@ -391,10 +391,11 @@ export default {
   background-color: rgba(#f7faff, 0.85);
 
   div div {
-    width: 90px;
+    // width: 90px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 0.5rem;
+    // justify-content: space-between;
   }
 }
 
@@ -406,10 +407,43 @@ export default {
   margin-bottom: 0.5rem;
 }
 
+.key-box-container {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+
 .key-box {
   display: block;
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
+
+  &-node,
+  &-both {
+    border: 1px solid gray;
+    border-radius: var(--el-border-radius-small);
+  }
+
+  // &-node {
+  //   background: #80F0F0;
+  // }
+
+  // &-both {
+  //   background: gray;
+  // }
+
+  &-axon {
+    border: 1px solid gray;
+    border-radius: var(--el-border-radius-small);
+    transform: rotate(45deg);
+    // background: green;
+  }
+
+  &-dendrite {
+    border: 1px solid gray;
+    border-radius: 50%;
+    // background: red;
+  }
 }
 
 .tools {
