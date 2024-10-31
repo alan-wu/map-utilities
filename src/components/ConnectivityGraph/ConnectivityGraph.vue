@@ -3,16 +3,7 @@
 
     <div ref="graphCanvas" class="graph-canvas"></div>
 
-    <div class="control-panel">
-      <div class="node-key">
-        <!-- <div class="key-head">Node type:</div> -->
-        <div class="key-box-container">
-          <div><span>Node:</span><span class="key-box key-box-node" /></div>
-          <div><span>Axon:</span><span class="key-box key-box-axon" /></div>
-          <div><span>Dendrite:</span><span class="key-box key-box-dendrite" /></div>
-          <div><span>Both:</span><span class="key-box key-box-both" /></div>
-        </div>
-      </div>
+    <div class="control-panel control-panel-tools">
       <div class="tools">
         <el-tooltip
           :content="resetLabel"
@@ -53,6 +44,26 @@
             <span class="visually-hidden">{{ zoomLockLabel }}</span>
           </el-button>
         </el-tooltip>
+      </div>
+    </div>
+
+    <div class="control-panel control-panel-nodes">
+      <div class="node-key">
+        <!-- <div class="key-head">Node type:</div> -->
+        <div class="key-box-container">
+          <div class="key-box key-box-dendrite">
+            Dendrite
+          </div>
+          <div class="key-box key-box-node">
+            Node
+          </div>
+          <div class="key-box key-box-axon">
+            Axon
+          </div>
+          <div class="key-box key-box-both">
+            Both
+          </div>
+        </div>
       </div>
     </div>
 
@@ -380,8 +391,15 @@ export default {
 
 .control-panel {
   position: absolute;
-  top: 1rem;
   right: 1rem;
+
+  &-tools {
+    top: 1rem;
+  }
+
+  &-nodes {
+    bottom: 1rem;
+  }
 }
 
 .node-key {
@@ -389,14 +407,6 @@ export default {
   font-size: 12px;
   border: 1px solid var(--el-border-color);
   background-color: rgba(#f7faff, 0.85);
-
-  div div {
-    // width: 90px;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    // justify-content: space-between;
-  }
 }
 
 .key-head {
@@ -414,12 +424,20 @@ export default {
 }
 
 .key-box {
-  display: block;
-  width: 14px;
-  height: 14px;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  position: relative;
 
-  &-node,
-  &-both {
+  &::before {
+    content: "";
+    display: block;
+    width: 14px;
+    height: 14px;
+  }
+
+  &-node::before,
+  &-both::before {
     border: 1px solid gray;
     border-radius: var(--el-border-radius-small);
   }
@@ -432,14 +450,14 @@ export default {
   //   background: gray;
   // }
 
-  &-axon {
+  &-axon::before {
     border: 1px solid gray;
     border-radius: var(--el-border-radius-small);
     transform: rotate(45deg);
     // background: green;
   }
 
-  &-dendrite {
+  &-dendrite::before {
     border: 1px solid gray;
     border-radius: 50%;
     // background: red;
@@ -447,7 +465,6 @@ export default {
 }
 
 .tools {
-  margin-top: 0.5rem;
   display: flex;
   flex-direction: row;
   gap: 0.5rem;
