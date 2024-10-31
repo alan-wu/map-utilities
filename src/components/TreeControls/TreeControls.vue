@@ -202,7 +202,7 @@ export default {
   methods: {
     filterNode: function(value, data) {
       if (!value) return true;
-      return data.label ? data.label.toLowerCase().includes(value) : false;
+      return data.label ? data.label.toLowerCase().includes(value.toLowerCase()) : false;
     },
     setColour: function (nodeData, value) {
       this.$emit("setColour", nodeData, value);
