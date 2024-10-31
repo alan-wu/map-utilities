@@ -6,12 +6,21 @@
           {{ title }}
         </div>
       </el-col>
+      <el-col v-if="enableFilter" :span="12">
+        <div>
+          <el-input
+            class="tree-filter-input"
+            v-model="filterText"
+            placeholder="Filter keyword"
+          />
+        </div>
+      </el-col>
     </el-row>
     <div class="tree-container" ref="treeContainer">
       <div :class="['tree-tooltip', tooltipAtBottom ? 'bottom' : '']" >
         <el-popover
           ref="tooltip"
-          :visible="tooltipVisible"
+          :visible="tooltipVisible && tooltipLabel !== ''"
           placement="top"
           :show-arrow="false"
           :teleported="false"
@@ -38,6 +47,7 @@
         :default-expanded-keys="expandedKeys"
         @check="checkChanged"
         :indent="8"
+        :filter-node-method="filterNode"
         :class="[mapType === 'flatmap' ? 'hide_grandchildren_checkbox': '']"
       >
         <template #default="{ node, data }">
@@ -138,10 +148,15 @@ export default {
       type: [String, Array],
       required: true,
     },
+    enableFilter: {
+      type: Boolean,
+      default: true,
+    }
   },
   data: function () {
     return {
       defaultExpandedKeys: ["All"],
+      filterText: "",
       myPopperClass: "hide-scaffold-colour-popup",
       tooltipVisible: false,
       tooltipLabel: "",
@@ -178,8 +193,17 @@ export default {
         else this.myPopperClass = "hide-scaffold-colour-popup";
       },
     },
+    filterText: {
+      handler: function (value) {
+        if (this.$refs.regionTree) this.$refs.regionTree.filter(value);
+      },
+    },
   },
   methods: {
+    filterNode: function(value, data) {
+      if (!value) return true;
+      return data.label ? data.label.toLowerCase().includes(value.toLowerCase()) : false;
+    },
     setColour: function (nodeData, value) {
       this.$emit("setColour", nodeData, value);
     },
@@ -250,6 +274,9 @@ export default {
   unmounted: function () {
     this.sortedPrimitiveGroups = undefined;
   },
+  mounted: function() {
+    if (this.$refs.regionTree) this.$refs.regionTree.filter(this.filterText);
+  }
 };
 </script>
 
@@ -265,6 +292,7 @@ export default {
 }
 
 .selections-container {
+  width: 260px;
   padding-top: 5px;
 }
 
@@ -276,6 +304,15 @@ export default {
   font-weight: normal;
   line-height: 20px;
   margin-left: 8px;
+}
+
+:deep(.tree-filter-input) {
+  .el-input__inner {
+      height: 20px;
+    }
+  .el-input__wrapper.is-focus{
+    box-shadow: 0 0 0 1px $app-primary-color;
+  }
 }
 
 .tree-container {
