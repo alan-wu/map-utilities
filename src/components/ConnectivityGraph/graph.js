@@ -90,15 +90,33 @@ export class ConnectivityGraph extends EventTarget
     }
 
     reset()
-    //=================
+    //=====
     {
         if (this.cyg?.cy) {
             this.cyg.cy.reset()
         }
     }
 
+    zoom(val)
+    //=======
+    {
+        if (this.cyg?.cy) {
+            const currentZoom = this.cyg.cy.zoom()
+            const width = this.cyg.cy.width()
+            const height = this.cyg.cy.height()
+            const positionToRender = {
+                x: width/2,
+                y: height/2,
+            }
+            this.cyg.cy.zoom({
+                level: currentZoom + val,
+                renderedPosition: positionToRender,
+            })
+        }
+    }
+
     enableZoom(option)
-    //=================
+    //================
     {
         if (this.cyg?.cy) {
             this.cyg.cy.userZoomingEnabled(option)

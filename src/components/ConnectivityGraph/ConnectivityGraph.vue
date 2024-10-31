@@ -22,6 +22,7 @@
             <span class="visually-hidden">{{ resetLabel }}</span>
           </el-button>
         </el-tooltip>
+
         <el-tooltip
           :content="zoomLockLabel"
           placement="bottom"
@@ -42,6 +43,42 @@
               </template>
             </el-icon>
             <span class="visually-hidden">{{ zoomLockLabel }}</span>
+          </el-button>
+        </el-tooltip>
+
+        <el-tooltip
+          :content="zoomInLabel"
+          placement="bottom"
+          effect="control-tooltip"
+        >
+          <el-button
+            class="control-button"
+            :class="theme"
+            size="small"
+            @click="zoomIn"
+          >
+            <el-icon color="white">
+              <el-icon-zoom-in />
+            </el-icon>
+            <span class="visually-hidden">{{ zoomInLabel }}</span>
+          </el-button>
+        </el-tooltip>
+
+        <el-tooltip
+          :content="zoomOutLabel"
+          placement="bottom"
+          effect="control-tooltip"
+        >
+          <el-button
+            class="control-button"
+            :class="theme"
+            size="small"
+            @click="zoomOut"
+          >
+            <el-icon color="white">
+              <el-icon-zoom-out />
+            </el-icon>
+            <span class="visually-hidden">{{ zoomOutLabel }}</span>
           </el-button>
         </el-tooltip>
       </div>
@@ -82,6 +119,9 @@ const CACHE_LIFETIME = 24 * 60 * 60 * 1000; // One day
 const RESET_LABEL = 'Reset position';
 const ZOOM_LOCK_LABEL = 'Lock zoom (to scroll)';
 const ZOOM_UNLOCK_LABEL = 'Unlock zoom';
+const ZOOM_IN_LABEL = 'Zoom in';
+const ZOOM_OUT_LABEL = 'Zoom out';
+const ZOOM_INCREMENT = 0.25;
 const APP_PRIMARY_COLOR = '#8300bf';
 
 export default {
@@ -111,6 +151,8 @@ export default {
       labelCache: new Map(),
       resetLabel: RESET_LABEL,
       zoomLockLabel: ZOOM_LOCK_LABEL,
+      zoomInLabel: ZOOM_IN_LABEL,
+      zoomOutLabel: ZOOM_OUT_LABEL,
       iconColor: APP_PRIMARY_COLOR,
       zoomEnabled: false,
       errorMessage: '',
@@ -355,6 +397,12 @@ export default {
     },
     reset: function () {
       this.connectivityGraph.reset();
+    },
+    zoomIn: function () {
+      this.connectivityGraph.zoom(ZOOM_INCREMENT);
+    },
+    zoomOut: function () {
+      this.connectivityGraph.zoom(-ZOOM_INCREMENT);
     },
     /**
      * Enable/disable user zoom for scrolling
