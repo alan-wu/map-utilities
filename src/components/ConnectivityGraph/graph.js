@@ -201,6 +201,8 @@ const GRAPH_STYLE = [
         'style': {
             // 'background-color': 'green',
             'shape': 'round-diamond',
+            'width': '100px',
+            'height': '100px',
         }
     },
     {
