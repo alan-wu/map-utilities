@@ -7,7 +7,7 @@
       <div class="tools" :class="{'zoom-locked': zoomEnabled}">
         <el-tooltip
           :content="resetLabel"
-          placement="bottom"
+          placement="top"
           effect="control-tooltip"
         >
           <el-button
@@ -25,7 +25,7 @@
 
         <el-tooltip
           :content="zoomLockLabel"
-          placement="bottom"
+          placement="top"
           effect="control-tooltip"
         >
           <el-button
@@ -117,7 +117,7 @@ import { ConnectivityGraph } from './graph';
 const MIN_SCHEMA_VERSION = 1.3;
 const CACHE_LIFETIME = 24 * 60 * 60 * 1000; // One day
 const RESET_LABEL = 'Reset position';
-const ZOOM_LOCK_LABEL = 'Lock zoom (to scroll)';
+const ZOOM_LOCK_LABEL = 'Lock zoom';
 const ZOOM_UNLOCK_LABEL = 'Unlock zoom';
 const ZOOM_IN_LABEL = 'Zoom in';
 const ZOOM_OUT_LABEL = 'Zoom out';
