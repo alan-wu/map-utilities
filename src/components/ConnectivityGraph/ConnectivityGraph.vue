@@ -89,17 +89,19 @@
         <!-- <div class="key-head">Node type:</div> -->
         <div class="key-box-container">
           <div class="key-box key-box-dendrite">
-            Dendrite
+            Origin
           </div>
           <div class="key-box key-box-node">
-            Node
+            Components
           </div>
           <div class="key-box key-box-axon">
-            Axon
+            Destination
           </div>
+          <!--
           <div class="key-box key-box-both">
             Both
           </div>
+          -->
         </div>
       </div>
     </div>
@@ -476,6 +478,7 @@ export default {
   align-items: center;
   gap: 0.35rem;
   position: relative;
+  line-height: 1;
 
   &::before {
     content: "";
