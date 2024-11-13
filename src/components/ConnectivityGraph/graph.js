@@ -32,6 +32,7 @@ export class ConnectivityGraph extends EventTarget
     edges = []
     axons = []
     dendrites = []
+    somas = []
     labelCache = new Map()
     graphCanvas = null
 
@@ -47,6 +48,9 @@ export class ConnectivityGraph extends EventTarget
     {
         this.axons = knowledge.axons.map(node => JSON.stringify(node))
         this.dendrites = knowledge.dendrites.map(node => JSON.stringify(node))
+        if (knowledge.somas?.length) {
+            this.somas = knowledge.somas.map(node => JSON.stringify(node))
+        }
         if (knowledge.connectivity.length) {
             for (const edge of knowledge.connectivity) {
                 const e0 = await this.graphNode(edge[0])
@@ -135,7 +139,10 @@ export class ConnectivityGraph extends EventTarget
     get roots()
     //===================
     {
-        return this.dendrites
+        return [
+            ...this.dendrites,
+            ...this.somas
+        ]
     }
 
     async graphNode(node)
@@ -155,12 +162,12 @@ export class ConnectivityGraph extends EventTarget
             label: label.join('\n')
         }
         if (this.axons.includes(id)) {
-            if (this.dendrites.includes(id)) {
+            if (this.dendrites.includes(id) || this.somas.includes(id)) {
                 result['both-a-d'] = true
             } else {
                 result['axon'] = true
             }
-        } else if (this.dendrites.includes(id)) {
+        } else if (this.dendrites.includes(id) || this.somas.includes(id)) {
             result['dendrite'] = true
 
         }
