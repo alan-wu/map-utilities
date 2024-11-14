@@ -202,7 +202,7 @@ export default {
   methods: {
     filterNode: function(value, data) {
       if (!value) return true;
-      return data.label ? data.label.toLowerCase().includes(value) : false;
+      return data.label ? data.label.toLowerCase().includes(value.toLowerCase()) : false;
     },
     setColour: function (nodeData, value) {
       this.$emit("setColour", nodeData, value);
@@ -368,7 +368,7 @@ export default {
 
 :deep(.el-checkbox__label) {
   padding-left: 5px;
-  color: $app-primary-color !important;
+  color: inherit !important;
   font-size: 12px;
   font-weight: 500;
   letter-spacing: 0px;
@@ -385,7 +385,7 @@ export default {
 
 .region-tree-node {
   flex: 1;
-  color: $app-primary-color !important;
+  color: inherit !important;
   display: flex;
   font-size: 12px;
   line-height: 14px;
