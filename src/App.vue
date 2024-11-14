@@ -248,12 +248,42 @@ function changeActive(value) {
 function changeHover(value) {
   console.log("🚀 ~ changeHover ~ value:", value);
 }
+
+/**
+ * CreatTooltipContent
+ */
+const createData = ref({
+  drawingBox: false,
+  toBeConfirmed: true,
+  points: [[1.0, 1.0, 1.0]],
+  shape: "Lines",
+  x: 0,
+  y: 0,
+  editingIndex: -1,
+  faceIndex: -1,
+  toBeDeleted: false,
+})
+function cancelCreate() {
+  console.log("🚀 ~ CreateTooltipContent : cancelCreate");
+}
+function confirmCreate(value) {
+  console.log("🚀 ~ CreateTooltipContent : confirmCreate", value);
+}
 </script>
 
 <template>
   <div ref="appRef">
     <div class="maplibregl-canvas"></div>
     <el-row>
+      <el-col>
+        <div class="annotation-popup">
+          <CreateTooltipContent
+            :createData="createData"
+            @cancel-create="cancelCreate"
+            @confirm-create="confirmCreate"
+          />
+        </div>
+      </el-col>
       <el-col>
         <h3>DrawToolbar</h3>
       </el-col>
@@ -535,6 +565,13 @@ function changeHover(value) {
   position: absolute;
   top: calc(50% - 100px);
   left: calc(50% - 200px);
+}
+.annotation-popup{
+  margin-top: 8px;
+  width:400px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: black;
 }
 .toolbar-container {
   height: 80px;
