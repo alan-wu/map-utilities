@@ -339,8 +339,19 @@ class CytoscapeGraph extends EventTarget
     {
         const node = event.target
         const data = node.data()
+        const { label } = data
+        const labels = label ? label.split(`\n`) : []
+        const connectivityData = []
+
+        for (let i = 0; i < labels.length / 2; i++) {
+            connectivityData.push({
+              id: labels[i],
+              label: labels[i + labels.length / 2]
+            })
+        }
+
         const tapEvent = new CustomEvent('tap-node', {
-            detail: data
+            detail: connectivityData
         })
         this.dispatchEvent(tapEvent);
     }

@@ -246,12 +246,11 @@ export default {
       this.connectivityGraph.showConnectivity(graphCanvas);
 
       this.connectivityGraph.on('tap-node', (event) => {
-        const { label } = event.detail;
-        const labels = label ? label.split(`\n`) : [];
+        const data = event.detail;
         /**
          * This event is triggered after a node on the connectivity graph is clicked.
          */
-        this.$emit('tap-node', labels);
+        this.$emit('tap-node', data);
       });
     },
     query: async function (sql, params) {
