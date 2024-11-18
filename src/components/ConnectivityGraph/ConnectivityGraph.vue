@@ -106,7 +106,8 @@
       </div>
     </div>
 
-    <div class="connectivity-graph-error" v-if="errorMessage">
+    <div class="connectivity-graph-error" v-if="errorMessage || errorConnectivities">
+      <strong v-if="errorConnectivities">{{ errorConnectivities }}</strong>
       {{ errorMessage }}
     </div>
 
@@ -126,6 +127,7 @@ const ZOOM_IN_LABEL = 'Zoom in';
 const ZOOM_OUT_LABEL = 'Zoom out';
 const ZOOM_INCREMENT = 0.25;
 const APP_PRIMARY_COLOR = '#8300bf';
+const ERROR_TIMEOUT = 3000; // 3 seconds
 
 export default {
   name: 'ConnectivityGraph',
@@ -159,6 +161,7 @@ export default {
       iconColor: APP_PRIMARY_COLOR,
       zoomEnabled: false,
       errorMessage: '',
+      errorConnectivities: '',
     };
   },
   mounted() {
@@ -435,17 +438,14 @@ export default {
     },
     showErrorMessage: function (errorInfo) {
       const {errorData, errorMessage} = errorInfo;
-      const errorConnectivities = this.getErrorConnectivities(errorData);
-
-      this.errorMessage = [
-        errorConnectivities,
-        errorMessage
-      ].join(' ');
+      this.errorConnectivities = this.getErrorConnectivities(errorData);
+      this.errorMessage = errorMessage;
 
       // Show error for 3 seconds
       setTimeout(() => {
+        this.errorConnectivities = '';
         this.errorMessage = '';
-      }, 3000);
+      }, ERROR_TIMEOUT);
     },
   },
 };
