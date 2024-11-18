@@ -115,6 +115,7 @@
 
 <script>
 import { ConnectivityGraph } from './graph';
+import { capitalise } from '../utilities';
 
 const MIN_SCHEMA_VERSION = 1.3;
 const CACHE_LIFETIME = 24 * 60 * 60 * 1000; // One day
@@ -413,8 +414,34 @@ export default {
       this.zoomLockLabel = this.zoomEnabled ? ZOOM_UNLOCK_LABEL : ZOOM_LOCK_LABEL;
       this.connectivityGraph.enableZoom(!this.zoomEnabled);
     },
-    showErrorMessage: function (errorMessage) {
-      this.errorMessage = errorMessage;
+    getErrorConnectivities: function (errorData) {
+      const errorDataToEmit = [...new Set(errorData)];
+      let errorConnectivities = '';
+
+      errorDataToEmit.forEach((connectivity, i) => {
+        const { label } = connectivity;
+        errorConnectivities += (i === 0) ? capitalise(label) : label;
+
+        if (errorDataToEmit.length > 1) {
+          if ((i + 2) === errorDataToEmit.length) {
+            errorConnectivities += ' and ';
+          } else if ((i + 1) < errorDataToEmit.length) {
+            errorConnectivities += ', ';
+          }
+        }
+      });
+
+      return errorConnectivities;
+    },
+    showErrorMessage: function (errorInfo) {
+      const {errorData, errorMessage} = errorInfo;
+      const errorConnectivities = this.getErrorConnectivities(errorData);
+
+      this.errorMessage = [
+        errorConnectivities,
+        errorMessage
+      ].join(' ');
+
       // Show error for 3 seconds
       setTimeout(() => {
         this.errorMessage = '';
