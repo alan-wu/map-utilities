@@ -443,7 +443,7 @@ export default {
      * @arg `errorInfo`
      */
     showErrorMessage: function (errorInfo) {
-      const {errorData, errorMessage} = errorInfo;
+      const { errorData, errorMessage } = errorInfo;
       this.errorConnectivities = this.getErrorConnectivities(errorData);
       this.errorMessage = errorMessage;
 
