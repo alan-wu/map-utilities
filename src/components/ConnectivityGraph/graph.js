@@ -317,6 +317,7 @@ class CytoscapeGraph extends EventTarget
         this.tooltip.style.left = `${event.renderedPosition.x}px`
         this.tooltip.style.top = `${event.renderedPosition.y}px`
         this.tooltip.style.maxWidth = '240px'
+        this.tooltip.style.zIndex = 2
         this.tooltip.hidden = false
 
         this.checkRightBoundary(event.renderedPosition.x)
