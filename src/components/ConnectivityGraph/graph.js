@@ -242,7 +242,7 @@ function trimLabel(label) {
     const labels = label.split('\n')
     const half = labels.length/2
     const trimLabels = labels.slice(half)
-    return trimLabels.join('\n')
+    return capitalizeLabels(trimLabels.join('\n'))
 }
 
 function capitalizeLabels(input) {
@@ -308,9 +308,12 @@ class CytoscapeGraph extends EventTarget
     //==============
     {
         const node = event.target
-        const label = capitalizeLabels(node.data().label)
+        const connectivityData = this.getConnectivityData(node)
+        const labels = connectivityData.map((data) => (
+            data.label + ' (' + data.id + ')'
+        ))
 
-        this.tooltip.innerText = label
+        this.tooltip.innerText = capitalizeLabels(labels.join('\n'))
         this.tooltip.style.left = `${event.renderedPosition.x}px`
         this.tooltip.style.top = `${event.renderedPosition.y}px`
         this.tooltip.style.maxWidth = '240px'
@@ -338,6 +341,17 @@ class CytoscapeGraph extends EventTarget
     //============
     {
         const node = event.target
+        const connectivityData = this.getConnectivityData(node)
+
+        const tapEvent = new CustomEvent('tap-node', {
+            detail: connectivityData
+        })
+        this.dispatchEvent(tapEvent);
+    }
+
+    getConnectivityData(node)
+    //=======================
+    {
         const data = node.data()
         const { label } = data
         const labels = label ? label.split(`\n`) : []
@@ -349,11 +363,7 @@ class CytoscapeGraph extends EventTarget
               label: labels[i + labels.length / 2]
             })
         }
-
-        const tapEvent = new CustomEvent('tap-node', {
-            detail: connectivityData
-        })
-        this.dispatchEvent(tapEvent);
+        return connectivityData
     }
 
     on(eventName, callback)
