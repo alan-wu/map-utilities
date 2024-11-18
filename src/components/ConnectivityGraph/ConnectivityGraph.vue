@@ -436,6 +436,12 @@ export default {
 
       return errorConnectivities;
     },
+    /**
+     * Function to show error message.
+     * `errorInfo` includes `errorData` array (optional) for error connectivities
+     * and `errorMessage` for error message.
+     * @arg `errorInfo`
+     */
     showErrorMessage: function (errorInfo) {
       const {errorData, errorMessage} = errorInfo;
       this.errorConnectivities = this.getErrorConnectivities(errorData);
