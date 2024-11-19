@@ -143,6 +143,10 @@ export default {
       type: String,
       default: '',
     },
+    selectedConnectivityData: {
+      type: Array,
+      default: [],
+    },
   },
   data: function () {
     return {
@@ -248,6 +252,11 @@ export default {
       this.hideSpinner();
 
       this.connectivityGraph.showConnectivity(graphCanvas);
+
+      // saved state from list view
+      if (this.selectedConnectivityData.length) {
+        this.connectivityGraph.selectConnectivity(this.selectedConnectivityData);
+      }
 
       this.connectivityGraph.on('tap-node', (event) => {
         const data = event.detail;

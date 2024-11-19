@@ -84,6 +84,25 @@ export class ConnectivityGraph extends EventTarget
         });
     }
 
+    selectConnectivity(selectedConnectivityData)
+    {
+        if (this.cyg?.cy) {
+            let eleId = ''
+            this.cyg.cy.elements().forEach((ele) => {
+                const label = ele.data('label')
+                const connectivityData = getConnectivityData(label)
+
+                if (areArraysIdentical(selectedConnectivityData, connectivityData)) {
+                    eleId = ele.id()
+                }
+            })
+
+            if (eleId) {
+                this.cyg.cy.$id(eleId).select()
+            }
+        }
+    }
+
     clearConnectivity()
     //=================
     {
@@ -271,6 +290,40 @@ function capitalizeLabels(input) {
     }).join('\n')
 }
 
+function getConnectivityData(label) {
+    const labels = label ? label.split(`\n`) : []
+    const connectivityData = []
+
+    for (let i = 0; i < labels.length / 2; i++) {
+        connectivityData.push({
+            id: labels[i],
+            label: labels[i + labels.length / 2]
+        })
+    }
+    return connectivityData
+}
+
+function areArraysIdentical(arr1, arr2) {
+    arr1.sort((a, b) => {
+      if (a.id < b.id) return -1
+      if (a.id > b.id) return 1
+      return 0
+    })
+
+    arr2.sort((a, b) => {
+      if (a.id < b.id) return -1
+      if (a.id > b.id) return 1
+      return 0
+    })
+
+    for (let i = 0; i < arr1.length; i++) {
+      if (JSON.stringify(arr1[i]) !== JSON.stringify(arr2[i])) {
+        return false
+      }
+    }
+
+    return true
+}
 //==============================================================================
 
 class CytoscapeGraph extends EventTarget
@@ -325,7 +378,9 @@ class CytoscapeGraph extends EventTarget
     //==============
     {
         const node = event.target
-        const connectivityData = this.getConnectivityData(node)
+        const data = node.data()
+        const { label } = data
+        const connectivityData = getConnectivityData(label)
         const labels = connectivityData.map((data) => (
             data.label + ' (' + data.id + ')'
         ))
@@ -359,29 +414,14 @@ class CytoscapeGraph extends EventTarget
     //============
     {
         const node = event.target
-        const connectivityData = this.getConnectivityData(node)
+        const data = node.data()
+        const { label } = data
+        const connectivityData = getConnectivityData(label)
 
         const tapEvent = new CustomEvent('tap-node', {
             detail: connectivityData
         })
         this.dispatchEvent(tapEvent);
-    }
-
-    getConnectivityData(node)
-    //=======================
-    {
-        const data = node.data()
-        const { label } = data
-        const labels = label ? label.split(`\n`) : []
-        const connectivityData = []
-
-        for (let i = 0; i < labels.length / 2; i++) {
-            connectivityData.push({
-              id: labels[i],
-              label: labels[i + labels.length / 2]
-            })
-        }
-        return connectivityData
     }
 
     on(eventName, callback)
