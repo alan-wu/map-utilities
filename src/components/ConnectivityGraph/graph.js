@@ -183,6 +183,8 @@ export class ConnectivityGraph extends EventTarget
 
 //==============================================================================
 
+const APP_PRIMARY_COLOR = '#8300bf'
+const BG_COLOR = '#f3ecf6'
 const GRAPH_STYLE = [
     {
         'selector': 'node',
@@ -234,6 +236,21 @@ const GRAPH_STYLE = [
             'target-arrow-color': 'dimgray',
             'target-arrow-shape': 'triangle',
             'curve-style': 'bezier'
+        }
+    },
+    {
+        'selector': 'node:active',
+        'style': {
+            'border-color': APP_PRIMARY_COLOR,
+            'border-width': 2
+        }
+    },
+    {
+        'selector': 'node:selected',
+        'style': {
+            'border-color': APP_PRIMARY_COLOR,
+            'background-color': BG_COLOR,
+            'background-opacity': 0.75,
         }
     }
 ]

@@ -616,6 +616,7 @@ export default {
   background: #f3ecf6 !important;
   border: 1px solid $app-primary-color;
   border-radius: var(--el-border-radius-base);
+  box-shadow: 1px 1px 6px 1px rgba($app-primary-color, 0.15);
   position: relative;
   top: 0;
   left: 0;
