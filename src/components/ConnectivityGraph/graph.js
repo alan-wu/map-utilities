@@ -84,6 +84,25 @@ export class ConnectivityGraph extends EventTarget
         });
     }
 
+    selectConnectivity(selectedConnectivityData)
+    {
+        if (this.cyg?.cy) {
+            let eleId = ''
+            this.cyg.cy.elements().forEach((ele) => {
+                const label = ele.data('label')
+                const connectivityData = getConnectivityData(label)
+
+                if (areArraysIdentical(selectedConnectivityData, connectivityData)) {
+                    eleId = ele.id()
+                }
+            })
+
+            if (eleId) {
+                this.cyg.cy.$id(eleId).select()
+            }
+        }
+    }
+
     clearConnectivity()
     //=================
     {
@@ -183,6 +202,8 @@ export class ConnectivityGraph extends EventTarget
 
 //==============================================================================
 
+const APP_PRIMARY_COLOR = '#8300bf'
+const BG_COLOR = '#f3ecf6'
 const GRAPH_STYLE = [
     {
         'selector': 'node',
@@ -235,6 +256,21 @@ const GRAPH_STYLE = [
             'target-arrow-shape': 'triangle',
             'curve-style': 'bezier'
         }
+    },
+    {
+        'selector': 'node:active',
+        'style': {
+            'border-color': APP_PRIMARY_COLOR,
+            'border-width': 2
+        }
+    },
+    {
+        'selector': 'node:selected',
+        'style': {
+            'border-color': APP_PRIMARY_COLOR,
+            'background-color': BG_COLOR,
+            'background-opacity': 0.75,
+        }
     }
 ]
 
@@ -242,7 +278,7 @@ function trimLabel(label) {
     const labels = label.split('\n')
     const half = labels.length/2
     const trimLabels = labels.slice(half)
-    return trimLabels.join('\n')
+    return capitalizeLabels(trimLabels.join('\n'))
 }
 
 function capitalizeLabels(input) {
@@ -254,6 +290,40 @@ function capitalizeLabels(input) {
     }).join('\n')
 }
 
+function getConnectivityData(label) {
+    const labels = label ? label.split(`\n`) : []
+    const connectivityData = []
+
+    for (let i = 0; i < labels.length / 2; i++) {
+        connectivityData.push({
+            id: labels[i],
+            label: labels[i + labels.length / 2]
+        })
+    }
+    return connectivityData
+}
+
+function areArraysIdentical(arr1, arr2) {
+    arr1.sort((a, b) => {
+      if (a.id < b.id) return -1
+      if (a.id > b.id) return 1
+      return 0
+    })
+
+    arr2.sort((a, b) => {
+      if (a.id < b.id) return -1
+      if (a.id > b.id) return 1
+      return 0
+    })
+
+    for (let i = 0; i < arr1.length; i++) {
+      if (JSON.stringify(arr1[i]) !== JSON.stringify(arr2[i])) {
+        return false
+      }
+    }
+
+    return true
+}
 //==============================================================================
 
 class CytoscapeGraph extends EventTarget
@@ -308,12 +378,18 @@ class CytoscapeGraph extends EventTarget
     //==============
     {
         const node = event.target
-        const label = capitalizeLabels(node.data().label)
+        const data = node.data()
+        const { label } = data
+        const connectivityData = getConnectivityData(label)
+        const labels = connectivityData.map((data) => (
+            data.label + ' (' + data.id + ')'
+        ))
 
-        this.tooltip.innerText = label
+        this.tooltip.innerText = capitalizeLabels(labels.join('\n'))
         this.tooltip.style.left = `${event.renderedPosition.x}px`
         this.tooltip.style.top = `${event.renderedPosition.y}px`
         this.tooltip.style.maxWidth = '240px'
+        this.tooltip.style.zIndex = 2
         this.tooltip.hidden = false
 
         this.checkRightBoundary(event.renderedPosition.x)
@@ -339,8 +415,19 @@ class CytoscapeGraph extends EventTarget
     {
         const node = event.target
         const data = node.data()
+        let { label } = data
+
+        if (label && node.isNode() && node.selected()) {
+            label = ''
+            setTimeout(() => {
+                node.unselect()
+            })
+        }
+
+        const connectivityData = getConnectivityData(label)
+
         const tapEvent = new CustomEvent('tap-node', {
-            detail: data
+            detail: connectivityData
         })
         this.dispatchEvent(tapEvent);
     }

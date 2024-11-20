@@ -106,7 +106,8 @@
       </div>
     </div>
 
-    <div class="connectivity-graph-error" v-if="errorMessage">
+    <div class="connectivity-graph-error" v-if="errorMessage || errorConnectivities">
+      <strong v-if="errorConnectivities">{{ errorConnectivities }}</strong>
       {{ errorMessage }}
     </div>
 
@@ -115,6 +116,7 @@
 
 <script>
 import { ConnectivityGraph } from './graph';
+import { capitalise } from '../utilities';
 
 const MIN_SCHEMA_VERSION = 1.3;
 const CACHE_LIFETIME = 24 * 60 * 60 * 1000; // One day
@@ -125,6 +127,7 @@ const ZOOM_IN_LABEL = 'Zoom in';
 const ZOOM_OUT_LABEL = 'Zoom out';
 const ZOOM_INCREMENT = 0.25;
 const APP_PRIMARY_COLOR = '#8300bf';
+const ERROR_TIMEOUT = 3000; // 3 seconds
 
 export default {
   name: 'ConnectivityGraph',
@@ -139,6 +142,10 @@ export default {
     mapServer: {
       type: String,
       default: '',
+    },
+    selectedConnectivityData: {
+      type: Array,
+      default: [],
     },
   },
   data: function () {
@@ -158,6 +165,7 @@ export default {
       iconColor: APP_PRIMARY_COLOR,
       zoomEnabled: false,
       errorMessage: '',
+      errorConnectivities: '',
     };
   },
   mounted() {
@@ -245,13 +253,17 @@ export default {
 
       this.connectivityGraph.showConnectivity(graphCanvas);
 
+      // saved state from list view
+      if (this.selectedConnectivityData.length) {
+        this.connectivityGraph.selectConnectivity(this.selectedConnectivityData);
+      }
+
       this.connectivityGraph.on('tap-node', (event) => {
-        const { label } = event.detail;
-        const labels = label ? label.split(`\n`) : [];
+        const data = event.detail;
         /**
          * This event is triggered after a node on the connectivity graph is clicked.
          */
-        this.$emit('tap-node', labels);
+        this.$emit('tap-node', data);
       });
     },
     query: async function (sql, params) {
@@ -414,12 +426,41 @@ export default {
       this.zoomLockLabel = this.zoomEnabled ? ZOOM_UNLOCK_LABEL : ZOOM_LOCK_LABEL;
       this.connectivityGraph.enableZoom(!this.zoomEnabled);
     },
-    showErrorMessage: function (errorMessage) {
+    getErrorConnectivities: function (errorData) {
+      const errorDataToEmit = [...new Set(errorData)];
+      let errorConnectivities = '';
+
+      errorDataToEmit.forEach((connectivity, i) => {
+        const { label } = connectivity;
+        errorConnectivities += (i === 0) ? capitalise(label) : label;
+
+        if (errorDataToEmit.length > 1) {
+          if ((i + 2) === errorDataToEmit.length) {
+            errorConnectivities += ' and ';
+          } else if ((i + 1) < errorDataToEmit.length) {
+            errorConnectivities += ', ';
+          }
+        }
+      });
+
+      return errorConnectivities;
+    },
+    /**
+     * Function to show error message.
+     * `errorInfo` includes `errorData` array (optional) for error connectivities
+     * and `errorMessage` for error message.
+     * @arg `errorInfo`
+     */
+    showErrorMessage: function (errorInfo) {
+      const { errorData, errorMessage } = errorInfo;
+      this.errorConnectivities = this.getErrorConnectivities(errorData);
       this.errorMessage = errorMessage;
+
       // Show error for 3 seconds
       setTimeout(() => {
+        this.errorConnectivities = '';
         this.errorMessage = '';
-      }, 3000);
+      }, ERROR_TIMEOUT);
     },
   },
 };
@@ -584,6 +625,7 @@ export default {
   background: #f3ecf6 !important;
   border: 1px solid $app-primary-color;
   border-radius: var(--el-border-radius-base);
+  box-shadow: 1px 1px 6px 1px rgba($app-primary-color, 0.15);
   position: relative;
   top: 0;
   left: 0;
