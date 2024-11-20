@@ -415,7 +415,15 @@ class CytoscapeGraph extends EventTarget
     {
         const node = event.target
         const data = node.data()
-        const { label } = data
+        let { label } = data
+
+        if (label && node.isNode() && node.selected()) {
+            label = ''
+            setTimeout(() => {
+                node.unselect()
+            })
+        }
+
         const connectivityData = getConnectivityData(label)
 
         const tapEvent = new CustomEvent('tap-node', {
