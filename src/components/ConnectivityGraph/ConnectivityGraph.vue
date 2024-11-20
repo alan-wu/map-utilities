@@ -106,9 +106,11 @@
       </div>
     </div>
 
-    <div class="connectivity-graph-error" v-if="errorMessage || errorConnectivities">
-      <strong v-if="errorConnectivities">{{ errorConnectivities }}</strong>
-      {{ errorMessage }}
+    <div v-if="connectivityError" class="connectivity-graph-error">
+      <strong v-if="connectivityError.errorConnectivities">
+        {{ connectivityError.errorConnectivities }}
+      </strong>
+      {{ connectivityError.errorMessage }}
     </div>
 
   </div>
@@ -164,8 +166,7 @@ export default {
       zoomOutLabel: ZOOM_OUT_LABEL,
       iconColor: APP_PRIMARY_COLOR,
       zoomEnabled: false,
-      errorMessage: '',
-      errorConnectivities: '',
+      connectivityError: null,
     };
   },
   mounted() {
@@ -426,40 +427,12 @@ export default {
       this.zoomLockLabel = this.zoomEnabled ? ZOOM_UNLOCK_LABEL : ZOOM_LOCK_LABEL;
       this.connectivityGraph.enableZoom(!this.zoomEnabled);
     },
-    getErrorConnectivities: function (errorData) {
-      const errorDataToEmit = [...new Set(errorData)];
-      let errorConnectivities = '';
-
-      errorDataToEmit.forEach((connectivity, i) => {
-        const { label } = connectivity;
-        errorConnectivities += (i === 0) ? capitalise(label) : label;
-
-        if (errorDataToEmit.length > 1) {
-          if ((i + 2) === errorDataToEmit.length) {
-            errorConnectivities += ' and ';
-          } else if ((i + 1) < errorDataToEmit.length) {
-            errorConnectivities += ', ';
-          }
-        }
-      });
-
-      return errorConnectivities;
-    },
-    /**
-     * Function to show error message.
-     * `errorInfo` includes `errorData` array (optional) for error connectivities
-     * and `errorMessage` for error message.
-     * @arg `errorInfo`
-     */
-    showErrorMessage: function (errorInfo) {
-      const { errorData, errorMessage } = errorInfo;
-      this.errorConnectivities = this.getErrorConnectivities(errorData);
-      this.errorMessage = errorMessage;
+    showErrorMessage: function (connectivityError) {
+      this.connectivityError = {...connectivityError};
 
       // Show error for 3 seconds
       setTimeout(() => {
-        this.errorConnectivities = '';
-        this.errorMessage = '';
+        this.connectivityError = null;
       }, ERROR_TIMEOUT);
     },
   },
