@@ -11,7 +11,7 @@
           <el-input
             class="tree-filter-input"
             v-model="filterText"
-            placeholder="Filter keyword"
+            :placeholder="'Filter ' + title"
           />
         </div>
       </el-col>
