@@ -258,14 +258,7 @@ const GRAPH_STYLE = [
         }
     },
     {
-        'selector': 'node:active',
-        'style': {
-            'border-color': APP_PRIMARY_COLOR,
-            'border-width': 2
-        }
-    },
-    {
-        'selector': 'node:selected',
+        'selector': 'node.active',
         'style': {
             'border-color': APP_PRIMARY_COLOR,
             'background-color': BG_COLOR,
@@ -420,7 +413,10 @@ class CytoscapeGraph extends EventTarget
         const data = node.data()
         let { label } = data
 
-        if (!show) {
+        if (show) {
+            node.addClass('active')
+        } else {
+            node.removeClass('active')
             label = ''
             setTimeout(() => {
                 node.unselect()
