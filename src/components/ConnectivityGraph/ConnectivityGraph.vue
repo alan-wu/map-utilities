@@ -167,6 +167,7 @@ export default {
       iconColor: APP_PRIMARY_COLOR,
       zoomEnabled: false,
       connectivityError: null,
+      timeoutID: undefined,
     };
   },
   mounted() {
@@ -430,8 +431,11 @@ export default {
     showErrorMessage: function (connectivityError) {
       this.connectivityError = {...connectivityError};
 
-      // Show error for 3 seconds
-      setTimeout(() => {
+      if (this.timeoutID) {
+        clearTimeout(this.timeoutID);
+      }
+
+      this.timeoutID = setTimeout(() => {
         this.connectivityError = null;
       }, ERROR_TIMEOUT);
     },
