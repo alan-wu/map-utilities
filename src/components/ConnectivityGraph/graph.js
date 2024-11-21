@@ -350,7 +350,6 @@ class CytoscapeGraph extends EventTarget
         }).on('mouseover', 'node', this.overNode.bind(this))
           .on('mouseout', 'node', this.exitNode.bind(this))
           .on('position', 'node', this.moveNode.bind(this))
-          .on('tap', this.tapNode.bind(this))
 
         this.tooltip = document.createElement('div')
         this.tooltip.className = 'cy-graph-tooltip'
@@ -393,6 +392,8 @@ class CytoscapeGraph extends EventTarget
         this.tooltip.hidden = false
 
         this.checkRightBoundary(event.renderedPosition.x)
+
+        this.tapNode(event, true)
     }
 
     moveNode(event)
@@ -408,16 +409,18 @@ class CytoscapeGraph extends EventTarget
     //==============
     {
         this.tooltip.hidden = true
+
+        this.tapNode(event, false)
     }
 
-    tapNode(event)
+    tapNode(event, show)
     //============
     {
         const node = event.target
         const data = node.data()
         let { label } = data
 
-        if (label && node.isNode() && node.selected()) {
+        if (!show) {
             label = ''
             setTimeout(() => {
                 node.unselect()
