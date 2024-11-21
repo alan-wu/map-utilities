@@ -12,7 +12,6 @@
         >
           <el-button
             class="control-button"
-            :class="theme"
             size="small"
             @click="reset"
           >
@@ -30,7 +29,6 @@
         >
           <el-button
             class="control-button"
-            :class="theme"
             size="small"
             @click="toggleZoom"
           >
@@ -53,7 +51,6 @@
         >
           <el-button
             class="control-button"
-            :class="theme"
             size="small"
             @click="zoomIn"
           >
@@ -71,7 +68,6 @@
         >
           <el-button
             class="control-button"
-            :class="theme"
             size="small"
             @click="zoomOut"
           >
