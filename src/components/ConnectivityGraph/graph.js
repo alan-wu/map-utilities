@@ -258,14 +258,7 @@ const GRAPH_STYLE = [
         }
     },
     {
-        'selector': 'node:active',
-        'style': {
-            'border-color': APP_PRIMARY_COLOR,
-            'border-width': 2
-        }
-    },
-    {
-        'selector': 'node:selected',
+        'selector': 'node.active',
         'style': {
             'border-color': APP_PRIMARY_COLOR,
             'background-color': BG_COLOR,
@@ -350,7 +343,6 @@ class CytoscapeGraph extends EventTarget
         }).on('mouseover', 'node', this.overNode.bind(this))
           .on('mouseout', 'node', this.exitNode.bind(this))
           .on('position', 'node', this.moveNode.bind(this))
-          .on('tap', this.tapNode.bind(this))
 
         this.tooltip = document.createElement('div')
         this.tooltip.className = 'cy-graph-tooltip'
@@ -393,6 +385,8 @@ class CytoscapeGraph extends EventTarget
         this.tooltip.hidden = false
 
         this.checkRightBoundary(event.renderedPosition.x)
+
+        this.tapNode(event, true)
     }
 
     moveNode(event)
@@ -408,16 +402,21 @@ class CytoscapeGraph extends EventTarget
     //==============
     {
         this.tooltip.hidden = true
+
+        this.tapNode(event, false)
     }
 
-    tapNode(event)
+    tapNode(event, show)
     //============
     {
         const node = event.target
         const data = node.data()
         let { label } = data
 
-        if (label && node.isNode() && node.selected()) {
+        if (show) {
+            node.addClass('active')
+        } else {
+            node.removeClass('active')
             label = ''
             setTimeout(() => {
                 node.unselect()
