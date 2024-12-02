@@ -46,11 +46,15 @@
               <el-row class="dialog-text">
                 <strong>Evidence: </strong>
                 <el-row
-                  v-for="evidence in sub.body.evidence"
+                  v-for="(evidence, index) in sub.body.evidence"
                   :key="evidence"
                   class="dialog-text"
-                >
-                  <a :href="evidence" target="_blank"> {{ evidence }}</a>
+                > 
+                  <a v-if="typeof evidence === 'object' ":href="Object.values(evidence)[0]" target="_blank"> 
+                    {{ Object.keys(evidence)[0] }}
+                  </a>
+                  <span v-else> {{ evidence }}</span>
+                  <span v-if="index !== sub.body.evidence.length - 1">, </span>
                 </el-row>
               </el-row>
               <el-row class="dialog-text">
@@ -102,18 +106,17 @@
                       <el-select
                         :teleported="false"
                         v-model="evidencePrefix"
-                        placeholder="No Prefix"
+                        placeholder="Other:"
                         class="select-box"
                         popper-class="flatmap_dropdown"
                       >
                         <el-option
                           v-for="item in evidencePrefixes"
-                          :key="item"
-                          :label="item"
-                          :value="item"
+                          :key="item.label"
+                          :value="item.value"
                         >
                           <el-row>
-                            <el-col :span="12">{{ item }}</el-col>
+                            <el-col :span="12">{{ item.label }}</el-col>
                           </el-row>
                         </el-option>
                       </el-select>
@@ -167,8 +170,12 @@ export default {
         Resource: "resourceId",
       },
       editing: false,
-      evidencePrefixes: ["", "DOI:", "PMID:"],
-      evidencePrefix: "",
+      evidencePrefixes: [
+        { value: "DOI:", label: "DOI:" },
+        { value: "PMID:", label: "PMID:" },
+        { value: "", label: "Other:" },
+      ],
+      evidencePrefix: "DOI:",
       evidence: [],
       authenticated: false,
       newEvidence: "",
@@ -270,18 +277,20 @@ export default {
           this.annotationEntry["featureId"]
         ) {
           const evidenceURLs = [];
-          this.evidence.forEach((evidence) => {
-            if (evidence.includes("DOI:")) {
-              const link = evidence.replace("DOI:", "https://doi.org/");
-              evidenceURLs.push(new URL(link));
-            } else if (evidence.includes("PMID:")) {
-              const link = evidence.replace(
+          this.evidence.forEach((evi) => {
+            let eviObject = {}
+            if (evi.includes("DOI:")) {
+              eviObject[evi] = evi.replace("DOI:", "https://doi.org/");
+            } else if (evi.includes("PMID:")) {
+              eviObject[evi] = evi.replace(
                 "PMID:",
                 "https://pubmed.ncbi.nlm.nih.gov/"
               );
-              evidenceURLs.push(new URL(link));
+            }
+            if (evi in eviObject) {
+              evidenceURLs.push(eviObject);
             } else {
-              evidenceURLs.push(evidence);
+              evidenceURLs.push(evi);
             }
           });
           const userAnnotation = {
