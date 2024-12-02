@@ -3,6 +3,7 @@
     <div class="block">
       <el-row class="info-field">
         <div class="title">Feature Annotations</div>
+        <copy-to-clipboard :content="updatedCopyContent" />
       </el-row>
       <template v-if="annotationEntry">
         <el-row
@@ -11,7 +12,9 @@
           class="dialog-text"
           :key="key"
         >
-          <strong>{{ label }}: </strong>&nbsp;{{ annotationEntry[key] }}
+          <strong>{{ label }}: </strong>&nbsp;
+          <span v-if="label !== 'Ontology'">{{ annotationEntry[key] }}</span>
+          <a v-else :href="ontologyLink" target="_blank">{{ annotationEntry[key] }}</a>
         </el-row>
         <template v-if="prevSubs.length > 0">
           <div
@@ -158,8 +161,8 @@ export default {
     return {
       displayPair: {
         "Feature ID": "featureId",
-        Tooltip: "label",
-        Models: "models",
+        Label: "label",
+        Ontology: "models",
         Name: "name",
         Resource: "resourceId",
       },
@@ -174,6 +177,7 @@ export default {
       showSubmissions: true,
       errorMessage: "",
       creator: undefined,
+      copyContent: '',
     };
   },
   computed: {
@@ -194,6 +198,15 @@ export default {
         this.annotationEntry["resourceId"] &&
         this.annotationEntry["type"] === "deleted"
       );
+    },
+    ontologyLink: function () {
+      const models = this.annotationEntry['models'];
+      if (models && models.startsWith("UBERON")) {
+        return `http://purl.obolibrary.org/obo/${this.annotationEntry.models.replace(":", "_")}`;
+      }
+    },
+    updatedCopyContent: function () {
+      return this.getUpdateCopyContent();
     },
   },
   methods: {
@@ -315,6 +328,50 @@ export default {
       this.evidence = [];
       this.newFeature = "";
       this.comment = "";
+    },
+    getUpdateCopyContent: function () {
+      if (!this.annotationEntry) {
+        return '';
+      }
+
+      const contentArray = [];
+
+      // featureId
+      if (this.annotationEntry.featureId) {
+        contentArray.push(`<div><strong>Feature ID:</strong>${this.annotationEntry.featureId}</div>`);
+      }
+
+      // label
+      if (this.annotationEntry.label) {
+        contentArray.push(`<div><strong>Label:</strong>${this.annotationEntry.label}</div>`);
+      }
+
+      // models
+      if (this.annotationEntry.models) {
+        contentArray.push(`<div><strong>Ontology:</strong>${this.annotationEntry.models}</div>`);
+        if (this.ontologyLink) {
+          contentArray.push(`<div><strong>Ontology Link:</strong>${this.ontologyLink}</div>`);
+        }
+      }
+
+      // resourceId
+      if (this.annotationEntry.resourceId) {
+        contentArray.push(`<div><strong>Resource:</strong>${this.annotationEntry.resourceId}</div>`);
+      }
+
+      if (this.prevSubs.length) {
+        let annotationContent = '<div><strong>Annotations:</strong></div>\n<br>';
+        this.prevSubs.map((sub, index) => {
+          annotationContent += `<div><strong>Created:</strong>${this.formatTime(sub.created)}</div>\n<br>`;
+          annotationContent += `<div><strong>Creator:</strong>${sub.creator.name}</div>\n<br>`;
+          annotationContent += `<div><strong>Contact:</strong>${sub.creator.email}</div>\n<br>`;
+          annotationContent += `<div><strong>Evidence:</strong>${sub.body.evidence.join(', ')}</div>\n<br>`;
+          annotationContent += `<div><strong>Comment:</strong>${sub.body.comment}</div>\n<br>`;
+        })
+        contentArray.push(`<div>${annotationContent}</div>`);
+      }
+
+      return contentArray.join('\n\n<br>');
     },
   },
   watch: {
