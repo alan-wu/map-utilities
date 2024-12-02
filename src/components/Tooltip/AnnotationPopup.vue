@@ -3,7 +3,9 @@
     <div class="block">
       <el-row class="info-field">
         <div class="title">Feature Annotations</div>
-        <copy-to-clipboard :content="updatedCopyContent" />
+        <div class="title-buttons">
+          <copy-to-clipboard :content="updatedCopyContent" />
+        </div>
       </el-row>
       <template v-if="annotationEntry">
         <el-row
@@ -373,8 +375,15 @@ export default {
         this.prevSubs.map((sub, index) => {
           annotationContent += `<div><strong>Created:</strong>${this.formatTime(sub.created)}</div>\n<br>`;
           annotationContent += `<div><strong>Creator:</strong>${sub.creator.name}</div>\n<br>`;
-          annotationContent += `<div><strong>Contact:</strong>${sub.creator.email}</div>\n<br>`;
-          annotationContent += `<div><strong>Evidence:</strong>${sub.body.evidence.join(', ')}</div>\n<br>`;
+          annotationContent += `<div><strong>Email:</strong>${sub.creator.email}</div>\n<br>`;
+          if (sub.body.evidence.length) {
+            let evidenceContent = '';
+            sub.body.evidence.forEach((evi, index) => {
+              evidenceContent += `${typeof evi === 'object' ? Object.values(evi)[0] : evi}`;
+              if (index !== sub.body.evidence.length - 1) evidenceContent += ', ';
+            })
+            annotationContent += `<div><strong>Evidence:</strong>${evidenceContent}</div>\n<br>`;
+          }
           annotationContent += `<div><strong>Comment:</strong>${sub.body.comment}</div>\n<br>`;
         })
         contentArray.push(`<div>${annotationContent}</div>`);
@@ -412,7 +421,11 @@ export default {
 
 <style lang="scss" scoped>
 .info-field {
+  padding: 0;
   display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
 .block {
@@ -471,7 +484,22 @@ export default {
   font-weight: 500;
   font-weight: bold;
   padding-bottom: 8px;
-  color: rgb(131, 0, 191);
+  color: $app-primary-color;
+}
+
+.title-buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+
+  :deep(.copy-clipboard-button) {
+    &,
+    &:hover,
+    &:focus {
+      border-color: $app-primary-color !important;
+      border-radius: 50%;
+    }
+  }
 }
 
 .sub-title {
