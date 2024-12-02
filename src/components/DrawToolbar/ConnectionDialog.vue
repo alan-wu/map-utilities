@@ -4,18 +4,12 @@
       <el-col>
         <el-row v-if="inDrawing">
           <span class="dialog-title">Finalise drawing</span>
-          <el-button-group>
-            <el-button
-              type="primary"
-              plain
-              @click="$emit('confirmDrawn', true)"
-            >
-              Confirm
-            </el-button>
-            <el-button type="primary" plain @click="$emit('cancelDrawn', true)">
-              Cancel
-            </el-button>
-          </el-button-group>
+          <el-button type="primary" plain @click="$emit('confirmDrawn', true)">
+            Confirm
+          </el-button>
+          <el-button type="primary" plain @click="$emit('cancelDrawn', true)">
+            Cancel
+          </el-button>
         </el-row>
         <el-row v-else>
           <span class="dialog-title">Visualise connection</span>
@@ -34,7 +28,18 @@
         <b><span>Related Features</span></b>
         <el-row v-for="(value, key) in connectionEntry" :key="key">
           <el-card :shadow="shadowDisplay(key)" @click="handleTooltip(key)">
-            <span>{{ capitalise(value.label) }}</span>
+            <el-popover
+              trigger="hover"
+              :disabled="value.label.length < 20"
+              :width="200"
+              :content="capitalise(value.label)"
+            >
+              <template #reference>
+                <span class="connection-label">{{
+                  capitalise(value.label)
+                }}</span>
+              </template>
+            </el-popover>
           </el-card>
         </el-row>
       </el-col>
@@ -100,13 +105,13 @@ export default {
 }
 
 .dialog-title {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: bold;
   color: rgb(131, 0, 191);
 }
 
 .el-button {
-  margin: 5px 0px;
+  margin: 5px 5px 5px 0;
 }
 
 :deep(.el-card) {
@@ -114,5 +119,14 @@ export default {
   --el-card-padding: 8px;
   border: 0;
   cursor: pointer;
+}
+
+.connection-label {
+  white-space: nowrap;
+  display: block;
+  width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 14px;
 }
 </style>
