@@ -76,6 +76,14 @@ export class ConnectivityGraph extends EventTarget
     {
         this.cyg = new CytoscapeGraph(this, graphCanvas)
 
+        if (this.cyg.cy) {
+            const currentZoom = this.cyg.cy.zoom()
+            const minZoom = currentZoom < 0.5 ? currentZoom : 0.5
+            const maxZoom = currentZoom + 5
+            this.cyg.cy.minZoom(minZoom)
+            this.cyg.cy.maxZoom(maxZoom)
+        }
+
         this.cyg.on('tap-node', (event) => {
             const tapEvent = new CustomEvent('tap-node', {
                 detail: event.detail
@@ -337,9 +345,6 @@ class CytoscapeGraph extends EventTarget
             },
             directed: true,
             style: GRAPH_STYLE,
-            minZoom: 0.5,
-            maxZoom: 10,
-            wheelSensitivity: 0.4,
         }).on('mouseover', 'node', this.overNode.bind(this))
           .on('mouseout', 'node', this.exitNode.bind(this))
           .on('position', 'node', this.moveNode.bind(this))
