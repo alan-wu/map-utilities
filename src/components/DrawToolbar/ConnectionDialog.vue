@@ -3,7 +3,7 @@
     <el-row>
       <el-col>
         <el-row v-if="inDrawing">
-          <span class="dialog-title">Finalise drawing</span>
+          <span class="dialog-title">Finalize drawing</span>
           <el-button type="primary" plain @click="$emit('confirmDrawn', true)">
             Confirm
           </el-button>
@@ -12,7 +12,7 @@
           </el-button>
         </el-row>
         <el-row v-else>
-          <span class="dialog-title">Visualise connection</span>
+          <span class="dialog-title">Visualize connection</span>
           <el-button
             type="primary"
             plain
@@ -32,12 +32,12 @@
               trigger="hover"
               :disabled="value.label.length < 20"
               :width="200"
-              :content="capitalise(value.label)"
+              :content="capitalize(value.label)"
             >
               <template #reference>
-                <span class="connection-label">{{
-                  capitalise(value.label)
-                }}</span>
+                <span class="connection-label">
+                  {{ capitalize(value.label) }}
+                </span>
               </template>
             </el-popover>
           </el-card>
@@ -48,7 +48,7 @@
 </template>
 
 <script>
-const capitalise = function (str) {
+const capitalize = function (str) {
   if (str) return str.charAt(0).toUpperCase() + str.slice(1);
   return "";
 };
@@ -78,8 +78,8 @@ export default {
     shadowDisplay: function (value) {
       return this.tooltipId === value ? "always" : "hover";
     },
-    capitalise: function (label) {
-      return capitalise(label);
+    capitalize: function (label) {
+      return capitalize(label);
     },
     handleTooltip: function (value) {
       this.tooltipId = this.tooltipId === value ? undefined : value;
