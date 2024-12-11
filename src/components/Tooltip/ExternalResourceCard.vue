@@ -1,5 +1,5 @@
 <template>
-  <div class="resource-container">
+  <div class="resource-container" v-if="resources.length">
     <div class="attribute-title-container">
       <div class="attribute-title">Publications</div>
     </div>
@@ -45,8 +45,8 @@ export default {
   },
   watch: {
     resources: async function (_resources) {
+      this.transformedResources = [];
       if (_resources.length) {
-        this.transformedResources = [];
         for (const resource of _resources) {
           try {
             const {title, abstract} = await this.fetchArticle(resource.dataId);
