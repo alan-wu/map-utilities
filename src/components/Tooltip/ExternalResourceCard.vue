@@ -49,12 +49,33 @@ export default {
       if (_resources.length) {
         for (const resource of _resources) {
           try {
-            const {title, abstract} = await this.fetchArticle(resource.dataId);
-            this.transformedResources.push({
-              ...resource,
-              title,
-              abstract,
-            });
+            if (resource.id === 'pubmed') {
+              const { title, abstract } = await this.fetchArticle(resource.dataId);
+
+              this.transformedResources.push({
+                ...resource,
+                title,
+                abstract,
+              });
+            } else {
+              let title = '';
+              const url = resource.url;
+              const splitURLs = url.split('/');
+              const index = splitURLs.indexOf('books') + 1;
+              const id = splitURLs[index];
+
+              if (resource.id === 'openlib') {
+                const data = await this.fetchBook(id);
+                title = data.title;
+              } else {
+                title = url;
+              }
+
+              this.transformedResources.push({
+                ...resource,
+                title,
+              });
+            }
           } catch (error) {
             console.error(`Error fetching data for id ${resource.dataId}:`, error);
           }
@@ -69,6 +90,12 @@ export default {
     openUrl: function (url) {
       EventBus.emit("open-pubmed-url", url);
       window.open(url, "_blank");
+    },
+    fetchBook: async function (id) {
+      const bookAPI = `https://openlibrary.org/books/${id}.json`;
+      const response = await fetch(bookAPI);
+      const data = await response.json();
+      return data;
     },
     fetchArticle: async function (id) {
       try {
