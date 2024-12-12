@@ -3,26 +3,29 @@
     <div class="attribute-title-container">
       <div class="attribute-title">Publications</div>
     </div>
-    <template v-for="resource in transformedResources" :key="resource.dataId">
-      <div class="resource">
-        <el-button
-          link
-          class="button"
-          id="open-pubmed-button"
-          :icon="ElIconNotebook"
-          @click="openUrl(resource.url)"
-        >
-          {{ resource.title || resource.url }}
-        </el-button>
-      </div>
-    </template>
+    <div class="resource" v-for="resource in transformedResources" :key="resource.dataId">
+      <el-button
+        link
+        class="button"
+        id="open-pubmed-button"
+        :icon="getIconByType(resource.id)"
+        @click="openUrl(resource.url)"
+      >
+        {{ resource.title || resource.url }}
+      </el-button>
+    </div>
+
   </div>
 </template>
 
 <script>
 /* eslint-disable no-alert, no-console */
 import { shallowRef } from "vue";
-import { Notebook as ElIconNotebook } from "@element-plus/icons-vue";
+import {
+  Notebook as ElIconNotebook,
+  Reading,
+  Memo,
+} from "@element-plus/icons-vue";
 
 import EventBus from "../EventBus.js";
 import { xmlToJSON } from "../utilities.js";
@@ -43,9 +46,18 @@ export default {
       ElIconNotebook: shallowRef(ElIconNotebook),
     };
   },
+  mounted: function () {
+    this.transformResources(this.resources);
+  },
   watch: {
     resources: async function (_resources) {
+      this.transformResources(_resources);
+    }
+  },
+  methods: {
+    transformResources: async function (_resources) {
       this.transformedResources = [];
+
       if (_resources.length) {
         for (const resource of _resources) {
           try {
@@ -81,15 +93,21 @@ export default {
           }
         }
       }
-    }
-  },
-  methods: {
+    },
     capitalise: function (string) {
       return string.charAt(0).toUpperCase() + string.slice(1);
     },
     openUrl: function (url) {
       EventBus.emit("open-pubmed-url", url);
       window.open(url, "_blank");
+    },
+    getIconByType: function (type) {
+      if (type === 'pubmed') {
+        return Reading;
+      } else if (type === 'openlib') {
+        return ElIconNotebook;
+      }
+      return Memo;
     },
     fetchBook: async function (id) {
       const bookAPI = `https://openlibrary.org/books/${id}.json`;
@@ -179,17 +197,20 @@ export default {
   text-transform: uppercase;
 }
 
-.button {
+.resource-container .button.is-link {
   margin-left: 0px !important;
   margin-top: 0px !important;
+  padding: 0;
+  font-family: inherit;
   font-size: 14px !important;
   color: $app-primary-color;
   max-width: 100%;
 
-  :deep(.el-icon + span) {
+  :deep(span) {
     display: inline;
     overflow: hidden;
     text-overflow: ellipsis;
+    line-height: 1.2;
   }
 
   &:hover {
