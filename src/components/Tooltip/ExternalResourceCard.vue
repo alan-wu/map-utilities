@@ -1,7 +1,7 @@
 <template>
   <div class="resource-container" v-if="resources.length">
     <div class="attribute-title-container">
-      <div class="attribute-title">Publications</div>
+      <div class="attribute-title">References</div>
     </div>
     <div class="resource" v-for="resource in transformedResources" :key="resource.dataId">
       <el-button
