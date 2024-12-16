@@ -72,7 +72,6 @@ export default {
   },
   watch: {
     resources: function (_resources) {
-      this.urls = this.getURLsForPubMed(_resources);
       this.urls = this.formatURLs([..._resources]);
     }
   },
@@ -255,27 +254,63 @@ export default {
     },
     getCitationText: function(citationType) {
       this.urls.forEach((url) => {
-        const {id, type} = url;
+        const { id, type, doi } = url;
         if (
           !(url.citation && url.citation[citationType])
-          && type === 'doi'
           && id
         ) {
           url.citation[citationType] = ''; // loading
-          const citationAPI = `${CROSSCITE_API_HOST}/format?doi=${id}&style=${citationType}&lang=en-US`;
-          fetch(citationAPI)
-            .then((response) => {
-              if (response.status !== 200) {
-                throw Error
-              }
-              return response.text();
-            }).then((text) => {
-              url.citation[citationType] = text;
-            }).catch((err) => {
-              console.error('Error', err)
-            });
+          if (type === 'doi' || doi) {
+            const doiID = type === 'doi' ? id : doi;
+            this.getCitationTextByDOI(doiID)
+              .then((text) => {
+                url.citation[citationType] = text;
+              });
+          } else if (type === 'pmid') {
+            this.getDOIFromPubMedID(id)
+              .then((data) => {
+                if (data?.result) {
+                  const resultObj = data.result[url.id];
+                  const articleIDs = resultObj?.articleids || [];
+                  const doiObj = articleIDs.find((item) => item.idtype === 'doi');
+                  const doiID = doiObj?.value;
+                  url['doi'] = doiID;
+
+                  this.getCitationTextByDOI(doiID)
+                    .then((text) => {
+                      url.citation[citationType] = text;
+                    });
+                }
+              });
+          }
         }
       });
+    },
+    getCitationTextByDOI: async function (id) {
+      const citationAPI = `${CROSSCITE_API_HOST}/format?doi=${id}&style=${this.citationType}&lang=en-US`;
+      try {
+        const response = await fetch(citationAPI);
+        if (!response.ok) {
+          throw new Error(`Response status: ${response.status}`);
+        }
+        const data = await response.text();
+        return data;
+      } catch (error) {
+        console.error(`Fetch citation text error: ${error}`);
+      }
+    },
+    getDOIFromPubMedID: async function (pubmedId) {
+      const summaryAPI = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id=${pubmedId}&format=json`;
+      try {
+        const response = await fetch(summaryAPI);
+        if (!response.ok) {
+          throw new Error(`Response status: ${response.status}`);
+        }
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error(`Fetch article summary error: ${error}`);
+      }
     },
   },
 }
@@ -317,6 +352,26 @@ export default {
 
     &.loading {
       padding: 1rem;
+
+      &::before {
+        content: "";
+        display: block;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        animation-duration: 3s;
+        animation-fill-mode: forwards;
+        animation-iteration-count: infinite;
+        animation-name: loadingAnimation;
+        animation-timing-function: linear;
+        background: linear-gradient(to right,
+          var(--el-bg-color-page) 5%,
+          var(--el-color-info-light-8) 15%,
+          var(--el-bg-color-page) 30%
+        );
+      }
     }
 
     :deep(.copy-clipboard-button) {
@@ -345,6 +400,15 @@ export default {
 
   .el-button + .el-button {
     margin-left: 0.25rem;
+  }
+}
+
+@keyframes loadingAnimation {
+  0% {
+    background-position: -30vw 0;
+  }
+  100% {
+    background-position: 70vw 0;
   }
 }
 </style>
