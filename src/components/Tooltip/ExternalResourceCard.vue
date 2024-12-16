@@ -21,9 +21,7 @@
         :class="{'loading': url.citation && url.citation[citationType] === ''}"
       >
         <template v-if="url.citation && url.citation[citationType]">
-          <span>
-            {{ url.citation[citationType] }}
-          </span>
+          <span v-html="url.citation[citationType]"></span>
           <CopyToClipboard :content="url.citation[citationType]" />
         </template>
       </li>
@@ -255,16 +253,19 @@ export default {
     getCitationText: function(citationType) {
       this.urls.forEach((url) => {
         const { id, type, doi } = url;
+
         if (
           !(url.citation && url.citation[citationType])
           && id
         ) {
           url.citation[citationType] = ''; // loading
+
           if (type === 'doi' || doi) {
             const doiID = type === 'doi' ? id : doi;
+
             this.getCitationTextByDOI(doiID)
               .then((text) => {
-                url.citation[citationType] = text;
+                url.citation[citationType] = this.replaceLinkInText(text);
               });
           } else if (type === 'pmid') {
             this.getDOIFromPubMedID(id)
@@ -278,13 +279,33 @@ export default {
 
                   this.getCitationTextByDOI(doiID)
                     .then((text) => {
-                      url.citation[citationType] = text;
+                      url.citation[citationType] = this.replaceLinkInText(text);
                     });
                 }
               });
           }
         }
       });
+    },
+    replaceLinkInText: function (text) {
+      const protocol = 'https://';
+      let linkBody = text.split(protocol)[1];
+
+      if (linkBody) {
+        linkBody = linkBody.split(' ')[0];
+        linkBody = linkBody.trim();
+
+        if (linkBody.endsWith('.')) {
+          linkBody = linkBody.substring(0, linkBody.length - 1);
+        }
+
+        const fullLink = protocol + linkBody;
+        const htmlLink = `<a href="${fullLink}" target="_blank">${fullLink}</a>`;
+
+        return text.replace(fullLink, htmlLink);
+      }
+
+      return text;
     },
     getCitationTextByDOI: async function (id) {
       const citationAPI = `${CROSSCITE_API_HOST}/format?doi=${id}&style=${this.citationType}&lang=en-US`;
