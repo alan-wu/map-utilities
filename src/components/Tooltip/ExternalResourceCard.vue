@@ -20,15 +20,20 @@
         :key="url.id"
         :class="{'loading': url.citation && url.citation[citationType] === ''}"
       >
-        <span v-if="url.citation">
-          {{ url.citation[citationType] }}
-        </span>
+        <template v-if="url.citation && url.citation[citationType]">
+          <span>
+            {{ url.citation[citationType] }}
+          </span>
+          <CopyToClipboard :content="url.citation[citationType]" />
+        </template>
       </li>
     </ul>
   </div>
 </template>
 
 <script>
+import CopyToClipboard from '../CopyToClipboard/CopyToClipboard.vue';
+
 const CROSSCITE_API_HOST = 'https://citation.crosscite.org';
 const CITATION_OPTIONS = [
   {
@@ -304,13 +309,20 @@ export default {
     padding: 0.25rem 0.5rem;
     border-radius: var(--el-border-radius-base);
     background-color: var(--el-bg-color-page);
+    position: relative;
 
     + li {
       margin-top: 0.5rem;
     }
 
     &.loading {
-      padding: 0.5rem;
+      padding: 1rem;
+    }
+
+    :deep(.copy-clipboard-button) {
+      position: absolute;
+      bottom: 0.25rem;
+      right: 0.5rem;
     }
   }
 }
