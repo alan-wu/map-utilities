@@ -341,7 +341,7 @@ export default {
 
   li {
     margin: 0;
-    padding: 0.25rem 0.5rem;
+    padding: 0.5rem 1.5rem 0.5rem 0.75rem;
     border-radius: var(--el-border-radius-base);
     background-color: var(--el-bg-color-page);
     position: relative;
@@ -377,7 +377,7 @@ export default {
     :deep(.copy-clipboard-button) {
       position: absolute;
       bottom: 0.25rem;
-      right: 0.5rem;
+      right: 0.25rem;
       opacity: 0;
       visibility: hidden;
     }
@@ -393,8 +393,10 @@ export default {
 
 .citation-tabs {
   .el-button {
-    &:hover {
-      color: var(--el-button-text-color);
+    &:hover,
+    &:focus,
+    &:active {
+      color: $app-primary-color;
     }
   }
 
