@@ -70,41 +70,41 @@ export default {
   },
   watch: {
     resources: function (_resources) {
-      this.references = this.formatURLs([..._resources]);
+      this.references = this.formatReferences([..._resources]);
     }
   },
   mounted: function () {
-    this.references = this.formatURLs([...this.resources]);
+    this.references = this.formatReferences([...this.resources]);
     this.getCitationText(CITATION_DEFAULT);
   },
   methods: {
-    formatURLs: function (references) {
-      const nonPubMedURLs = this.extractNonPubMedURLs(references);
-      const pubMedURLs = references.filter((reference) => !nonPubMedURLs.includes(reference));
-      const formattedURLs = pubMedURLs.map((reference) =>
+    formatReferences: function (references) {
+      const nonPubMedReferences = this.extractNonPubMedReferences(references);
+      const pubMedReferences = references.filter((reference) => !nonPubMedReferences.includes(reference));
+      const formattedReferences = pubMedReferences.map((reference) =>
         (typeof reference === 'object') ?
         this.extractPublicationIdFromURLString(reference[0]) :
         this.extractPublicationIdFromURLString(reference)
       );
-      return formattedURLs;
+      return formattedReferences;
     },
-    extractNonPubMedURLs: function (references) {
-      const extractedURLs = [];
-      const names = this.getPubMedDomains();
+    extractNonPubMedReferences: function (references) {
+      const extractedReferences = [];
+      const pubmedDomains = this.getPubMedDomains();
 
       references.forEach((reference) => {
         let count = 0;
-        names.forEach((name) => {
+        pubmedDomains.forEach((name) => {
           if (reference.includes(name)) {
             count++;
           }
         });
         if (!count) {
-          extractedURLs.push(reference);
+          extractedReferences.push(reference);
         }
       });
 
-      return extractedURLs;
+      return extractedReferences;
     },
     getURLsForPubMed: function (data) {
       return new Promise((resolve) => {
