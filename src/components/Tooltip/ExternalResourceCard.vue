@@ -16,13 +16,13 @@
     </div>
     <ul class="citation-list">
       <li
-        v-for="url of urls"
-        :key="url.id"
-        :class="{'loading': url.citation && url.citation[citationType] === ''}"
+        v-for="reference of references"
+        :key="reference.id"
+        :class="{'loading': reference.citation && reference.citation[citationType] === ''}"
       >
-        <template v-if="url.citation && url.citation[citationType]">
-          <span v-html="url.citation[citationType]"></span>
-          <CopyToClipboard :content="url.citation[citationType]" />
+        <template v-if="reference.citation && reference.citation[citationType]">
+          <span v-html="reference.citation[citationType]"></span>
+          <CopyToClipboard :content="reference.citation[citationType]" />
         </template>
       </li>
     </ul>
@@ -63,44 +63,44 @@ export default {
   },
   data: function () {
     return {
-      urls: [],
+      references: [],
       citationOptions: CITATION_OPTIONS,
       citationType: CITATION_DEFAULT,
     }
   },
   watch: {
     resources: function (_resources) {
-      this.urls = this.formatURLs([..._resources]);
+      this.references = this.formatURLs([..._resources]);
     }
   },
   mounted: function () {
-    this.urls = this.formatURLs([...this.resources]);
+    this.references = this.formatURLs([...this.resources]);
     this.getCitationText(CITATION_DEFAULT);
   },
   methods: {
-    formatURLs: function (urls) {
-      const nonPubMedURLs = this.extractNonPubMedURLs(urls);
-      const pubMedURLs = urls.filter(url => !nonPubMedURLs.includes(url));
-      const formattedURLs = pubMedURLs.map((url) =>
-        (typeof url === 'object') ?
-        this.extractPublicationIdFromURLString(url[0]) :
-        this.extractPublicationIdFromURLString(url)
+    formatURLs: function (references) {
+      const nonPubMedURLs = this.extractNonPubMedURLs(references);
+      const pubMedURLs = references.filter((reference) => !nonPubMedURLs.includes(reference));
+      const formattedURLs = pubMedURLs.map((reference) =>
+        (typeof reference === 'object') ?
+        this.extractPublicationIdFromURLString(reference[0]) :
+        this.extractPublicationIdFromURLString(reference)
       );
       return formattedURLs;
     },
-    extractNonPubMedURLs: function (urls) {
+    extractNonPubMedURLs: function (references) {
       const extractedURLs = [];
       const names = this.getPubMedDomains();
 
-      urls.forEach((url) => {
+      references.forEach((reference) => {
         let count = 0;
         names.forEach((name) => {
-          if (url.includes(name)) {
+          if (reference.includes(name)) {
             count++;
           }
         });
         if (!count) {
-          extractedURLs.push(url);
+          extractedURLs.push(reference);
         }
       });
 
@@ -251,35 +251,35 @@ export default {
       this.getCitationText(citationType);
     },
     getCitationText: function(citationType) {
-      this.urls.forEach((url) => {
-        const { id, type, doi } = url;
+      this.references.forEach((reference) => {
+        const { id, type, doi } = reference;
 
         if (
-          !(url.citation && url.citation[citationType])
+          !(reference.citation && reference.citation[citationType])
           && id
         ) {
-          url.citation[citationType] = ''; // loading
+          reference.citation[citationType] = ''; // loading
 
           if (type === 'doi' || doi) {
             const doiID = type === 'doi' ? id : doi;
 
             this.getCitationTextByDOI(doiID)
               .then((text) => {
-                url.citation[citationType] = this.replaceLinkInText(text);
+                reference.citation[citationType] = this.replaceLinkInText(text);
               });
           } else if (type === 'pmid') {
             this.getDOIFromPubMedID(id)
               .then((data) => {
                 if (data?.result) {
-                  const resultObj = data.result[url.id];
+                  const resultObj = data.result[id];
                   const articleIDs = resultObj?.articleids || [];
                   const doiObj = articleIDs.find((item) => item.idtype === 'doi');
                   const doiID = doiObj?.value;
-                  url['doi'] = doiID;
+                  reference['doi'] = doiID;
 
                   this.getCitationTextByDOI(doiID)
                     .then((text) => {
-                      url.citation[citationType] = this.replaceLinkInText(text);
+                      reference.citation[citationType] = this.replaceLinkInText(text);
                     });
                 }
               });
