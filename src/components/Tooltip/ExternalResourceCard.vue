@@ -323,6 +323,15 @@ export default {
       position: absolute;
       bottom: 0.25rem;
       right: 0.5rem;
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    &:hover {
+      :deep(.copy-clipboard-button) {
+        opacity: 1;
+        visibility: visible;
+      }
     }
   }
 }
