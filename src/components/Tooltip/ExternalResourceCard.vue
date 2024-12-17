@@ -175,29 +175,6 @@ export default {
 
       return transformedReferences;
     },
-    getURLsForPubMed: function (data) {
-      return new Promise((resolve) => {
-        const ids = data.map((id) =>
-          (typeof id === 'object') ?
-          this.extractPublicationIdFromURLString(id[0]) :
-          this.extractPublicationIdFromURLString(id)
-        )
-        this.convertPublicationIds(ids).then((pmids) => {
-          if (pmids.length > 0) {
-            const transformedIDs = [];
-            pmids.forEach(pmid => {
-              transformedIDs.push({
-                id: pmid,
-                link: this.pubmedSearchUrl(pmid),
-              })
-            })
-            resolve(transformedIDs)
-          } else {
-            resolve([])
-          }
-        })
-      })
-    },
     extractPublicationIdFromURLString: function (urlStr) {
       if (!urlStr) return
 
@@ -248,72 +225,8 @@ export default {
 
       return names;
     },
-    convertPublicationIds: function (ids) {
-      return new Promise((resolve) => {
-        const pmids = []
-        const toBeConverted = []
-        ids.forEach((id) => {
-          if (id.type === "pmid") {
-            pmids.push(id.id)
-          } else if (id.type === "doi" || id.type === "pmc") {
-            toBeConverted.push(id.id)
-          }
-        })
-        this.getPMID(toBeConverted).then((idList) => {
-          pmids.push(...idList)
-          resolve(pmids)
-        })
-        .catch(() => {
-          resolve(pmids)
-        })
-      })
-    },
-    pubmedSearchUrl: function (ids) {
-      let url = 'https://pubmed.ncbi.nlm.nih.gov/?'
-      let params = new URLSearchParams()
-      params.append('term', ids)
-      return url + params.toString()
-    },
     stripPMIDPrefix: function (pubmedId) {
       return pubmedId.split(':')[1]
-    },
-    getPMID: function(idsList) {
-      return new Promise((resolve) => {
-        if (idsList.length > 0) {
-          //Muliple term search does not work well,
-          //DOIs term get splitted unexpectedly
-          //
-          const promises = []
-          const results = []
-          let wrapped = ''
-          idsList.forEach((id, i) => {
-            wrapped += i > 0 ? 'OR"' + id + '"' : '"' + id + '"'
-          })
-
-          const params = new URLSearchParams({
-            db: 'pubmed',
-            term: wrapped,
-            format: 'json'
-          })
-          const promise = fetch(`https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?${params}`, {
-            method: 'GET',
-          })
-          .then((response) => response.json())
-          .then((data) => {
-            const newIds = data.esearchresult ? data.esearchresult.idlist : []
-            results.push(...newIds)
-          })
-          promises.push(promise)
-
-          Promise.all(promises).then(() => {
-            resolve(results)
-          }).catch(() => {
-            resolve(results)
-          })
-        } else {
-          resolve([])
-        }
-      })
     },
     onCitationFormatChange: function(citationType) {
       this.citationType = citationType;
