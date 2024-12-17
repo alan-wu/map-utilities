@@ -32,7 +32,7 @@
       </li>
 
       <li v-for="reference of isbnDBReferences">
-        <a :href="reference.url">{{ reference.url }}</a>
+        <a :href="reference.url" target="_blank">{{ reference.url }}</a>
         <CopyToClipboard :content="reference.url" />
       </li>
     </ul>
