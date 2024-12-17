@@ -27,8 +27,8 @@
       </li>
 
       <li v-for="reference of openLibReferences">
-        <a :href="reference.url">{{ reference.url }}</a>
-        <CopyToClipboard :content="reference.url" />
+        <div v-html="formatCopyReference(reference)"></div>
+        <CopyToClipboard :content="formatCopyReference(reference)" />
       </li>
 
       <li v-for="reference of isbnDBReferences">
@@ -104,6 +104,8 @@ export default {
       this.formatNonPubMedReferences(nonPubMedReferences).then((responses) => {
         this.openLibReferences = responses.filter((response) => response.type === 'openlib');
         this.isbnDBReferences = responses.filter((response) => response.type === 'isbndb');
+
+        this.formatOpenLibReferences();
       });
 
       this.references = [
@@ -400,6 +402,82 @@ export default {
         console.error(`Fetch article summary error: ${error}`);
       }
     },
+    formatOpenLibReferences: function () {
+      this.openLibReferences.forEach((reference) => {
+        const { bookId } = reference;
+        this.getBookData(bookId)
+          .then((data) => {
+            const { title, authors, publish_date } = data;
+            if (title) {
+              reference['title'] = title;
+            }
+
+            if (publish_date) {
+              reference['date'] = publish_date;
+            }
+
+            if (authors) {
+              reference['authors'] = [];
+
+              authors.forEach((author) => {
+                this.getBookAuthor(author.key)
+                  .then((data) => {
+                    const { name } = data;
+                    if (name) {
+                      reference['authors'].push(name);
+                    }
+                  });
+              });
+            }
+          });
+      });
+    },
+    getBookData: async function (bookId) {
+      const apiURL = `https://openlibrary.org/books/${bookId}.json`;
+      try {
+        const response = await fetch(apiURL);
+        if (!response.ok) {
+          throw new Error(`Response status: ${response.status}`);
+        }
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error(`Fetch book data error: ${error}`);
+      }
+    },
+    getBookAuthor: async function (key) {
+      const apiURL = `https://openlibrary.org${key}.json`;
+      try {
+        const response = await fetch(apiURL);
+        if (!response.ok) {
+          throw new Error(`Response status: ${response.status}`);
+        }
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error(`Fetch book author error: ${error}`);
+      }
+    },
+    formatCopyReference: function (reference) {
+      const copyContents = [];
+      const { title, date, authors, url } = reference;
+
+      if (title) {
+        copyContents.push(title);
+      }
+
+      if (date) {
+        copyContents.push(`(${date})`);
+      }
+
+      if (authors) {
+        copyContents.push(`- ${authors.join(', ')}`);
+      }
+
+      copyContents.push(`<div><a href="${url}" target="_blank">${url}</a></div>`);
+
+      return copyContents.join(' ');
+    },
   },
 }
 </script>
@@ -434,7 +512,7 @@ export default {
     background-color: var(--el-bg-color-page);
     position: relative;
 
-    a {
+    :deep(a) {
       word-wrap: break-word;
     }
 
