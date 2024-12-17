@@ -64,29 +64,41 @@ export default {
   data: function () {
     return {
       references: [],
+      pubMedReferences: [],
+      openLibReferences: [],
+      isbnDBReferences: [],
       citationOptions: CITATION_OPTIONS,
       citationType: CITATION_DEFAULT,
     }
   },
   watch: {
     resources: function (_resources) {
-      this.references = this.formatReferences([..._resources]);
+      this.formatReferences([..._resources]);
     }
   },
   mounted: function () {
-    this.references = this.formatReferences([...this.resources]);
+    this.formatReferences([...this.resources]);
     this.getCitationText(CITATION_DEFAULT);
   },
   methods: {
     formatReferences: function (references) {
       const nonPubMedReferences = this.extractNonPubMedReferences(references);
       const pubMedReferences = references.filter((reference) => !nonPubMedReferences.includes(reference));
-      const formattedReferences = pubMedReferences.map((reference) =>
+
+      this.pubMedReferences = pubMedReferences.map((reference) =>
         (typeof reference === 'object') ?
         this.extractPublicationIdFromURLString(reference[0]) :
         this.extractPublicationIdFromURLString(reference)
       );
-      return formattedReferences;
+
+      this.formatNonPubMedReferences(nonPubMedReferences).then((responses) => {
+        this.openLibReferences = responses.filter((response) => response.type === 'openlib');
+        this.isbnDBReferences = responses.filter((response) => response.type === 'isbndb');
+      });
+
+      this.references = [
+        ...this.pubMedReferences,
+      ];
     },
     extractNonPubMedReferences: function (references) {
       const extractedReferences = [];
@@ -105,6 +117,51 @@ export default {
       });
 
       return extractedReferences;
+    },
+    formatNonPubMedReferences: async function (references) {
+      const transformedReferences = [];
+      const openLibraryReferences = references.filter((referenceURL) => referenceURL.indexOf('isbn') !== -1);
+      const isbnIDs = openLibraryReferences.map((url) => {
+        const isbnId = url.split('/').pop();
+        return 'ISBN:' + isbnId;
+      });
+      const isbnIDsKey = isbnIDs.join(',');
+      const failedIDs = isbnIDs.slice();
+
+      const openlibAPI = `https://openlibrary.org/api/books?bibkeys=${isbnIDsKey}&format=json`;
+      const response = await fetch(openlibAPI);
+      const data = await response.json();
+
+      for (const key in data) {
+        const successKeyIndex = failedIDs.indexOf(key);
+        failedIDs.splice(successKeyIndex, 1);
+
+        const url = data[key].info_url;
+        const urlSegments = url.split('/');
+        const endpointIndex = urlSegments.indexOf('books');
+        const bookId = urlSegments[endpointIndex + 1];
+
+        transformedReferences.push({
+          id: key.split(':')[1], // Key => "ISBN:1234"
+          type: 'openlib',
+          url: url,
+          bookId: bookId,
+        });
+      }
+
+      failedIDs.forEach((failedID) => {
+        const id = failedID.split(':')[1];
+        // Data does not exist in OpenLibrary
+        // Provide ISBNDB link for reference
+        const url = `https://isbndb.com/book/${id}`;
+        transformedReferences.push({
+          id: id,
+          url: url,
+          type: 'isbndb'
+        });
+      });
+
+      return transformedReferences;
     },
     getURLsForPubMed: function (data) {
       return new Promise((resolve) => {
