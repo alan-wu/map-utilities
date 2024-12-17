@@ -25,6 +25,16 @@
           <CopyToClipboard :content="reference.citation[citationType]" />
         </template>
       </li>
+
+      <li v-for="reference of openLibReferences">
+        <a :href="reference.url">{{ reference.url }}</a>
+        <CopyToClipboard :content="reference.url" />
+      </li>
+
+      <li v-for="reference of isbnDBReferences">
+        <a :href="reference.url">{{ reference.url }}</a>
+        <CopyToClipboard :content="reference.url" />
+      </li>
     </ul>
   </div>
 </template>
@@ -120,8 +130,8 @@ export default {
     },
     formatNonPubMedReferences: async function (references) {
       const transformedReferences = [];
-      const openLibraryReferences = references.filter((referenceURL) => referenceURL.indexOf('isbn') !== -1);
-      const isbnIDs = openLibraryReferences.map((url) => {
+      const filteredReferences = references.filter((referenceURL) => referenceURL.indexOf('isbn') !== -1);
+      const isbnIDs = filteredReferences.map((url) => {
         const isbnId = url.split('/').pop();
         return 'ISBN:' + isbnId;
       });
@@ -423,6 +433,10 @@ export default {
     border-radius: var(--el-border-radius-base);
     background-color: var(--el-bg-color-page);
     position: relative;
+
+    a {
+      word-wrap: break-word;
+    }
 
     + li {
       margin-top: 0.5rem;
