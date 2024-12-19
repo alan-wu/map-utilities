@@ -141,8 +141,7 @@ export default {
       const failedIDs = isbnIDs.slice();
 
       const openlibAPI = `https://openlibrary.org/api/books?bibkeys=${isbnIDsKey}&format=json`;
-      const response = await fetch(openlibAPI);
-      const data = await response.json();
+      const data = await this.fetchData(openlibAPI);
 
       for (const key in data) {
         const successKeyIndex = failedIDs.indexOf(key);
@@ -291,29 +290,11 @@ export default {
     },
     getCitationTextByDOI: async function (id) {
       const citationAPI = `${CROSSCITE_API_HOST}/format?doi=${id}&style=${this.citationType}&lang=en-US`;
-      try {
-        const response = await fetch(citationAPI);
-        if (!response.ok) {
-          throw new Error(`Response status: ${response.status}`);
-        }
-        const data = await response.text();
-        return data;
-      } catch (error) {
-        console.error(`Fetch citation text error: ${error}`);
-      }
+      return await this.fetchData(citationAPI, 'text');
     },
     getDOIFromPubMedID: async function (pubmedId) {
       const summaryAPI = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id=${pubmedId}&format=json`;
-      try {
-        const response = await fetch(summaryAPI);
-        if (!response.ok) {
-          throw new Error(`Response status: ${response.status}`);
-        }
-        const data = await response.json();
-        return data;
-      } catch (error) {
-        console.error(`Fetch article summary error: ${error}`);
-      }
+      return await this.fetchData(summaryAPI);
     },
     formatOpenLibReferences: function () {
       this.openLibReferences.forEach((reference) => {
@@ -347,29 +328,11 @@ export default {
     },
     getBookData: async function (bookId) {
       const apiURL = `https://openlibrary.org/books/${bookId}.json`;
-      try {
-        const response = await fetch(apiURL);
-        if (!response.ok) {
-          throw new Error(`Response status: ${response.status}`);
-        }
-        const data = await response.json();
-        return data;
-      } catch (error) {
-        console.error(`Fetch book data error: ${error}`);
-      }
+      return await this.fetchData(apiURL);
     },
     getBookAuthor: async function (key) {
       const apiURL = `https://openlibrary.org${key}.json`;
-      try {
-        const response = await fetch(apiURL);
-        if (!response.ok) {
-          throw new Error(`Response status: ${response.status}`);
-        }
-        const data = await response.json();
-        return data;
-      } catch (error) {
-        console.error(`Fetch book author error: ${error}`);
-      }
+      return await this.fetchData(apiURL);
     },
     formatCopyReference: function (reference) {
       const copyContents = [];
@@ -390,6 +353,22 @@ export default {
       copyContents.push(`<div><a href="${url}" target="_blank">${url}</a></div>`);
 
       return copyContents.join(' ');
+    },
+    fetchData: async function (apiURL, format) {
+      try {
+        const response = await fetch(apiURL);
+        if (!response.ok) {
+          throw new Error(`Response status: ${response.status}`);
+        }
+
+        if (format === 'text') {
+          return await response.text();
+        } else {
+          return await response.json();
+        }
+      } catch (error) {
+        console.error(`Fetch data error: ${error}`);
+      }
     },
   },
 }
