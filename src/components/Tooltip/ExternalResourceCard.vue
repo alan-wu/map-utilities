@@ -16,7 +16,7 @@
     </div>
     <ul class="citation-list">
       <li
-        v-for="reference of references"
+        v-for="reference of pubMedReferences"
         :key="reference.id"
         :class="{'loading': reference.citation && reference.citation[citationType] === ''}"
       >
@@ -73,7 +73,6 @@ export default {
   },
   data: function () {
     return {
-      references: [],
       pubMedReferences: [],
       openLibReferences: [],
       isbnDBReferences: [],
@@ -88,7 +87,7 @@ export default {
   },
   computed: {
     referencesWithDOI: function () {
-      const withDOI = this.references.filter((reference) => reference.type === 'doi' || reference.doi);
+      const withDOI = this.pubMedReferences.filter((reference) => reference.type === 'doi' || reference.doi);
       return withDOI.length;
     },
   },
@@ -113,10 +112,6 @@ export default {
 
         this.formatOpenLibReferences();
       });
-
-      this.references = [
-        ...this.pubMedReferences,
-      ];
     },
     extractNonPubMedReferences: function (references) {
       const extractedReferences = [];
@@ -238,7 +233,7 @@ export default {
       this.getCitationText(citationType);
     },
     getCitationText: function(citationType) {
-      this.references.forEach((reference) => {
+      this.pubMedReferences.forEach((reference) => {
         const { id, type, doi } = reference;
 
         if (
@@ -297,7 +292,7 @@ export default {
         citationFormatStyle = citationTypeObj?.label;
       }
 
-      this.references.forEach((reference) => {
+      this.pubMedReferences.forEach((reference) => {
         values.push(reference.citation[this.citationType]);
       });
 
