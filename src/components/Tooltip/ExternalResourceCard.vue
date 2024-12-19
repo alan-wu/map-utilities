@@ -106,6 +106,20 @@ export default {
         this.extractPublicationIdFromURLString(reference)
       );
 
+      // pmc to pmid
+      this.pubMedReferences.forEach((reference) => {
+        if (reference.type === 'pmc') {
+          const pmcId = reference.id;
+          this.searchPMID(pmcId).then((data) => {
+            if (data && data.esearchresult) {
+              const idList = data.esearchresult.idlist || [];
+              reference.id = idList[0];
+              reference.type = 'pmid';
+            }
+          });
+        }
+      });
+
       this.formatNonPubMedReferences(nonPubMedReferences).then((responses) => {
         this.openLibReferences = responses.filter((response) => response.type === 'openlib');
         this.isbnDBReferences = responses.filter((response) => response.type === 'isbndb');
@@ -328,6 +342,10 @@ export default {
       }
 
       return text;
+    },
+    searchPMID: async function (term) {
+      const esearchAPI = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=${term}&format=json`;
+      return await this.fetchData(esearchAPI);
     },
     getCitationTextByDOI: async function (id) {
       const citationAPI = `${CROSSCITE_API_HOST}/format?doi=${id}&style=${this.citationType}&lang=en-US`;
