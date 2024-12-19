@@ -3,7 +3,7 @@
     <div class="attribute-title-container">
       <div class="attribute-title">References</div>
     </div>
-    <div class="citation-tabs">
+    <div class="citation-tabs" v-if="referencesWithDOI">
       <el-button
         link
         v-for="citationOption of citationOptions"
@@ -84,7 +84,13 @@ export default {
   watch: {
     resources: function (_resources) {
       this.formatReferences([..._resources]);
-    }
+    },
+  },
+  computed: {
+    referencesWithDOI: function () {
+      const withDOI = this.references.filter((reference) => reference.type === 'doi' || reference.doi);
+      return withDOI.length;
+    },
   },
   mounted: function () {
     this.formatReferences([...this.resources]);
@@ -243,29 +249,69 @@ export default {
 
           if (type === 'doi' || doi) {
             const doiID = type === 'doi' ? id : doi;
-
-            this.getCitationTextByDOI(doiID)
-              .then((text) => {
-                reference.citation[citationType] = this.replaceLinkInText(text);
-              });
+            this.getCitationTextByDOI(doiID).then((text) => {
+              const formattedText = this.replaceLinkInText(text);
+              reference.citation[citationType] = formattedText;
+              this.updateCopyContents();
+            });
           } else if (type === 'pmid') {
-            this.getDOIFromPubMedID(id)
-              .then((data) => {
-                if (data?.result) {
-                  const resultObj = data.result[id];
-                  const articleIDs = resultObj?.articleids || [];
-                  const doiObj = articleIDs.find((item) => item.idtype === 'doi');
-                  const doiID = doiObj?.value;
-                  reference['doi'] = doiID;
+            this.getDOIFromPubMedID(id).then((data) => {
+              if (data?.result) {
+                const resultObj = data.result[id];
+                const articleIDs = resultObj?.articleids || [];
+                const doiObj = articleIDs.find((item) => item.idtype === 'doi');
+                const doiID = doiObj?.value;
 
-                  this.getCitationTextByDOI(doiID)
-                    .then((text) => {
-                      reference.citation[citationType] = this.replaceLinkInText(text);
-                    });
+                if (doiID) {
+                  reference['doi'] = doiID;
+                  this.getCitationTextByDOI(doiID).then((text) => {
+                    const formattedText = this.replaceLinkInText(text);
+                    reference.citation[citationType] = formattedText;
+                    this.updateCopyContents();
+                  });
+                } else {
+                  // If there has no doi in PubMed
+                  const { title, pubdate, authors } = resultObj;
+                  const authorNames = authors ? authors.map((author) => author.name) : [];
+                  const formattedText = this.formatCopyReference({
+                    title: title || '',
+                    date: pubdate || '',
+                    authors: authorNames,
+                    url: `https://pubmed.ncbi.nlm.nih.gov/${id}`,
+                  });
+                  reference.citation[citationType] = formattedText;
+                  this.updateCopyContents();
                 }
-              });
+              }
+            });
           }
         }
+      });
+    },
+    updateCopyContents: function () {
+      const citationTypeObj = this.citationOptions.find((item) => item.value === this.citationType);
+      let citationFormatStyle = '';
+      const values = [];
+
+      if (this.referencesWithDOI) {
+        citationFormatStyle = citationTypeObj?.label;
+      }
+
+      this.references.forEach((reference) => {
+        values.push(reference.citation[this.citationType]);
+      });
+
+      this.openLibReferences.forEach((reference) => {
+        values.push(this.formatCopyReference(reference));
+      });
+
+      this.isbnDBReferences.forEach((reference) => {
+        values.push(reference.url);
+      });
+
+      this.$emit('references-loaded', {
+        style: citationFormatStyle,
+        list: values
       });
     },
     replaceLinkInText: function (text) {
@@ -299,31 +345,31 @@ export default {
     formatOpenLibReferences: function () {
       this.openLibReferences.forEach((reference) => {
         const { bookId } = reference;
-        this.getBookData(bookId)
-          .then((data) => {
-            const { title, authors, publish_date } = data;
-            if (title) {
-              reference['title'] = title;
-            }
+        this.getBookData(bookId).then((data) => {
+          const { title, authors, publish_date } = data;
+          if (title) {
+            reference['title'] = title;
+          }
 
-            if (publish_date) {
-              reference['date'] = publish_date;
-            }
+          if (publish_date) {
+            reference['date'] = publish_date;
+          }
 
-            if (authors) {
-              reference['authors'] = [];
+          if (authors) {
+            reference['authors'] = [];
 
-              authors.forEach((author) => {
-                this.getBookAuthor(author.key)
-                  .then((data) => {
-                    const { name } = data;
-                    if (name) {
-                      reference['authors'].push(name);
-                    }
-                  });
+            authors.forEach((author) => {
+              this.getBookAuthor(author.key).then((data) => {
+                const { name } = data;
+                if (name) {
+                  reference['authors'].push(name);
+                  this.updateCopyContents();
+                }
               });
-            }
-          });
+            });
+          }
+          this.updateCopyContents();
+        });
       });
     },
     getBookData: async function (bookId) {
