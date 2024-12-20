@@ -83,6 +83,7 @@ export default {
   watch: {
     resources: function (_resources) {
       this.formatReferences([..._resources]);
+      this.getCitationText(CITATION_DEFAULT);
     },
   },
   computed: {
