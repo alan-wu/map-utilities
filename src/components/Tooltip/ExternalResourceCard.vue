@@ -466,6 +466,7 @@ export default {
 
     :deep(a) {
       word-wrap: break-word;
+      color: $app-primary-color;
     }
 
     + li {
