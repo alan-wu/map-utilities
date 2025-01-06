@@ -3,6 +3,9 @@
     <div class="block">
       <el-row class="info-field">
         <div class="title">Feature Annotations</div>
+        <div class="title-buttons">
+          <copy-to-clipboard :content="updatedCopyContent" />
+        </div>
       </el-row>
       <template v-if="annotationEntry">
         <el-row
@@ -11,7 +14,9 @@
           class="dialog-text"
           :key="key"
         >
-          <strong>{{ label }}: </strong>&nbsp;{{ annotationEntry[key] }}
+          <strong>{{ label }}: </strong>&nbsp;
+          <span v-if="label !== 'Ontology'">{{ annotationEntry[key] }}</span>
+          <a v-else :href="ontologyLink" target="_blank">{{ annotationEntry[key] }}</a>
         </el-row>
         <template v-if="prevSubs.length > 0">
           <div
@@ -43,11 +48,15 @@
               <el-row class="dialog-text">
                 <strong>Evidence: </strong>
                 <el-row
-                  v-for="evidence in sub.body.evidence"
+                  v-for="(evidence, index) in processEvidences(sub)"
                   :key="evidence"
                   class="dialog-text"
-                >
-                  <a :href="evidence" target="_blank"> {{ evidence }}</a>
+                > 
+                  <a v-if="typeof evidence === 'object' ":href="Object.values(evidence)[0]" target="_blank"> 
+                    {{ Object.keys(evidence)[0] }}
+                  </a>
+                  <span v-else> {{ evidence }}</span>
+                  <span v-if="index !== sub.body.evidence.length - 1">, </span>
                 </el-row>
               </el-row>
               <el-row class="dialog-text">
@@ -99,18 +108,17 @@
                       <el-select
                         :teleported="false"
                         v-model="evidencePrefix"
-                        placeholder="No Prefix"
+                        placeholder="Other:"
                         class="select-box"
                         popper-class="flatmap_dropdown"
                       >
                         <el-option
                           v-for="item in evidencePrefixes"
-                          :key="item"
-                          :label="item"
-                          :value="item"
+                          :key="item.label"
+                          :value="item.value"
                         >
                           <el-row>
-                            <el-col :span="12">{{ item }}</el-col>
+                            <el-col :span="12">{{ item.label }}</el-col>
                           </el-row>
                         </el-option>
                       </el-select>
@@ -158,14 +166,18 @@ export default {
     return {
       displayPair: {
         "Feature ID": "featureId",
-        Tooltip: "label",
-        Models: "models",
+        Label: "label",
+        Ontology: "models",
         Name: "name",
         Resource: "resourceId",
       },
       editing: false,
-      evidencePrefixes: ["", "DOI:", "PMID:"],
-      evidencePrefix: "",
+      evidencePrefixes: [
+        { value: "DOI:", label: "DOI:" },
+        { value: "PMID:", label: "PMID:" },
+        { value: "", label: "Other:" },
+      ],
+      evidencePrefix: "DOI:",
       evidence: [],
       authenticated: false,
       newEvidence: "",
@@ -174,6 +186,7 @@ export default {
       showSubmissions: true,
       errorMessage: "",
       creator: undefined,
+      copyContent: '',
     };
   },
   computed: {
@@ -195,8 +208,42 @@ export default {
         this.annotationEntry["type"] === "deleted"
       );
     },
+    ontologyLink: function () {
+      const models = this.annotationEntry['models'];
+      if (models && models.startsWith("UBERON")) {
+        return `http://purl.obolibrary.org/obo/${this.annotationEntry.models.replace(":", "_")}`;
+      }
+    },
+    updatedCopyContent: function () {
+      return this.getUpdateCopyContent();
+    },
   },
   methods: {
+    processEvidences: function(sub) {
+      const evidences = [];
+      if (sub?.body?.evidence) {
+        sub.body.evidence.forEach((evidence) => {
+          if (typeof evidence === 'object') {
+            evidences.push(evidence);
+          } else {
+            const eviObject = {}
+            if (evidence.includes("https://doi.org/")) {
+              const key = evidence.replace("https://doi.org/", "DOI:");
+              eviObject[key] = evidence;
+            } else if (evidence.includes("https://pubmed.ncbi.nlm.nih.gov/")) {
+              const key = evidence.replace("https://pubmed.ncbi.nlm.nih.gov/", "PMID:");
+              eviObject[key] = evidence;
+            }
+            if (Object.keys(eviObject).length > 0) {
+              evidences.push(eviObject);
+            } else {
+              evidences.push(evidence);
+            }
+          }
+        });
+      }
+      return evidences;
+    },
     evidenceEntered: function (value) {
       if (value) {
         this.evidence.push(this.evidencePrefix + value);
@@ -316,6 +363,57 @@ export default {
       this.newFeature = "";
       this.comment = "";
     },
+    getUpdateCopyContent: function () {
+      if (!this.annotationEntry) {
+        return '';
+      }
+
+      const contentArray = [];
+
+      // featureId
+      if (this.annotationEntry.featureId) {
+        contentArray.push(`<div><strong>Feature ID:</strong>${this.annotationEntry.featureId}</div>`);
+      }
+
+      // label
+      if (this.annotationEntry.label) {
+        contentArray.push(`<div><strong>Label:</strong>${this.annotationEntry.label}</div>`);
+      }
+
+      // models
+      if (this.annotationEntry.models) {
+        contentArray.push(`<div><strong>Ontology:</strong>${this.annotationEntry.models}</div>`);
+        if (this.ontologyLink) {
+          contentArray.push(`<div><strong>Ontology Link:</strong>${this.ontologyLink}</div>`);
+        }
+      }
+
+      // resourceId
+      if (this.annotationEntry.resourceId) {
+        contentArray.push(`<div><strong>Resource:</strong>${this.annotationEntry.resourceId}</div>`);
+      }
+
+      if (this.prevSubs.length) {
+        let annotationContent = '<div><strong>Annotations:</strong></div>\n<br>';
+        this.prevSubs.map((sub, index) => {
+          annotationContent += `<div><strong>Created:</strong>${this.formatTime(sub.created)}</div>\n<br>`;
+          annotationContent += `<div><strong>Creator:</strong>${sub.creator.name}</div>\n<br>`;
+          annotationContent += `<div><strong>Email:</strong>${sub.creator.email}</div>\n<br>`;
+          if (sub.body.evidence.length) {
+            let evidenceContent = '';
+            sub.body.evidence.forEach((evi, index) => {
+              evidenceContent += `${typeof evi === 'object' ? Object.values(evi)[0] : evi}`;
+              if (index !== sub.body.evidence.length - 1) evidenceContent += ', ';
+            })
+            annotationContent += `<div><strong>Evidence:</strong>${evidenceContent}</div>\n<br>`;
+          }
+          annotationContent += `<div><strong>Comment:</strong>${sub.body.comment}</div>\n<br>`;
+        })
+        contentArray.push(`<div>${annotationContent}</div>`);
+      }
+
+      return contentArray.join('\n\n<br>');
+    },
   },
   watch: {
     annotationEntry: {
@@ -346,7 +444,11 @@ export default {
 
 <style lang="scss" scoped>
 .info-field {
+  padding: 0;
   display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
 .block {
@@ -405,7 +507,22 @@ export default {
   font-weight: 500;
   font-weight: bold;
   padding-bottom: 8px;
-  color: rgb(131, 0, 191);
+  color: $app-primary-color;
+}
+
+.title-buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+
+  :deep(.copy-clipboard-button) {
+    &,
+    &:hover,
+    &:focus {
+      border-color: $app-primary-color !important;
+      border-radius: 50%;
+    }
+  }
 }
 
 .sub-title {
