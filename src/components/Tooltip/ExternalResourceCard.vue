@@ -2,6 +2,9 @@
   <div class="resource-container">
     <div class="attribute-title-container">
       <div class="attribute-title">References</div>
+      <div class="copy-button">
+        <CopyToClipboard label="Copy list to clipboard" :content="referecesListContent" />
+      </div>
     </div>
     <div class="citation-tabs" v-if="referencesWithDOI">
       <el-button
@@ -76,6 +79,7 @@ export default {
       pubMedReferences: [],
       openLibReferences: [],
       isbnDBReferences: [],
+      referecesListContent: '',
       citationOptions: CITATION_OPTIONS,
       citationType: CITATION_DEFAULT,
     }
@@ -319,6 +323,13 @@ export default {
         values.push(reference.url);
       });
 
+      if (values.length) {
+        const list = values.map((item) => `<li>${item}</li>`).join('\n');
+        const listContent = `<ul>${list}</ul>`;
+        const listTitle = `<div><strong>References</strong></div>`;
+        this.referecesListContent = listTitle + `\n` + listContent;
+      }
+
       this.$emit('references-loaded', {
         style: citationFormatStyle,
         list: values
@@ -437,10 +448,25 @@ export default {
 <style lang="scss" scoped>
 .resource-container {
   margin-top: 1em;
+
+  &:hover {
+    .attribute-title-container :deep(.copy-clipboard-button) {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
 }
 
 .attribute-title-container {
   margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  :deep(.copy-clipboard-button) {
+    opacity: 0;
+    visibility: hidden;
+  }
 }
 
 .attribute-title {
