@@ -21,9 +21,9 @@
 </template>
 
 <script>
-const labelBefore = 'Copy to clipboard';
-const labelAfter = 'Copied!';
-const appPrimaryColor = '#8300bf';
+const LABEL_BEFORE = 'Copy to clipboard';
+const LABEL_AFTER = 'Copied!';
+const APP_PRIMARY_COLOR = '#8300bf';
 
 export default {
   name: 'CopyToClipboard',
@@ -31,6 +31,10 @@ export default {
     content: {
       type: String,
       default: '',
+    },
+    label: {
+      type: String,
+      default: LABEL_BEFORE,
     },
     /**
      * `theme: light` will show white button,
@@ -44,9 +48,9 @@ export default {
   },
   data: function () {
     return {
-      textLabel: labelBefore,
+      textLabel: this.label,
       autoHideTimeout: 0,
-      iconColor: appPrimaryColor,
+      iconColor: APP_PRIMARY_COLOR,
     };
   },
   methods: {
@@ -78,14 +82,14 @@ export default {
       }
 
       if (copiedSuccessfully) {
-        this.textLabel = labelAfter;
+        this.textLabel = LABEL_AFTER;
       } else {
         this.textLabel = 'Error trying to copy to clipboard!';
       }
     },
     resetSettings: function () {
       this.autoHideTimeout = 0;
-      this.textLabel = labelBefore;
+      this.textLabel = this.label;
     },
   }
 }
