@@ -48,7 +48,7 @@
               <el-row class="dialog-text">
                 <strong>Evidence: </strong>
                 <el-row
-                  v-for="(evidence, index) in sub.body.evidence"
+                  v-for="(evidence, index) in processEvidences(sub)"
                   :key="evidence"
                   class="dialog-text"
                 > 
@@ -219,6 +219,31 @@ export default {
     },
   },
   methods: {
+    processEvidences: function(sub) {
+      const evidences = [];
+      if (sub?.body?.evidence) {
+        sub.body.evidence.forEach((evidence) => {
+          if (typeof evidence === 'object') {
+            evidences.push(evidence);
+          } else {
+            const eviObject = {}
+            if (evidence.includes("https://doi.org/")) {
+              const key = evidence.replace("https://doi.org/", "DOI:");
+              eviObject[key] = evidence;
+            } else if (evidence.includes("https://pubmed.ncbi.nlm.nih.gov/")) {
+              const key = evidence.replace("https://pubmed.ncbi.nlm.nih.gov/", "PMID:");
+              eviObject[key] = evidence;
+            }
+            if (Object.keys(eviObject).length > 0) {
+              evidences.push(eviObject);
+            } else {
+              evidences.push(evidence);
+            }
+          }
+        });
+      }
+      return evidences;
+    },
     evidenceEntered: function (value) {
       if (value) {
         this.evidence.push(this.evidencePrefix + value);
@@ -279,20 +304,18 @@ export default {
           this.annotationEntry["featureId"]
         ) {
           const evidenceURLs = [];
-          this.evidence.forEach((evi) => {
-            let eviObject = {}
-            if (evi.includes("DOI:")) {
-              eviObject[evi] = evi.replace("DOI:", "https://doi.org/");
-            } else if (evi.includes("PMID:")) {
-              eviObject[evi] = evi.replace(
+          this.evidence.forEach((evidence) => {
+            if (evidence.includes("DOI:")) {
+              const link = evidence.replace("DOI:", "https://doi.org/");
+              evidenceURLs.push(new URL(link));
+            } else if (evidence.includes("PMID:")) {
+              const link = evidence.replace(
                 "PMID:",
                 "https://pubmed.ncbi.nlm.nih.gov/"
               );
-            }
-            if (evi in eviObject) {
-              evidenceURLs.push(eviObject);
+              evidenceURLs.push(new URL(link));
             } else {
-              evidenceURLs.push(evi);
+              evidenceURLs.push(evidence);
             }
           });
           const userAnnotation = {
