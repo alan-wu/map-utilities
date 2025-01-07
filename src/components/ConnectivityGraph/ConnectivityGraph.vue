@@ -1,5 +1,5 @@
 <template>
-  <div class="connectivity-graph" v-loading="loading">
+  <div class="connectivity-graph" v-loading="loading" ref="connectivityGraphRef">
 
     <div ref="graphCanvas" class="graph-canvas"></div>
 
@@ -9,6 +9,8 @@
           :content="resetLabel"
           placement="top"
           effect="control-tooltip"
+          :teleported="true"
+          :append-to="connectivityGraphContainer"
         >
           <el-button
             class="control-button"
@@ -26,6 +28,8 @@
           :content="zoomLockLabel"
           placement="top"
           effect="control-tooltip"
+          :teleported="true"
+          :append-to="connectivityGraphContainer"
         >
           <el-button
             class="control-button"
@@ -48,6 +52,8 @@
           :content="zoomInLabel"
           placement="left"
           effect="control-tooltip"
+          :teleported="true"
+          :append-to="connectivityGraphContainer"
         >
           <el-button
             class="control-button"
@@ -65,6 +71,8 @@
           :content="zoomOutLabel"
           placement="left"
           effect="control-tooltip"
+          :teleported="true"
+          :append-to="connectivityGraphContainer"
         >
           <el-button
             class="control-button"
@@ -164,9 +172,11 @@ export default {
       zoomEnabled: false,
       connectivityError: null,
       timeoutID: undefined,
+      connectivityGraphContainer: null,
     };
   },
   mounted() {
+    this.updateTooltipContainer();
     this.refreshCache();
     this.loadCacheData();
     this.run().then((res) => {
@@ -174,6 +184,9 @@ export default {
     });
   },
   methods: {
+    updateTooltipContainer: function () {
+      this.connectivityGraphContainer = this.$refs.connectivityGraphRef;
+    },
     loadCacheData: function () {
       const selectedSource = sessionStorage.getItem('connectivity-graph-source');
       const labelCache = sessionStorage.getItem('connectivity-graph-labels');
