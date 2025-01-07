@@ -5,6 +5,8 @@
     :hide-after="autoHideTimeout"
     effect="clipboard-tooltip"
     @hide="resetSettings"
+    :teleported="true"
+    :append-to="tooltipContainer"
   >
     <el-button
       class="copy-clipboard-button"
@@ -47,7 +49,17 @@ export default {
       textLabel: labelBefore,
       autoHideTimeout: 0,
       iconColor: appPrimaryColor,
+      tooltipContainer: null,
     };
+  },
+  mounted() {
+    const fullscreenContainer = document.querySelector('.mapcontent');
+
+    if (fullscreenContainer) {
+      this.tooltipContainer = fullscreenContainer;
+    } else {
+      this.tooltipContainer = document.body;
+    }
   },
   methods: {
     copyToClipboard: async function () {
