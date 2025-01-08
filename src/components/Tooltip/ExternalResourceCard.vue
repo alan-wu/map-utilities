@@ -554,6 +554,13 @@ export default {
       color: var(--el-button-text-color) !important;
       height: auto !important;
       padding: 2px !important;
+
+      &:hover,
+      &:focus,
+      &:active {
+        color: $app-primary-color !important;
+        box-shadow: none !important;
+      }
     }
   }
 
