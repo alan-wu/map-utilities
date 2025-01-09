@@ -547,6 +547,21 @@ export default {
     &:active {
       color: $app-primary-color;
     }
+
+    &.is-link {
+      background: transparent !important;
+      border-color: transparent !important;
+      color: var(--el-button-text-color) !important;
+      height: auto !important;
+      padding: 2px !important;
+
+      &:hover,
+      &:focus,
+      &:active {
+        color: $app-primary-color !important;
+        box-shadow: none !important;
+      }
+    }
   }
 
   .el-button + .el-button {
