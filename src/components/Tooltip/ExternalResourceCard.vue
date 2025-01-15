@@ -45,7 +45,7 @@
 <script>
 import CopyToClipboard from '../CopyToClipboard/CopyToClipboard.vue';
 
-const CROSSCITE_API_HOST = 'https://citation.crosscite.org';
+const CROSSCITE_API_HOST = 'https://citation.doi.org';
 const CITATION_OPTIONS = [
   {
     label: 'APA',
