@@ -44,7 +44,12 @@ const xmlToJSON = (xmlText) => {
   return result;
 };
 
+const delay = (ms) => {
+  return new Promise(resolve => setTimeout(resolve, ms));
+};
+
 export {
   capitalise,
   xmlToJSON,
+  delay,
 };
