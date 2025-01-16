@@ -21,11 +21,33 @@
       <li
         v-for="reference of pubMedReferences"
         :key="reference.id"
-        :class="{'loading': reference.citation && reference.citation[citationType] === ''}"
+        :class="{'loading': reference.citation && !reference.citation.error && reference.citation[citationType] === ''}"
       >
-        <template v-if="reference.citation && reference.citation[citationType]">
-          <span v-html="reference.citation[citationType]"></span>
-          <CopyToClipboard :content="reference.citation[citationType]" />
+        <template v-if="reference.citation">
+
+          <!-- DOI Server Error -->
+          <template v-if="reference.citation.error?.ref === 'doi' && reference.citation.error?.type === citationType">
+            <span>Internal Server Error</span><br />
+            Sorry, something went wrong.<br />
+            The dataset citation generator (<a
+              :href="crosscite_host"
+              target="_blank"
+            >{{ crosscite_host }}</a>) encountered an internal error and was unable to complete your
+            request.<br />
+            Please come back later.
+          </template>
+
+          <!-- PubMed Server Error -->
+          <template v-else-if="reference.citation.error?.ref === 'pubmed' && reference.citation.error?.type === citationType">
+            <span>Sorry, something went wrong.</span><br />
+            Please try again.
+            <span class="reload-button" @click="reloadCitation(reference)">Reload</span>
+          </template>
+
+          <template v-else>
+            <span v-html="reference.citation[citationType]"></span>
+            <CopyToClipboard :content="reference.citation[citationType]" />
+          </template>
         </template>
       </li>
 
@@ -44,8 +66,9 @@
 
 <script>
 import CopyToClipboard from '../CopyToClipboard/CopyToClipboard.vue';
+import { delay } from '../utilities';
 
-const CROSSCITE_API_HOST = 'https://citation.crosscite.org';
+const CROSSCITE_API_HOST = 'https://citation.doi.org';
 const CITATION_OPTIONS = [
   {
     label: 'APA',
@@ -65,6 +88,7 @@ const CITATION_OPTIONS = [
   },
 ];
 const CITATION_DEFAULT = 'apa';
+const LOADING_DELAY = 600;
 
 export default {
   name: "ExternalResourceCard",
@@ -82,6 +106,7 @@ export default {
       referecesListContent: '',
       citationOptions: CITATION_OPTIONS,
       citationType: CITATION_DEFAULT,
+      crosscite_host: CROSSCITE_API_HOST,
     }
   },
   watch: {
@@ -251,56 +276,90 @@ export default {
       this.citationType = citationType;
       this.getCitationText(citationType);
     },
-    getCitationText: function(citationType) {
-      this.pubMedReferences.forEach((reference) => {
-        const { id, type, doi } = reference;
+    generateCitationText: function (reference, citationType) {
+      const { id, type, doi } = reference;
 
-        if (
-          !(reference.citation && reference.citation[citationType])
-          && id
-        ) {
-          reference.citation[citationType] = ''; // loading
+      if (
+        !(reference.citation && reference.citation[citationType])
+        && id
+      ) {
+        reference.citation[citationType] = ''; // loading
+        reference.citation['error'] = null; // clear errors
 
-          if (type === 'doi' || doi) {
-            const doiID = type === 'doi' ? id : doi;
-            this.getCitationTextByDOI(doiID).then((text) => {
-              const formattedText = this.replaceLinkInText(text);
-              reference.citation[citationType] = formattedText;
-              this.updateCopyContents();
-            });
-          } else if (type === 'pmid') {
-            this.getDOIFromPubMedID(id).then((data) => {
-              if (data?.result) {
-                const resultObj = data.result[id];
-                const articleIDs = resultObj?.articleids || [];
-                const doiObj = articleIDs.find((item) => item.idtype === 'doi');
-                const doiID = doiObj?.value;
+        if (type === 'doi' || doi) {
+          const doiID = type === 'doi' ? id : doi;
+          this.getCitationTextByDOI(doiID).then((text) => {
+            const formattedText = this.replaceLinkInText(text);
+            reference.citation[citationType] = formattedText;
+            this.updateCopyContents();
+          }).catch((error) => {
+            reference.citation['error'] = {
+              type: citationType,
+              ref: 'doi',
+            };
+          });
+        } else if (type === 'pmid') {
+          this.getDOIFromPubMedID(id).then((data) => {
+            if (data?.result) {
+              const resultObj = data.result[id];
+              const articleIDs = resultObj?.articleids || [];
+              const doiObj = articleIDs.find((item) => item.idtype === 'doi');
+              const doiID = doiObj?.value;
 
-                if (doiID) {
-                  reference['doi'] = doiID;
-                  this.getCitationTextByDOI(doiID).then((text) => {
-                    const formattedText = this.replaceLinkInText(text);
-                    reference.citation[citationType] = formattedText;
-                    this.updateCopyContents();
-                  });
-                } else {
-                  // If there has no doi in PubMed
-                  const { title, pubdate, authors } = resultObj;
-                  const authorNames = authors ? authors.map((author) => author.name) : [];
-                  const formattedText = this.formatCopyReference({
-                    title: title || '',
-                    date: pubdate || '',
-                    authors: authorNames,
-                    url: `https://pubmed.ncbi.nlm.nih.gov/${id}`,
-                  });
+              if (doiID) {
+                reference['doi'] = doiID;
+                this.getCitationTextByDOI(doiID).then((text) => {
+                  const formattedText = this.replaceLinkInText(text);
                   reference.citation[citationType] = formattedText;
                   this.updateCopyContents();
-                }
+                }).catch((error) => {
+                  reference.citation['error'] = {
+                    type: citationType,
+                    ref: 'doi',
+                  };
+                });
+              } else {
+                // If there has no doi in PubMed
+                const { title, pubdate, authors } = resultObj;
+                const authorNames = authors ? authors.map((author) => author.name) : [];
+                const formattedText = this.formatCopyReference({
+                  title: title || '',
+                  date: pubdate || '',
+                  authors: authorNames,
+                  url: `https://pubmed.ncbi.nlm.nih.gov/${id}`,
+                });
+                reference.citation[citationType] = formattedText;
+                this.updateCopyContents();
               }
-            });
+            }
+          }).catch((error) => {
+            reference.citation['error'] = {
+              type: citationType,
+              ref: 'pubmed',
+            };
+          });
+        }
+      }
+    },
+    getCitationText: function(citationType) {
+      async function generateCitationTextSequentially(that) {
+        for (let i = 0; i < that.pubMedReferences.length; i++) {
+          that.generateCitationText(that.pubMedReferences[i], citationType);
+
+          // add delay only for more than 3 items in the list
+          if (
+            that.pubMedReferences.length > 3 &&
+            i < that.pubMedReferences.length - 1
+          ) {
+            await delay(LOADING_DELAY);
           }
         }
-      });
+      }
+
+      generateCitationTextSequentially(this);
+    },
+    reloadCitation: function (reference) {
+      this.generateCitationText(reference, this.citationType);
     },
     updateCopyContents: function () {
       const citationTypeObj = this.citationOptions.find((item) => item.value === this.citationType);
@@ -360,7 +419,7 @@ export default {
       return await this.fetchData(esearchAPI);
     },
     getCitationTextByDOI: async function (id) {
-      const citationAPI = `${CROSSCITE_API_HOST}/format?doi=${id}&style=${this.citationType}&lang=en-US`;
+      const citationAPI = `${this.crosscite_host}/format?doi=${id}&style=${this.citationType}&lang=en-US`;
       return await this.fetchData(citationAPI, 'text');
     },
     getDOIFromPubMedID: async function (pubmedId) {
@@ -438,7 +497,7 @@ export default {
           return await response.json();
         }
       } catch (error) {
-        console.error(`Fetch data error: ${error}`);
+        throw new Error(error);
       }
     },
   },
@@ -567,6 +626,12 @@ export default {
   .el-button + .el-button {
     margin-left: 0.25rem;
   }
+}
+
+.reload-button {
+  color: $app-primary-color;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 @keyframes loadingAnimation {
