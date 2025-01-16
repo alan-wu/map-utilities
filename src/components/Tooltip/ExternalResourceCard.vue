@@ -21,11 +21,21 @@
       <li
         v-for="reference of pubMedReferences"
         :key="reference.id"
-        :class="{'loading': reference.citation && reference.citation[citationType] === ''}"
+        :class="{'loading': reference.citation && reference.citation[citationType] === 'loading'}"
       >
         <template v-if="reference.citation && reference.citation[citationType]">
           <span v-html="reference.citation[citationType]"></span>
           <CopyToClipboard :content="reference.citation[citationType]" />
+        </template>
+        <template v-else>
+          <span>Internal Server Error</span><br />
+          Sorry, something went wrong.<br />
+          The dataset citation generator (<a
+            :href="crosscite_host"
+            target="_blank"
+          >{{ crosscite_host }}</a>) encountered an internal error and was unable to complete your
+          request.<br />
+          Please come back later.
         </template>
       </li>
 
@@ -82,6 +92,7 @@ export default {
       referecesListContent: '',
       citationOptions: CITATION_OPTIONS,
       citationType: CITATION_DEFAULT,
+      crosscite_host: CROSSCITE_API_HOST,
     }
   },
   watch: {
@@ -259,7 +270,7 @@ export default {
           !(reference.citation && reference.citation[citationType])
           && id
         ) {
-          reference.citation[citationType] = ''; // loading
+          reference.citation[citationType] = 'loading'; // loading
 
           if (type === 'doi' || doi) {
             const doiID = type === 'doi' ? id : doi;
@@ -267,6 +278,8 @@ export default {
               const formattedText = this.replaceLinkInText(text);
               reference.citation[citationType] = formattedText;
               this.updateCopyContents();
+            }).catch((error) => {
+              reference.citation[citationType] = ''; // error
             });
           } else if (type === 'pmid') {
             this.getDOIFromPubMedID(id).then((data) => {
@@ -282,6 +295,8 @@ export default {
                     const formattedText = this.replaceLinkInText(text);
                     reference.citation[citationType] = formattedText;
                     this.updateCopyContents();
+                  }).catch((error) => {
+                    reference.citation[citationType] = ''; // error
                   });
                 } else {
                   // If there has no doi in PubMed
@@ -297,6 +312,8 @@ export default {
                   this.updateCopyContents();
                 }
               }
+            }).catch((error) => {
+              reference.citation[citationType] = ''; // error
             });
           }
         }
@@ -360,7 +377,7 @@ export default {
       return await this.fetchData(esearchAPI);
     },
     getCitationTextByDOI: async function (id) {
-      const citationAPI = `${CROSSCITE_API_HOST}/format?doi=${id}&style=${this.citationType}&lang=en-US`;
+      const citationAPI = `${this.crosscite_host}/format?doi=${id}&style=${this.citationType}&lang=en-US`;
       return await this.fetchData(citationAPI, 'text');
     },
     getDOIFromPubMedID: async function (pubmedId) {
@@ -439,6 +456,7 @@ export default {
         }
       } catch (error) {
         console.error(`Fetch data error: ${error}`);
+        throw new Error(`Fetch data error: ${error}`);
       }
     },
   },
