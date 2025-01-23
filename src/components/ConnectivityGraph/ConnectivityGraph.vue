@@ -149,6 +149,10 @@ export default {
       type: String,
       default: '',
     },
+    sckanVersion: {
+      type: String,
+      default: '',
+    },
     selectedConnectivityData: {
       type: Array,
       default: [],
@@ -196,6 +200,12 @@ export default {
       if (selectedSource) {
         this.selectedSource = selectedSource;
       }
+      // Update knowledge source if SCKAN version is provided
+      if (this.sckanVersion) {
+        this.selectedSource = this.sckanVersion;
+        sessionStorage.setItem('connectivity-graph-source', this.selectedSource);
+        this.updateCacheExpiry();
+      }
       if (pathList) {
         this.pathList = JSON.parse(pathList);
       }
@@ -206,6 +216,13 @@ export default {
       if (schemaVersion) {
         this.schemaVersion = schemaVersion;
       }
+    },
+    isValidKnowledgeSource: function () {
+      const selectedSource = sessionStorage.getItem('connectivity-graph-source');
+      if (this.sckanVersion && (this.sckanVersion !== selectedSource)) {
+        return false;
+      }
+      return true;
     },
     removeAllCacheData: function () {
       const keys = [
@@ -222,8 +239,9 @@ export default {
     refreshCache: function () {
       const expiry = sessionStorage.getItem('connectivity-graph-expiry');
       const now = new Date();
+      const validKnowledgeSource = this.isValidKnowledgeSource();
 
-      if (now.getTime() > expiry) {
+      if (now.getTime() > expiry || !validKnowledgeSource) {
         this.removeAllCacheData();
       }
     },
