@@ -1,6 +1,10 @@
 <template>
   <div class="connectivity-graph" v-loading="loading" ref="connectivityGraphRef">
 
+    <div class="sckan-version">
+      SCKAN Release: {{ this.selectedSource }}
+    </div>
+
     <div ref="graphCanvas" class="graph-canvas"></div>
 
     <div class="control-panel control-panel-tools">
@@ -658,6 +662,16 @@ export default {
   position: absolute;
   white-space: nowrap;
   width: 1px;
+}
+
+.sckan-version {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  margin-bottom: -22px;
+  font-size: 12px;
+  font-style: italic;
+  color: gray;
 }
 </style>
 
