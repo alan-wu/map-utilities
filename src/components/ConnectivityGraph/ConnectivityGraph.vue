@@ -252,6 +252,7 @@ export default {
       const keys = [
         'connectivity-graph-expiry',
         'connectivity-graph-selected-source',
+        'connectivity-graph-sources',
         'connectivity-graph-labels',
         'connectivity-graph-pathlist',
         'connectivity-graph-schema-version',
