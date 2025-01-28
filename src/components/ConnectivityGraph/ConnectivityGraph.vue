@@ -126,7 +126,6 @@
 
 <script>
 import { ConnectivityGraph } from './graph';
-import { capitalise } from '../utilities';
 
 const MIN_SCHEMA_VERSION = 1.3;
 const CACHE_LIFETIME = 24 * 60 * 60 * 1000; // One day
