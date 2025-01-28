@@ -215,7 +215,7 @@ export default {
       const pathList = sessionStorage.getItem('connectivity-graph-pathlist');
       const schemaVersion = sessionStorage.getItem('connectivity-graph-schema-version');
 
-      // Update knowledge source if SCKAN version is provided
+      // Use provided SCKAN version for the knowledge source
       if (this.sckanVersion) {
         this.selectedSource = this.sckanVersion;
       }
@@ -250,6 +250,7 @@ export default {
       const keys = [
         'connectivity-graph-expiry',
         'connectivity-graph-selected-source',
+        'connectivity-graph-source', // to clear old data
         'connectivity-graph-sources',
         'connectivity-graph-labels',
         'connectivity-graph-pathlist',
