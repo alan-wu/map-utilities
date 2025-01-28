@@ -117,6 +117,10 @@
       {{ connectivityError.errorMessage }}
     </div>
 
+    <div v-if="loadingError" class="loading-error">
+      {{ loadingError }}
+    </div>
+
   </div>
 </template>
 
@@ -161,6 +165,7 @@ export default {
   data: function () {
     return {
       loading: true,
+      loadingError: '',
       connectivityGraph: null,
       selectedSource: '',
       pathList: [],
@@ -183,9 +188,22 @@ export default {
     this.updateTooltipContainer();
     this.refreshCache();
     this.loadCacheData();
-    this.run().then((res) => {
-      this.showGraph(this.entry);
-    });
+    this.showSpinner();
+    this.run()
+      .then((res) => {
+        if (res?.success) {
+          this.showGraph(this.entry);
+        } else if (res?.error) {
+          this.loadingError = res.error;
+        } else {
+          this.loadingError = 'Loading error!';
+        }
+        this.hideSpinner();
+      })
+      .catch((error) => {
+        this.loadingError = 'Loading error!';
+        this.hideSpinner();
+      });
   },
   methods: {
     updateTooltipContainer: function () {
@@ -258,27 +276,26 @@ export default {
         this.updateCacheExpiry();
       }
       if (this.schemaVersion < MIN_SCHEMA_VERSION) {
-        console.warn('No Server!');
-        return;
+        return {
+          error: `No server available for schema-version ${this.schemaVersion}!`,
+        };
       }
-      this.showSpinner();
+
       if (!this.selectedSource) {
         this.selectedSource = await this.setSourceList();
         sessionStorage.setItem('connectivity-graph-source', this.selectedSource);
         this.updateCacheExpiry();
       }
       await this.setPathList(this.selectedSource);
-      this.hideSpinner();
+      return {
+        success: true,
+      };
     },
     showGraph: async function (neuronPath) {
       const graphCanvas = this.$refs.graphCanvas;
 
-      this.showSpinner();
-
       this.connectivityGraph = new ConnectivityGraph(this.labelCache, graphCanvas);
       await this.connectivityGraph.addConnectivity(this.knowledgeByPath.get(neuronPath));
-
-      this.hideSpinner();
 
       this.connectivityGraph.showConnectivity(graphCanvas);
 
@@ -658,6 +675,15 @@ export default {
   position: absolute;
   white-space: nowrap;
   width: 1px;
+}
+
+.loading-error {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--el-mask-color);
 }
 </style>
 
