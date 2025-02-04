@@ -46,6 +46,17 @@
 
           <template v-else>
             <span v-html="reference.citation[citationType]"></span>
+
+            <div class="reference-button-container">
+              <el-button
+                class="reference-icon-button"
+                size="small"
+                @click="showRelatedConnectivities(reference.resource)"
+              >
+                Show related connectivities
+              </el-button>
+            </div>
+
             <CopyToClipboard :content="reference.citation[citationType]" />
           </template>
         </template>
@@ -126,6 +137,9 @@ export default {
     this.getCitationText(CITATION_DEFAULT);
   },
   methods: {
+    showRelatedConnectivities: function (resource) {
+      this.$emit('show-reference-connectivities', resource);
+    },
     formatReferences: function (references) {
       const nonPubMedReferences = this.extractNonPubMedReferences(references);
       const pubMedReferences = references.filter((reference) => !nonPubMedReferences.includes(reference));
@@ -202,6 +216,7 @@ export default {
           type: 'openlib',
           url: url,
           bookId: bookId,
+          // resource: resource, // TODO
         });
       }
 
@@ -213,7 +228,8 @@ export default {
         transformedReferences.push({
           id: id,
           url: url,
-          type: 'isbndb'
+          type: 'isbndb',
+          // resource: resource, // TODO
         });
       });
 
@@ -224,7 +240,7 @@ export default {
 
       const str = decodeURIComponent(urlStr)
 
-      let term = {id: '', type: '', citation: {}}
+      let term = {id: '', type: '', citation: {}, resource: urlStr}
 
       const names = this.getPubMedDomains()
 
@@ -632,6 +648,20 @@ export default {
   color: $app-primary-color;
   text-decoration: underline;
   cursor: pointer;
+}
+
+.reference-button-container {
+  margin-top: 0.5rem;
+}
+
+.reference-icon-button {
+  color: $app-primary-color !important;
+  background-color: #f9f2fc !important;
+  border-color: $app-primary-color !important;
+
+  &:hover {
+    background-color: transparent !important;
+  }
 }
 
 @keyframes loadingAnimation {
