@@ -64,11 +64,33 @@
 
       <li v-for="reference of openLibReferences">
         <div v-html="formatCopyReference(reference)"></div>
+
+        <div class="reference-button-container">
+          <el-button
+            class="reference-icon-button"
+            size="small"
+            @click="showRelatedConnectivities(reference.resource)"
+          >
+            Show related connectivities
+          </el-button>
+        </div>
+
         <CopyToClipboard :content="formatCopyReference(reference)" />
       </li>
 
       <li v-for="reference of isbnDBReferences">
         <a :href="reference.url" target="_blank">{{ reference.url }}</a>
+
+        <div class="reference-button-container">
+          <el-button
+            class="reference-icon-button"
+            size="small"
+            @click="showRelatedConnectivities(reference.resource)"
+          >
+            Show related connectivities
+          </el-button>
+        </div>
+
         <CopyToClipboard :content="reference.url" />
       </li>
     </ul>
@@ -192,12 +214,17 @@ export default {
     formatNonPubMedReferences: async function (references) {
       const transformedReferences = [];
       const filteredReferences = references.filter((referenceURL) => referenceURL.indexOf('isbn') !== -1);
+
       const isbnIDs = filteredReferences.map((url) => {
         const isbnId = url.split('/').pop();
         return 'ISBN:' + isbnId;
       });
       const isbnIDsKey = isbnIDs.join(',');
       const failedIDs = isbnIDs.slice();
+
+      const getOriginalURL = (id) => {
+        return filteredReferences.find((url) => url.includes(id));
+      };
 
       const openlibAPI = `https://openlibrary.org/api/books?bibkeys=${isbnIDsKey}&format=json`;
       const data = await this.fetchData(openlibAPI);
@@ -210,13 +237,15 @@ export default {
         const urlSegments = url.split('/');
         const endpointIndex = urlSegments.indexOf('books');
         const bookId = urlSegments[endpointIndex + 1];
+        const id = key.split(':')[1]; // Key => "ISBN:1234"
+        const resource = getOriginalURL(id);
 
         transformedReferences.push({
-          id: key.split(':')[1], // Key => "ISBN:1234"
+          id: id,
           type: 'openlib',
           url: url,
           bookId: bookId,
-          // resource: resource, // TODO
+          resource: resource,
         });
       }
 
@@ -225,11 +254,13 @@ export default {
         // Data does not exist in OpenLibrary
         // Provide ISBNDB link for reference
         const url = `https://isbndb.com/book/${id}`;
+        const resource = getOriginalURL(id);
+
         transformedReferences.push({
           id: id,
           url: url,
           type: 'isbndb',
-          // resource: resource, // TODO
+          resource: resource,
         });
       });
 
