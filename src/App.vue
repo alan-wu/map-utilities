@@ -42,6 +42,7 @@ const showConnectivityGraph = ref(false);
 const connectivityGraphEntry = "ilxtr:neuron-type-aacar-13";
 // const connectivityGraphEntry = "ilxtr:sparc-nlp/kidney/134";
 const mapServer = "https://mapcore-demo.org/curation/flatmap/";
+const sckanVersion = "sckan-2024-09-21-npo";
 
 onMounted(() => {
   console.log("🚀 ~ onMounted ~ appRef:", appRef.value);
@@ -548,6 +549,7 @@ function confirmCreate(value) {
       v-if="showConnectivityGraph"
       :entry="connectivityGraphEntry"
       :map-server="mapServer"
+      :sckanVersion="sckanVersion"
     />
   </div>
 </template>
