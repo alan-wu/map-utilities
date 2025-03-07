@@ -266,7 +266,7 @@ export default {
     },
     updatePrevSubmissions: function () {
       if (this.offlineAnnotate) {
-        const offlineAnnotation = JSON.parse(localStorage.getItem('flatmap-offline-annotation')) || []
+        const offlineAnnotation = JSON.parse(sessionStorage.getItem('flatmap-offline-annotation')) || [];
         this.prevSubs = offlineAnnotation.filter((offline) => {
           return (
             offline.resource === this.annotationEntry.resourceId &&
