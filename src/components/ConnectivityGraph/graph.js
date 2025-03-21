@@ -252,8 +252,6 @@ const GRAPH_STYLE = [
         'style': {
             'width': 1,
             'line-color': 'dimgray',
-            'target-arrow-color': 'dimgray',
-            'target-arrow-shape': 'triangle',
             'curve-style': 'bezier'
         }
     },
