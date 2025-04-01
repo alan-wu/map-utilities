@@ -157,6 +157,10 @@ export default {
         featuresAlert: undefined,
       }),
     },
+    availableAnatomyFacets: {
+      type: Array,
+      default: () => [],
+    },
     connectivityError: {
       type: Object,
       default: () => null,
@@ -173,6 +177,15 @@ export default {
       sckanVersion: '',
     }
   },
+  watch: {
+    availableAnatomyFacets: {
+      handler: function (val) {
+        this.convertFacetsToList(val)
+      },
+      immediate: true,
+      deep: true,
+    },
+  },
   computed: {
     originDescription: function () {
       if (
@@ -187,7 +200,7 @@ export default {
     },
   },
   mounted: function () {
-    this.loading = false;
+    // this.loading = false;
   },
   methods: {
     capitalise: function (text) {
@@ -228,20 +241,30 @@ export default {
       }
       return false
     },
+    // convertFacetsToList: Converts the available anatomy facets to a list for easy searching
+    convertFacetsToList: function (facets) {
+      facets.forEach((facet) => {
+        if(facet.children) {
+          this.convertFacetsToList(facet.children)
+        } else {
+          this.facetList.push(facet.label.toLowerCase())
+        }
+      })
+    },
     openAll: function () {
-      this.$emit('onConnectivityActionClick', {
+      this.$emit('connectivity-action-click', {
         type: 'Facets',
         labels: this.entry.componentsWithDatasets.map((a) => a.name.toLowerCase()),
       })
     },
     openAxons: function () {
-      this.$emit('onConnectivityActionClick', {
+      this.$emit('connectivity-action-click', {
         type: 'Facets',
         labels: this.entry.destinationsWithDatasets.map((a) => a.name.toLowerCase()),
       })
     },
     openDendrites: function () {
-      this.$emit('onConnectivityActionClick', {
+      this.$emit('connectivity-action-click', {
         type: 'Facets',
         labels: this.entry.originsWithDatasets.map((a) => a.name.toLowerCase()),
       })
@@ -258,8 +281,30 @@ export default {
   position: relative;
 }
 
+:deep(.el-loading-mask) {
+  background-color: #f7faffcc;
+}
+
 .block + .block {
   margin-top: 0.5em;
+}
+
+.button {
+  margin-left: 0px !important;
+  margin-top: 0px !important;
+  font-size: 14px !important;
+  background-color: $app-primary-color;
+  color: #fff;
+
+  &:hover {
+    color: #fff !important;
+    background-color: #ac76c5 !important;
+    border: 1px solid #ac76c5 !important;
+  }
+
+  & + .button {
+    margin-top: 10px !important;
+  }
 }
 
 .icon {
