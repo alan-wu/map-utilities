@@ -200,7 +200,7 @@ export default {
     },
   },
   mounted: function () {
-    // this.loading = false;
+    this.loading = false;
   },
   methods: {
     capitalise: function (text) {
