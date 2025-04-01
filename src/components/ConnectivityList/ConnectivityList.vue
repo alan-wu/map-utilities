@@ -1,5 +1,5 @@
 <template>
-  <div class="connectivity-list" v-loading="loading">
+  <div class="connectivity-list">
     {{ entry.paths }}
     <div v-if="entry.origins && entry.origins.length > 0" class="block">
       <div class="attribute-title-container">
@@ -168,7 +168,6 @@ export default {
   },
   data: function () {
     return {
-      loading: true,
       originDescriptions: {
         motor: 'is the location of the initial cell body of the circuit',
         sensory: 'is the location of the initial cell body in the PNS circuit',
@@ -198,9 +197,6 @@ export default {
         return this.originDescriptions.sensory
       }
     },
-  },
-  mounted: function () {
-    this.loading = false;
   },
   methods: {
     capitalise: function (text) {
@@ -279,10 +275,6 @@ export default {
   flex-direction: column;
   gap: 1rem;
   position: relative;
-}
-
-:deep(.el-loading-mask) {
-  background-color: #f7faffcc;
 }
 
 .block + .block {
