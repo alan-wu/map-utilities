@@ -277,10 +277,6 @@ export default {
   position: relative;
 }
 
-.block + .block {
-  margin-top: 0.5em;
-}
-
 .button {
   margin-left: 0px !important;
   margin-top: 0px !important;
