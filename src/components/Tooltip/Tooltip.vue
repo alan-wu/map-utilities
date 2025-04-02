@@ -19,7 +19,7 @@ export default {
   name: "Tooltip",
   props: {
     tooltipEntry: {
-      type: Object,
+      type: Array,
     },
     annotationDisplay: {
       type: Boolean,
