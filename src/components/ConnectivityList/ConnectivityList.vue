@@ -130,6 +130,9 @@
 
 <script>
 import {
+  Warning as ElIconWarning,
+} from '@element-plus/icons-vue'
+import {
   ElButton as Button,
   ElContainer as Container,
   ElIcon as Icon,
@@ -142,6 +145,7 @@ export default {
     Button,
     Container,
     Icon,
+    ElIconWarning,
   },
   props: {
     entry: {
@@ -203,30 +207,10 @@ export default {
       return capitalise(text)
     },
     toggleConnectivityTooltip: function (name, option) {
-      const allWithDatasets = [
-        ...this.entry.componentsWithDatasets,
-        ...this.entry.destinationsWithDatasets,
-        ...this.entry.originsWithDatasets,
-      ];
-      const names = name.split(','); // some features have more than one value
-      const data = [];
-      if (option.show) {
-        names.forEach((n) => {
-          const foundData = allWithDatasets.find((a) =>
-            a.name.toLowerCase().trim() === n.toLowerCase().trim()
-          );
-
-          if (foundData) {
-            data.push({
-              id: foundData.id,
-              label: foundData.name
-            });
-          }
-        });
-      }
-
-      // type: to show error only for click event
-      this.$emit('connectivity-component-click', data);
+      this.$emit('toggle-connectivity-tooltip', {
+        name,
+        option
+      });
     },
     // shouldShowExploreButton: Checks if the feature is in the list of available anatomy facets
     shouldShowExploreButton: function (features) {

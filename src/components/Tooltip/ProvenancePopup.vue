@@ -171,6 +171,11 @@
 </template>
 
 <script>
+import {
+  ArrowUp as ElIconArrowUp,
+  ArrowDown as ElIconArrowDown,
+  Warning as ElIconWarning,
+} from '@element-plus/icons-vue'
 import EventBus from "../EventBus.js";
 
 const titleCase = (str) => {
@@ -186,6 +191,11 @@ const capitalise = function (str) {
 
 export default {
   name: "ProvenancePopup",
+  components: {
+    ElIconArrowUp,
+    ElIconArrowDown,
+    ElIconWarning,
+  },
   props: {
     tooltipEntry: {
       type: Object,
