@@ -44,7 +44,8 @@ const connectivityGraphEntry = "ilxtr:neuron-type-aacar-13";
 // const connectivityGraphEntry = "ilxtr:neuron-type-aacar-11";
 // const connectivityGraphEntry = "ilxtr:neuron-type-sstom-14";
 // const connectivityGraphEntry = "ilxtr:neuron-type-keast-6";
-// const connectivityGraphEntry = "ilxtr:neuron-type-aacar-4"
+// const connectivityGraphEntry = "ilxtr:neuron-type-aacar-4";
+// const connectivityGraphEntry = "ilxtr:neuron-type-aacar-12";
 const mapServer = "https://mapcore-demo.org/curation/flatmap/";
 const sckanVersion = "sckan-2024-09-21-npo";
 
