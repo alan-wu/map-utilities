@@ -191,21 +191,7 @@ export default {
   watch: {
     connectivityFromMap: function (oldVal, newVal) {
       if (oldVal != newVal) {
-        this.run()
-          .then((res) => {
-            if (res?.success) {
-              this.showGraph(this.entry);
-            } else if (res?.error) {
-              this.loadingError = res.error;
-            } else {
-              this.loadingError = 'Loading error!';
-            }
-            this.hideSpinner();
-          })
-          .catch((error) => {
-            this.loadingError = 'Loading error!';
-            this.hideSpinner();
-          });
+        this.start();
       }
     }
   },
@@ -214,21 +200,7 @@ export default {
     this.updateTooltipContainer();
     this.refreshCache();
     this.loadCacheData();
-    this.run()
-      .then((res) => {
-        if (res?.success) {
-          this.showGraph(this.entry);
-        } else if (res?.error) {
-          this.loadingError = res.error;
-        } else {
-          this.loadingError = 'Loading error!';
-        }
-        this.hideSpinner();
-      })
-      .catch((error) => {
-        this.loadingError = 'Loading error!';
-        this.hideSpinner();
-      });
+    this.start();
   },
   methods: {
     updateTooltipContainer: function () {
@@ -299,6 +271,23 @@ export default {
       const expiry = now.getTime() + CACHE_LIFETIME;
 
       sessionStorage.setItem('connectivity-graph-expiry', expiry);
+    },
+    start: function () {
+      this.run()
+        .then((res) => {
+          if (res?.success) {
+            this.showGraph(this.entry);
+          } else if (res?.error) {
+            this.loadingError = res.error;
+          } else {
+            this.loadingError = 'Loading error!';
+          }
+          this.hideSpinner();
+        })
+        .catch((error) => {
+          this.loadingError = 'Loading error!';
+          this.hideSpinner();
+        });
     },
     run: async function () {
       if (!this.schemaVersion) {
