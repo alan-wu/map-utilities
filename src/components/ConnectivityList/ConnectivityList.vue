@@ -1,7 +1,7 @@
 <template>
   <div class="connectivity-list">
     {{ entry.paths }}
-    <div v-if="entry.origins && entry.origins.length > 0" class="block">
+    <div v-if="origins && origins.length > 0" class="block">
       <div class="attribute-title-container">
         <span class="attribute-title">Origin</span>
         <el-popover
@@ -20,7 +20,7 @@
         </el-popover>
       </div>
       <div
-        v-for="(origin, i) in entry.origins"
+        v-for="(origin, i) in origins"
         class="attribute-content"
         :origin-item-label="origin"
         :key="origin"
@@ -31,8 +31,8 @@
       </div>
       <el-button
         v-show="
-          entry.originsWithDatasets && entry.originsWithDatasets.length > 0 &&
-          shouldShowExploreButton(entry.originsWithDatasets)
+          originsWithDatasets && originsWithDatasets.length > 0 &&
+          shouldShowExploreButton(originsWithDatasets)
         "
         class="button"
         id="open-dendrites-button"
@@ -42,14 +42,14 @@
       </el-button>
     </div>
     <div
-      v-if="entry.components && entry.components.length > 0"
+      v-if="components && components.length > 0"
       class="block"
     >
       <div class="attribute-title-container">
         <div class="attribute-title">Components</div>
       </div>
       <div
-        v-for="(component, i) in entry.components"
+        v-for="(component, i) in components"
         class="attribute-content"
         :component-item-label="component"
         :key="component"
@@ -60,7 +60,7 @@
       </div>
     </div>
     <div
-      v-if="entry.destinations && entry.destinations.length > 0"
+      v-if="destinations && destinations.length > 0"
       class="block"
     >
       <div class="attribute-title-container">
@@ -80,7 +80,7 @@
         </el-popover>
       </div>
       <div
-        v-for="(destination, i) in entry.destinations"
+        v-for="(destination, i) in destinations"
         class="attribute-content"
         :destination-item-label="destination"
         :key="destination"
@@ -91,9 +91,9 @@
       </div>
       <el-button
         v-show="
-          entry.destinationsWithDatasets &&
-          entry.destinationsWithDatasets.length > 0 &&
-          shouldShowExploreButton(entry.destinationsWithDatasets)
+          destinationsWithDatasets &&
+          destinationsWithDatasets.length > 0 &&
+          shouldShowExploreButton(destinationsWithDatasets)
         "
         class="button"
         @click="openAxons"
@@ -103,9 +103,9 @@
     </div>
     <div
       v-show="
-        entry.componentsWithDatasets &&
-        entry.componentsWithDatasets.length > 0 &&
-        shouldShowExploreButton(entry.componentsWithDatasets)
+        componentsWithDatasets &&
+        componentsWithDatasets.length > 0 &&
+        shouldShowExploreButton(componentsWithDatasets)
       "
       class="block"
     >
@@ -160,6 +160,30 @@ export default {
         resource: undefined,
         featuresAlert: undefined,
       }),
+    },
+    origins: {
+      type: Array,
+      default: () => []
+    },
+    components: {
+      type: Array,
+      default: () => []
+    },
+    destinations: {
+      type: Array,
+      default: () => []
+    },
+    originsWithDatasets: {
+      type: Array,
+      default: () => []
+    },
+    componentsWithDatasets: {
+      type: Array,
+      default: () => []
+    },
+    destinationsWithDatasets: {
+      type: Array,
+      default: () => []
     },
     availableAnatomyFacets: {
       type: Array,
@@ -234,19 +258,19 @@ export default {
     openAll: function () {
       this.$emit('connectivity-action-click', {
         type: 'Facets',
-        labels: this.entry.componentsWithDatasets.map((a) => a.name.toLowerCase()),
+        labels: this.componentsWithDatasets.map((a) => a.name.toLowerCase()),
       })
     },
     openAxons: function () {
       this.$emit('connectivity-action-click', {
         type: 'Facets',
-        labels: this.entry.destinationsWithDatasets.map((a) => a.name.toLowerCase()),
+        labels: this.destinationsWithDatasets.map((a) => a.name.toLowerCase()),
       })
     },
     openDendrites: function () {
       this.$emit('connectivity-action-click', {
         type: 'Facets',
-        labels: this.entry.originsWithDatasets.map((a) => a.name.toLowerCase()),
+        labels: this.originsWithDatasets.map((a) => a.name.toLowerCase()),
       })
     },
   }
