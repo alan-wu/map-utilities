@@ -160,6 +160,10 @@ export default {
       type: Array,
       default: [],
     },
+    connectivityFromMap: {
+      type: Object,
+      default: () => null,
+    },
   },
   data: function () {
     return {
@@ -183,6 +187,27 @@ export default {
       timeoutID: undefined,
       connectivityGraphContainer: null,
     };
+  },
+  watch: {
+    connectivityFromMap: function (oldVal, newVal) {
+      if (oldVal != newVal) {
+        this.run()
+          .then((res) => {
+            if (res?.success) {
+              this.showGraph(this.entry);
+            } else if (res?.error) {
+              this.loadingError = res.error;
+            } else {
+              this.loadingError = 'Loading error!';
+            }
+            this.hideSpinner();
+          })
+          .catch((error) => {
+            this.loadingError = 'Loading error!';
+            this.hideSpinner();
+          });
+      }
+    }
   },
   mounted() {
     this.showSpinner();
@@ -306,7 +331,16 @@ export default {
       const graphCanvas = this.$refs.graphCanvas;
 
       this.connectivityGraph = new ConnectivityGraph(this.labelCache, graphCanvas);
-      await this.connectivityGraph.addConnectivity(this.knowledgeByPath.get(neuronPath));
+      const connectivityInfo = this.knowledgeByPath.get(neuronPath);
+
+      if (this.connectivityFromMap) {
+        connectivityInfo.axons = this.connectivityFromMap.axons;
+        connectivityInfo.connectivity = this.connectivityFromMap.connectivity;
+        connectivityInfo.dendrites = this.connectivityFromMap.dendrites;
+        connectivityInfo.somas = this.connectivityFromMap.somas;
+      }
+
+      await this.connectivityGraph.addConnectivity(connectivityInfo);
 
       this.connectivityGraph.showConnectivity(graphCanvas);
 
