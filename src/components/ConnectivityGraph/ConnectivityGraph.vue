@@ -191,6 +191,7 @@ export default {
   watch: {
     connectivityFromMap: function (oldVal, newVal) {
       if (oldVal != newVal) {
+        this.showSpinner();
         this.start();
       }
     }
