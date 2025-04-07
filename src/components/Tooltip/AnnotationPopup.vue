@@ -65,7 +65,7 @@
             </div>
           </template>
         </template>
-        <template v-if="authenticated || offlineAnnotate">
+        <template v-if="authenticated || offlineAnnotationEnabled">
           <template v-if="isEditable">
             <el-row class="dialog-spacer"></el-row>
             <el-row v-if="!editing">
@@ -217,7 +217,7 @@ export default {
     updatedCopyContent: function () {
       return this.getUpdateCopyContent();
     },
-    offlineAnnotate: function () {
+    offlineAnnotationEnabled: function () {
       return this.annotationEntry["offline"];
     },
   },
@@ -265,9 +265,9 @@ export default {
       return new Date(dateString).toLocaleDateString(undefined, options);
     },
     updatePrevSubmissions: function () {
-      if (this.offlineAnnotate) {
-        const offlineAnnotation = JSON.parse(sessionStorage.getItem('offline-annotation')) || [];
-        this.prevSubs = offlineAnnotation.filter((offline) => {
+      if (this.offlineAnnotationEnabled) {
+        const offlineAnnotations = JSON.parse(sessionStorage.getItem('offline-annotation')) || [];
+        this.prevSubs = offlineAnnotations.filter((offline) => {
           return (
             offline.resource === this.annotationEntry.resourceId &&
             offline.item.id === this.annotationEntry.featureId
