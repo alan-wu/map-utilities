@@ -319,9 +319,16 @@ export default {
     showGraph: async function (neuronPath) {
       const graphCanvas = this.$refs.graphCanvas;
 
+      // Update label data
+      if (this.connectivityFromMap) {
+        this.cacheLabels(this.connectivityFromMap);
+        await this.getCachedTermLabels();
+      }
+
       this.connectivityGraph = new ConnectivityGraph(this.labelCache, graphCanvas);
       const connectivityInfo = this.knowledgeByPath.get(neuronPath);
 
+      // Update connectivity
       if (this.connectivityFromMap) {
         connectivityInfo.axons = this.connectivityFromMap.axons;
         connectivityInfo.connectivity = this.connectivityFromMap.connectivity;
