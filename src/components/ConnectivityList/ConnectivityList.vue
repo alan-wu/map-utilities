@@ -16,7 +16,6 @@
           <span style="word-break: keep-all">
             <i>Origin</i> {{ originDescription }}
           </span>
-
         </el-popover>
       </div>
       <div
