@@ -1,13 +1,19 @@
 <template>
   <div v-if="entry" class="main" v-loading="loading">
-    <div v-if="tooltipEntry.length > 1">
+    <div v-if="tooltipEntry.length > 1" class="toggle-button">
       <el-popover
         width="auto"
         trigger="hover"
         :teleported="false"
       >
         <template #reference>
-          <el-button class="button" @click="previous">Previous</el-button>
+          <el-button 
+            class="button" 
+            @click="previous" 
+            :disabled="this.entryIndex === 0"
+          >
+            Previous
+          </el-button>
         </template>
         <span>{{ previousLabel }}</span>
       </el-popover>
@@ -17,7 +23,13 @@
         :teleported="false"
       >
         <template #reference>
-          <el-button class="button" @click="next">Next</el-button>
+          <el-button 
+            class="button" 
+            @click="next" 
+            :disabled="this.entryIndex === this.tooltipEntry.length - 1"
+          >
+            Next
+          </el-button>
         </template>
         <span>{{ nextLabel }}</span>
       </el-popover>
@@ -264,13 +276,13 @@ export default {
     },
     previousLabel: function () {
       if (this.entryIndex === 0) {
-        return "This is the first item"
+        return "This is the first item. Click 'Next' to see more information."
       }
       return this.tooltipEntry[this.entryIndex - 1]?.title
     },
     nextLabel: function () {
       if (this.entryIndex === this.tooltipEntry.length - 1) {
-        return "This is the last item"
+        return "This is the last item. Click 'Previous' to see more information."
       }
       return this.tooltipEntry[this.entryIndex + 1]?.title
     }
@@ -324,6 +336,17 @@ export default {
 .display {
   width: 44px;
   word-break: normal;
+}
+
+.toggle-button {
+  display: flex;
+  justify-content: space-between;
+
+  .is-disabled {
+    color: #fff !important;
+    background-color: #ac76c5 !important;
+    border: 1px solid #ac76c5 !important;
+  }
 }
 
 .title {
