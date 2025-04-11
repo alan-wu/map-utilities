@@ -25,6 +25,43 @@ import cytoscape from 'cytoscape'
 
 //==============================================================================
 
+const inArray = function (ar1, ar2) {
+    if (!ar1 || !ar2) return false
+    let as1 = JSON.stringify(ar1)
+    let as2 = JSON.stringify(ar2)
+    return as1.indexOf(as2) !== -1
+}
+
+const removeDuplicates = function (arrayOfAnything) {
+    if (!arrayOfAnything) return []
+    return [...new Set(arrayOfAnything.map((e) => JSON.stringify(e)))].map((e) =>
+      JSON.parse(e)
+    )
+}
+
+const findComponents = function (knowledge, axons, dendrites) {
+    let dnodes = knowledge.connectivity.flat() // get nodes from edgelist
+    let nodes = removeDuplicates(dnodes)
+
+    let found = []
+    let terminal = false
+    nodes.forEach((node) => {
+      terminal = false
+      // Check if the node is an destination or origin (note that they are labelled dendrite and axon as opposed to origin and destination)
+      if (inArray(axons, node)) {
+        terminal = true
+      }
+      if (inArray(dendrites, node)) {
+        terminal = true
+      }
+      if (!terminal) {
+        found.push(node)
+      }
+    })
+
+    return found
+  }
+
 export class ConnectivityGraph extends EventTarget
 {
     cyg = null
@@ -46,10 +83,23 @@ export class ConnectivityGraph extends EventTarget
     async addConnectivity(knowledge)
     //=====================================================
     {
-        this.axons = knowledge.axons.map(node => JSON.stringify(node))
-        this.dendrites = knowledge.dendrites.map(node => JSON.stringify(node))
-        if (knowledge.somas?.length) {
-            this.somas = knowledge.somas.map(node => JSON.stringify(node))
+        const sourceKey = ["ilxtr:hasSomaLocatedIn"]
+        const destinationKey = ["ilxtr:hasAxonPresynapticElementIn", "ilxtr:hasAxonSensorySubcellularElementIn"]
+
+        const source = []
+        const destination = []
+        sourceKey.forEach((key)=>{
+          source.push(...knowledge["node-phenotypes"][key])
+        })
+        destinationKey.forEach((key)=>{
+          destination.push(...knowledge["node-phenotypes"][key])
+        })
+        const via = findComponents(knowledge, source, destination)
+
+        this.dendrites = source.map(node => JSON.stringify(node))
+        this.axons = destination.map(node => JSON.stringify(node))
+        if (via?.length) {
+            this.somas = via.map(node => JSON.stringify(node))
         }
         if (knowledge.connectivity.length) {
             for (const edge of knowledge.connectivity) {
@@ -160,7 +210,6 @@ export class ConnectivityGraph extends EventTarget
     {
         return [
             ...this.dendrites,
-            ...this.somas
         ]
     }
 
@@ -181,14 +230,11 @@ export class ConnectivityGraph extends EventTarget
             label: label.join('\n')
         }
         if (this.axons.includes(id)) {
-            if (this.dendrites.includes(id) || this.somas.includes(id)) {
-                result['both-a-d'] = true
-            } else {
-                result['axon'] = true
-            }
-        } else if (this.dendrites.includes(id) || this.somas.includes(id)) {
+            result['axon'] = true
+        } else if (this.dendrites.includes(id)) {
             result['dendrite'] = true
-
+        } else {
+            result['somas'] = true
         }
         return result
     }
@@ -241,7 +287,7 @@ const GRAPH_STYLE = [
         }
     },
     {
-        'selector': 'node[both-a-d]',
+        'selector': 'node[somas]',
         'style': {
             // 'background-color': 'gray',
             'shape': 'round-rectangle',
