@@ -45,7 +45,21 @@
       class="block"
     >
       <div class="attribute-title-container">
-        <div class="attribute-title">Components</div>
+        <span class="attribute-title">Components</span>
+        <el-popover
+          width="250"
+          trigger="hover"
+          :teleported="false"
+          popper-class="popover-origin-help"
+        >
+          <template #reference>
+            <el-icon class="info"><el-icon-warning /></el-icon>
+          </template>
+          <span style="word-break: keep-all">
+            The list is not in any specific order.<br>
+            Specific paths can be viewed using Graph View.
+          </span>
+        </el-popover>
       </div>
       <div
         v-for="(component, i) in components"
