@@ -1,15 +1,11 @@
 <template>
   <div v-if="entry" class="main" v-loading="loading">
     <div v-if="tooltipEntry.length > 1" class="toggle-button">
-      <el-popover
-        width="auto"
-        trigger="hover"
-        :teleported="false"
-      >
+      <el-popover width="auto" trigger="hover" :teleported="false">
         <template #reference>
-          <el-button 
-            class="button" 
-            @click="previous" 
+          <el-button
+            class="button"
+            @click="previous"
             :disabled="this.entryIndex === 0"
           >
             Previous
@@ -17,15 +13,11 @@
         </template>
         <span>{{ previousLabel }}</span>
       </el-popover>
-      <el-popover
-        width="auto"
-        trigger="hover"
-        :teleported="false"
-      >
+      <el-popover width="auto" trigger="hover" :teleported="false">
         <template #reference>
-          <el-button 
-            class="button" 
-            @click="next" 
+          <el-button
+            class="button"
+            @click="next"
             :disabled="this.entryIndex === this.tooltipEntry.length - 1"
           >
             Next
@@ -85,141 +77,47 @@
     </div>
     <transition name="slide-fade">
       <div v-show="showDetails" class="content-container scrollbar">
-        {{ entry.paths }}
-        <div v-if="entry.origins && entry.origins.length > 0" class="block">
-          <div class="attribute-title-container">
-            <span class="attribute-title">Origin</span>
-            <el-popover
-              width="250"
-              trigger="hover"
-              :teleported="false"
-              popper-class="popover-origin-help"
-            >
-              <template #reference>
-                <el-icon class="info"><el-icon-warning /></el-icon>
-              </template>
-              <span style="word-break: keep-all">
-                <i>Origin</i> {{ originDescription }}
-              </span>
-            </el-popover>
-          </div>
-          <div
-            v-for="(origin, i) in entry.origins"
-            class="attribute-content"
-            :origin-item-label="origin"
-            :key="origin"
-          >
-            {{ capitalise(origin) }}
-            <div v-if="i != entry.origins.length - 1" class="separator"></div>
-          </div>
-          <el-button
-            v-show="
-              entry.originsWithDatasets && entry.originsWithDatasets.length > 0
-            "
-            class="button"
-            id="open-dendrites-button"
-            @click="openDendrites"
-          >
-            Explore origin data
-          </el-button>
-        </div>
-        <div
-          v-if="entry.components && entry.components.length > 0"
-          class="block"
-        >
-          <div class="attribute-title-container">
-            <div class="attribute-title">Components</div>
-          </div>
-          <div
-            v-for="(component, i) in entry.components"
-            class="attribute-content"
-            :component-item-label="component"
-            :key="component"
-          >
-            {{ capitalise(component) }}
-            <div
-              v-if="i != entry.components.length - 1"
-              class="separator"
-            ></div>
-          </div>
-        </div>
-        <div
-          v-if="entry.destinations && entry.destinations.length > 0"
-          class="block"
-        >
-          <div class="attribute-title-container">
-            <span class="attribute-title">Destination</span>
-            <el-popover
-              width="250"
-              trigger="hover"
-              :teleported="false"
-              popper-class="popover-origin-help"
-            >
-              <template #reference>
-                <el-icon class="info"><el-icon-warning /></el-icon>
-              </template>
-              <span style="word-break: keep-all">
-                <i>Destination</i> is where the axons terminate
-              </span>
-            </el-popover>
-          </div>
-          <div
-            v-for="(destination, i) in entry.destinations"
-            class="attribute-content"
-            :destination-item-label="destination"
-            :key="destination"
-          >
-            {{ capitalise(destination) }}
-            <div
-              v-if="i != entry.destinations.length - 1"
-              class="separator"
-            ></div>
-          </div>
-          <el-button
-            v-show="
-              entry.destinationsWithDatasets &&
-              entry.destinationsWithDatasets.length > 0
-            "
-            class="button"
-            @click="openAxons"
-          >
-            Explore destination data
-          </el-button>
-        </div>
-
-        <el-button
-          v-show="
-            entry.componentsWithDatasets &&
-            entry.componentsWithDatasets.length > 0
-          "
-          class="button"
-          @click="openAll"
-        >
-          Search for data on components
-        </el-button>
-
-        <external-resource-card :resources="resources" v-if="resources.length"></external-resource-card>
+        <connectivity-list
+          :key="entry.featureId[0]"
+          :entry="entry"
+          :origins="origins"
+          :components="components"
+          :destinations="destinations"
+          :originsWithDatasets="originsWithDatasets"
+          :componentsWithDatasets="componentsWithDatasets"
+          :destinationsWithDatasets="destinationsWithDatasets"
+          :availableAnatomyFacets="availableAnatomyFacets"
+          @connectivity-action-click="onConnectivityActionClick"
+        />
+        <external-resource-card
+          v-if="resources.length"
+          :resources="resources"
+        />
       </div>
     </transition>
   </div>
 </template>
 
 <script>
+import {
+  ArrowUp as ElIconArrowUp,
+  ArrowDown as ElIconArrowDown,
+  Warning as ElIconWarning,
+} from "@element-plus/icons-vue";
 import EventBus from "../EventBus.js";
-
-const titleCase = (str) => {
-  return str.replace(/\w\S*/g, (t) => {
-    return t.charAt(0).toUpperCase() + t.substr(1).toLowerCase();
-  });
-};
-
-const capitalise = function (str) {
-  if (str) return str.charAt(0).toUpperCase() + str.slice(1);
-  return "";
-};
+import ConnectivityList from "../ConnectivityList/ConnectivityList.vue";
+import ExternalResourceCard from "./ExternalResourceCard.vue";
+import { capitalise, titleCase } from "../utilities.js";
 
 export default {
   name: "ProvenancePopup",
+  components: {
+    ElIconArrowUp,
+    ElIconArrowDown,
+    ElIconWarning,
+    ConnectivityList,
+    ExternalResourceCard,
+  },
   props: {
     tooltipEntry: {
       type: Array,
@@ -228,42 +126,31 @@ export default {
   },
   data: function () {
     return {
-      controller: undefined,
-      activeSpecies: undefined,
-      pubmedSearchUrl: "",
       loading: false,
-      showToolip: false,
       showDetails: false,
       originDescriptions: {
         motor: "is the location of the initial cell body of the circuit",
         sensory: "is the location of the initial cell body in the PNS circuit",
       },
-      componentsWithDatasets: [],
-      uberons: [{ id: undefined, name: undefined }],
-      entryIndex: 0
+      entryIndex: 0,
+      availableAnatomyFacets: [],
     };
   },
   computed: {
     entry: function () {
       return this.tooltipEntry[this.entryIndex];
     },
-    resources: function () {
-      let resources = [];
-      if (this.entry && this.entry.hyperlinks) {
-        resources = this.entry.hyperlinks;
+    previousLabel: function () {
+      if (this.entryIndex === 0) {
+        return "This is the first item. Click 'Next' to see more information.";
       }
-      return resources;
+      return this.tooltipEntry[this.entryIndex - 1]?.title;
     },
-    originDescription: function () {
-      if (
-        this.entry &&
-        this.entry.title &&
-        this.entry.title.toLowerCase().includes("motor")
-      ) {
-        return this.originDescriptions.motor;
-      } else {
-        return this.originDescriptions.sensory;
+    nextLabel: function () {
+      if (this.entryIndex === this.tooltipEntry.length - 1) {
+        return "This is the last item. Click 'Previous' to see more information.";
       }
+      return this.tooltipEntry[this.entryIndex + 1]?.title;
     },
     provSpeciesDescription: function () {
       let text = "Studied in";
@@ -274,18 +161,30 @@ export default {
       text += " species";
       return text;
     },
-    previousLabel: function () {
-      if (this.entryIndex === 0) {
-        return "This is the first item. Click 'Next' to see more information."
-      }
-      return this.tooltipEntry[this.entryIndex - 1]?.title
+    origins: function () {
+      return this.entry.origins;
     },
-    nextLabel: function () {
-      if (this.entryIndex === this.tooltipEntry.length - 1) {
-        return "This is the last item. Click 'Previous' to see more information."
-      }
-      return this.tooltipEntry[this.entryIndex + 1]?.title
-    }
+    components: function () {
+      return this.entry.components;
+    },
+    destinations: function () {
+      return this.entry.destinations;
+    },
+    originsWithDatasets: function () {
+      return this.entry.originsWithDatasets;
+    },
+    componentsWithDatasets: function () {
+      return this.entry.componentsWithDatasets;
+    },
+    destinationsWithDatasets: function () {
+      return this.entry.destinationsWithDatasets;
+    },
+    resources: function () {
+      return this.entry.hyperlinks;
+    },
+  },
+  mounted: function () {
+    this.loadAvailableAnatomyFacets();
   },
   methods: {
     previous: function () {
@@ -304,40 +203,24 @@ export default {
     capitalise: function (text) {
       return capitalise(text);
     },
-    openUrl: function (url) {
-      window.open(url, "_blank");
+    onConnectivityActionClick: function (data) {
+      EventBus.emit("onActionClick", data);
     },
-    openAll: function () {
-      EventBus.emit("onActionClick", {
-        type: "Facets",
-        labels: this.entry.componentsWithDatasets.map((a) => a.name),
-      });
-    },
-    openAxons: function () {
-      EventBus.emit("onActionClick", {
-        type: "Facets",
-        labels: this.entry.destinationsWithDatasets.map((a) => a.name),
-      });
-    },
-    openDendrites: function () {
-      EventBus.emit("onActionClick", {
-        type: "Facets",
-        labels: this.entry.originsWithDatasets.map((a) => a.name),
-      });
-    },
-    pubmedSearchUrlUpdate: function (val) {
-      this.pubmedSearchUrl = val;
+    // Load available anatomy facets from the local storage if available.
+    // The data is from Algolia in Sidebar.
+    loadAvailableAnatomyFacets: function () {
+      const availableAnatomyFacets = localStorage.getItem(
+        "available-anatomy-facets"
+      );
+      if (availableAnatomyFacets) {
+        this.availableAnatomyFacets = JSON.parse(availableAnatomyFacets);
+      }
     },
   },
 };
 </script>
 
 <style lang="scss" scoped>
-.display {
-  width: 44px;
-  word-break: normal;
-}
-
 .toggle-button {
   display: flex;
   justify-content: space-between;
@@ -368,41 +251,10 @@ export default {
   }
 }
 
-.pub {
-  width: 16rem;
-}
-
-.icon {
-  right: 0px;
-  position: absolute;
-  top: 10px;
-}
-
-.icon:hover {
-  cursor: pointer;
-}
-
-:deep(.popover-origin-help.el-popover) {
-  text-transform: none !important; // need to overide the tooltip text transform
-  border: 1px solid $app-primary-color;
-  .el-popper__arrow {
-    &:before {
-      border-color: $app-primary-color;
-      background-color: #ffffff;
-    }
-  }
-}
-
 .info {
   transform: rotate(180deg);
   color: #8300bf;
   margin-left: 8px;
-}
-
-.separator {
-  width: 90%;
-  height: 1px;
-  background-color: #bfbec2;
 }
 
 .hide {
@@ -410,17 +262,6 @@ export default {
   cursor: pointer;
   margin-right: 6px;
   margin-top: 3px;
-}
-
-.slide-fade-enter-active {
-  transition: opacity 0.5s, transform 0.5s;
-}
-.slide-fade-leave-active {
-  transition: opacity 0.2s, transform 0.2s;
-}
-.slide-fade-enter, .slide-fade-leave-to /* .slide-fade-leave-active in <2.1.8 */ {
-  opacity: 0;
-  transform: translateY(-8px);
 }
 
 .main {
@@ -455,11 +296,6 @@ export default {
   }
 }
 
-.popover-container {
-  height: 100%;
-  width: 100%;
-}
-
 .main {
   .el-button.is-round {
     border-radius: 4px;
@@ -475,34 +311,15 @@ export default {
   font-size: 14px !important;
   background-color: $app-primary-color;
   color: #fff;
+
   & + .button {
     margin-top: 10px !important;
   }
+
   &:hover {
     color: #fff !important;
     background: #ac76c5 !important;
     border: 1px solid #ac76c5 !important;
-  }
-}
-
-.tooltip-container {
-  &::after,
-  &::before {
-    content: "";
-    display: block;
-    position: absolute;
-    width: 0;
-    height: 0;
-    border-style: solid;
-    flex-shrink: 0;
-  }
-  .tooltip {
-    &::after {
-      display: none;
-    }
-    &::before {
-      display: none;
-    }
   }
 }
 
@@ -513,10 +330,12 @@ export default {
       top: 100%;
       border-width: 12px;
     }
+
     &::after {
       margin-top: -1px;
       border-color: rgb(255, 255, 255) transparent transparent transparent;
     }
+
     &::before {
       margin: 0 auto;
       border-color: $app-primary-color transparent transparent transparent;
@@ -531,10 +350,12 @@ export default {
       top: -24px;
       border-width: 12px;
     }
+
     &::after {
       margin-top: 1px;
       border-color: transparent transparent rgb(255, 255, 255) transparent;
     }
+
     &::before {
       margin: 0 auto;
       border-color: transparent transparent $app-primary-color transparent;
@@ -549,6 +370,10 @@ export default {
 
   .block {
     padding-top: 0.5em;
+  }
+
+  .connectivity-list {
+    padding-top: 1rem;
   }
 }
 
@@ -567,11 +392,5 @@ export default {
   border-radius: 4px;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.06);
   background-color: #979797;
-}
-
-/* Fix for chrome bug where under triangle pops up above one on top of it  */
-.selector:not(*:root),
-.tooltip-container::after {
-  top: 99.4%;
 }
 </style>
