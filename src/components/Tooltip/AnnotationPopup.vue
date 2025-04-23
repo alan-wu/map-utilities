@@ -469,14 +469,14 @@ export default {
   },
   watch: {
     entry: {
+      deep: true,
+      immediate: true,
       handler: function (newVal, oldVal) {
         if (newVal !== oldVal) {
           this.resetSubmission();
           this.updatePrevSubmissions();
         }
       },
-      immediate: false,
-      deep: false,
     },
   },
   mounted: function () {
