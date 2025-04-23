@@ -39,13 +39,16 @@ const drawnTypes = [
   { value: "None", label: "None" },
 ];
 const showConnectivityGraph = ref(false);
-const connectivityGraphEntry = "ilxtr:neuron-type-aacar-13";
-// const connectivityGraphEntry = "ilxtr:sparc-nlp/kidney/134";
-// const connectivityGraphEntry = "ilxtr:neuron-type-aacar-11";
-// const connectivityGraphEntry = "ilxtr:neuron-type-sstom-14";
-// const connectivityGraphEntry = "ilxtr:neuron-type-keast-6";
-// const connectivityGraphEntry = "ilxtr:neuron-type-aacar-4";
-// const connectivityGraphEntry = "ilxtr:neuron-type-aacar-12";
+const connectivityGraphEntry = ref("ilxtr:neuron-type-aacar-13");
+const connectivityGraphEntries = [
+  "ilxtr:neuron-type-aacar-13",
+  "ilxtr:sparc-nlp/kidney/134",
+  "ilxtr:neuron-type-aacar-11",
+  "ilxtr:neuron-type-sstom-14",
+  "ilxtr:neuron-type-keast-6",
+  "ilxtr:neuron-type-aacar-4",
+  "ilxtr:neuron-type-aacar-12",
+];
 const mapServer = "https://mapcore-demo.org/curation/flatmap/";
 const sckanVersion = "sckan-2024-09-21-npo";
 
@@ -479,10 +482,24 @@ function confirmCreate(value) {
         >
           Hide connectivity graph
         </el-button>
+        <el-select
+          v-model="connectivityGraphEntry"
+          placeholder="Select featureId"
+          style="width: 180px"
+          size="small"
+        >
+          <el-option
+            v-for="item in connectivityGraphEntries"
+            :key="item"
+            :label="item"
+            :value="item"
+          />
+        </el-select>
       </el-col>
       <el-col>
         <ConnectivityGraph
           v-if="showConnectivityGraph"
+          :key="connectivityGraphEntry"
           :entry="connectivityGraphEntry"
           :map-server="mapServer"
           :sckanVersion="sckanVersion"
@@ -590,5 +607,8 @@ function confirmCreate(value) {
   width: 600px;
   height: 600px;
   margin-top: 1rem;
+}
+.el-button + .el-select {
+  margin-left: 12px;
 }
 </style>
