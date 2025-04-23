@@ -498,6 +498,7 @@ export default {
 .toggle-button {
   display: flex;
   justify-content: space-between;
+  margin-bottom: 30px;
 
   .is-disabled {
     color: #fff !important;
