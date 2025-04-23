@@ -26,7 +26,7 @@ export default {
       default: false,
     },
     annotationEntry: {
-      type: Object,
+      type: Array,
     },
   },
   mounted: function() {
