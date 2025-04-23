@@ -19,6 +19,8 @@ limitations under the License.
 ==============================================================================*/
 
 import cytoscape from 'cytoscape'
+import dagre from 'cytoscape-dagre'
+cytoscape.use( dagre );
 
 //==============================================================================
 
@@ -264,7 +266,7 @@ export class ConnectivityGraph extends EventTarget
                 }
             } else if (this.dendrites.includes(id) || this.somas.includes(id)) {
                 result['dendrite'] = true
-    
+
             }
         }
         return result
@@ -406,12 +408,11 @@ class CytoscapeGraph extends EventTarget
             container: graphCanvas,
             elements: connectivityGraph.elements,
             layout: {
-                name: 'breadthfirst',
-                directed: true,
-                depthSort: function (a, b) {
-                    // TODO: to sort based on connections
-                    return a.data('id') - b.data('id');
-                },
+                name: 'dagre',
+                nodeSep: 150,
+                edgeSep: 50,
+                rankSep: 100,
+                rankDir: 'TB',
                 roots: connectivityGraph.roots.length ? connectivityGraph.roots : undefined,
             },
             style: GRAPH_STYLE,
