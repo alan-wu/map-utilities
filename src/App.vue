@@ -480,6 +480,14 @@ function confirmCreate(value) {
           Hide connectivity graph
         </el-button>
       </el-col>
+      <el-col>
+        <ConnectivityGraph
+          v-if="showConnectivityGraph"
+          :entry="connectivityGraphEntry"
+          :map-server="mapServer"
+          :sckanVersion="sckanVersion"
+        />
+      </el-col>
     </el-row>
 
     <DrawToolbar
@@ -549,12 +557,6 @@ function confirmCreate(value) {
       :showColourPicker="true"
       @setColour="setColour"
       @checkChanged="checkChanged"
-    />
-    <ConnectivityGraph
-      v-if="showConnectivityGraph"
-      :entry="connectivityGraphEntry"
-      :map-server="mapServer"
-      :sckanVersion="sckanVersion"
     />
   </div>
 </template>
