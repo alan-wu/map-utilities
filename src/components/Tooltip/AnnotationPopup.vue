@@ -41,7 +41,7 @@
               <strong class="sub-title">Previous submissions:</strong>
             </el-row>
             <div class="entry" v-for="(sub, index) in prevSubs" :key="index">
-              <el-row class="dialog-text">
+              <el-row class="dialog-text" v-if="sub.creator">
                 <strong>{{ formatTime(sub.created) }}</strong>
                 {{ sub.creator.name }}
               </el-row>
@@ -65,7 +65,7 @@
             </div>
           </template>
         </template>
-        <template v-if="authenticated">
+        <template v-if="authenticated || offlineAnnotationEnabled">
           <template v-if="isEditable">
             <el-row class="dialog-spacer"></el-row>
             <el-row v-if="!editing">
@@ -217,6 +217,9 @@ export default {
     updatedCopyContent: function () {
       return this.getUpdateCopyContent();
     },
+    offlineAnnotationEnabled: function () {
+      return this.annotationEntry["offline"];
+    },
   },
   methods: {
     processEvidences: function(sub) {
@@ -262,7 +265,15 @@ export default {
       return new Date(dateString).toLocaleDateString(undefined, options);
     },
     updatePrevSubmissions: function () {
-      if (this.$annotator && this.authenticated) {
+      if (this.offlineAnnotationEnabled) {
+        const offlineAnnotations = JSON.parse(sessionStorage.getItem('offline-annotation')) || [];
+        this.prevSubs = offlineAnnotations.filter((offline) => {
+          return (
+            offline.resource === this.annotationEntry.resourceId &&
+            offline.item.id === this.annotationEntry.featureId
+          )
+        });
+      } else if (this.$annotator && this.authenticated) {
         if (
           this.annotationEntry["resourceId"] &&
           this.annotationEntry["featureId"]
@@ -342,7 +353,6 @@ export default {
           this.$annotator
             ?.addAnnotation(this.userApiKey, userAnnotation)
             .then(() => {
-              this.$emit("annotation", userAnnotation);
               this.errorMessage = "";
               this.resetSubmission();
               this.updatePrevSubmissions();
@@ -351,6 +361,7 @@ export default {
               this.errorMessage =
                 "There is a problem with the submission, please try again later";
             });
+          this.$emit("annotation", userAnnotation);
         }
       }
     },
@@ -396,9 +407,11 @@ export default {
       if (this.prevSubs.length) {
         let annotationContent = '<div><strong>Annotations:</strong></div>\n<br>';
         this.prevSubs.map((sub, index) => {
-          annotationContent += `<div><strong>Created:</strong>${this.formatTime(sub.created)}</div>\n<br>`;
-          annotationContent += `<div><strong>Creator:</strong>${sub.creator.name}</div>\n<br>`;
-          annotationContent += `<div><strong>Email:</strong>${sub.creator.email}</div>\n<br>`;
+          if (sub.creator) {
+            annotationContent += `<div><strong>Created:</strong>${this.formatTime(sub.created)}</div>\n<br>`;
+            annotationContent += `<div><strong>Creator:</strong>${sub.creator.name}</div>\n<br>`;
+            annotationContent += `<div><strong>Email:</strong>${sub.creator.email}</div>\n<br>`;
+          }
           if (sub.body.evidence.length) {
             let evidenceContent = '';
             sub.body.evidence.forEach((evi, index) => {
@@ -433,10 +446,10 @@ export default {
         this.creator = userData;
         if (!userData.orcid) this.creator.orcid = "0000-0000-0000-0000";
         this.authenticated = true;
-        this.updatePrevSubmissions();
       } else {
         this.errorMessage = "";
       }
+      this.updatePrevSubmissions();
     });
   },
 };
