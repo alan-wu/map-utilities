@@ -22,8 +22,8 @@
         v-for="reference of pubMedReferences"
         :key="reference.id"
         :class="{
-          'loading': reference.citation && !reference.citation.error && reference.citation[citationType] === '',
-          'error': reference.citation && reference.citation.error
+          'loading': isCitationLoading(reference.citation),
+          'error': isCitationError(reference.citation),
         }"
       >
         <template v-if="reference.citation">
@@ -400,6 +400,12 @@ export default {
     },
     reloadCitation: function (reference) {
       this.generateCitationText(reference, this.citationType);
+    },
+    isCitationLoading: function (citation) {
+      return citation && !citation[this.citationType] && !citation.error;
+    },
+    isCitationError: function (citation) {
+      return citation && citation.error;
     },
     updateCopyContents: function () {
       const citationTypeObj = this.citationOptions.find((item) => item.value === this.citationType);
