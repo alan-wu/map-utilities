@@ -60,7 +60,7 @@
         </template>
       </li>
 
-      <li v-for="reference of openLibReferences">
+      <li v-for="reference of openLibReferences" :key="reference.id">
         <div v-html="formatCopyReference(reference)"></div>
 
         <RelatedConnectivitiesButton
@@ -71,7 +71,7 @@
         <CopyToClipboard :content="formatCopyReference(reference)" />
       </li>
 
-      <li v-for="reference of isbnDBReferences">
+      <li v-for="reference of isbnDBReferences" :key="reference.id">
         <a :href="reference.url" target="_blank">{{ reference.url }}</a>
 
         <RelatedConnectivitiesButton
