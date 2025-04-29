@@ -128,6 +128,9 @@ const LOADING_DELAY = 600;
 
 export default {
   name: "ExternalResourceCard",
+  components: {
+    CopyToClipboard,
+  },
   props: {
     resources: {
       type: Array,
