@@ -481,7 +481,7 @@ export default {
       deep: true,
       immediate: true,
       handler: function (newVal, oldVal) {
-        if (newVal !== oldVal) {
+        if (newVal && newVal !== oldVal) {
           this.resetSubmission();
           this.updatePrevSubmissions();
         }
