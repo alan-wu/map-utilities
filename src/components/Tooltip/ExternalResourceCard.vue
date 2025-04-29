@@ -601,7 +601,7 @@ export default {
     &.loading {
       padding: 1rem;
 
-      &::before {
+      &::after {
         content: "";
         display: block;
         width: 100%;
