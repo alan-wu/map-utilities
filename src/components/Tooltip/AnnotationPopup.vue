@@ -468,6 +468,15 @@ export default {
     },
   },
   watch: {
+    annotationEntry: {
+      deep: true,
+      immediate: true,
+      handler: function (newVal, oldVal) {
+        if (newVal !== oldVal) {
+          this.entryIndex = 0;
+        }
+      },
+    },
     entry: {
       deep: true,
       immediate: true,
@@ -498,7 +507,6 @@ export default {
 .toggle-button {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 30px;
 
   .is-disabled {
     color: #fff !important;
