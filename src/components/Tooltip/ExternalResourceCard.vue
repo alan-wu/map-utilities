@@ -50,15 +50,10 @@
           <template v-else>
             <span v-html="reference.citation[citationType]"></span>
 
-            <div class="reference-button-container">
-              <el-button
-                class="reference-icon-button"
-                size="small"
-                @click="showRelatedConnectivities(reference.resource)"
-              >
-                Show related connectivities
-              </el-button>
-            </div>
+            <RelatedConnectivitiesButton
+              :resource="reference.resource"
+              @show-related-connectivities="showRelatedConnectivities"
+            />
 
             <CopyToClipboard :content="reference.citation[citationType]" />
           </template>
@@ -68,15 +63,10 @@
       <li v-for="reference of openLibReferences">
         <div v-html="formatCopyReference(reference)"></div>
 
-        <div class="reference-button-container">
-          <el-button
-            class="reference-icon-button"
-            size="small"
-            @click="showRelatedConnectivities(reference.resource)"
-          >
-            Show related connectivities
-          </el-button>
-        </div>
+        <RelatedConnectivitiesButton
+          :resource="reference.resource"
+          @show-related-connectivities="showRelatedConnectivities"
+        />
 
         <CopyToClipboard :content="formatCopyReference(reference)" />
       </li>
@@ -84,15 +74,10 @@
       <li v-for="reference of isbnDBReferences">
         <a :href="reference.url" target="_blank">{{ reference.url }}</a>
 
-        <div class="reference-button-container">
-          <el-button
-            class="reference-icon-button"
-            size="small"
-            @click="showRelatedConnectivities(reference.resource)"
-          >
-            Show related connectivities
-          </el-button>
-        </div>
+        <RelatedConnectivitiesButton
+          :resource="reference.resource"
+          @show-related-connectivities="showRelatedConnectivities"
+        />
 
         <CopyToClipboard :content="reference.url" />
       </li>
@@ -103,6 +88,7 @@
 <script>
 import CopyToClipboard from '../CopyToClipboard/CopyToClipboard.vue';
 import { delay } from '../utilities';
+import RelatedConnectivitiesButton from './RelatedConnectivitiesButton.vue';
 
 const CROSSCITE_API_HOST = 'https://citation.doi.org';
 const CITATION_OPTIONS = [
@@ -130,6 +116,7 @@ export default {
   name: "ExternalResourceCard",
   components: {
     CopyToClipboard,
+    RelatedConnectivitiesButton,
   },
   props: {
     resources: {
@@ -692,20 +679,6 @@ export default {
   color: $app-primary-color;
   text-decoration: underline;
   cursor: pointer;
-}
-
-.reference-button-container {
-  margin-top: 0.5rem;
-}
-
-.reference-icon-button {
-  color: $app-primary-color !important;
-  background-color: #f9f2fc !important;
-  border-color: $app-primary-color !important;
-
-  &:hover {
-    background-color: transparent !important;
-  }
 }
 
 @keyframes loadingAnimation {
