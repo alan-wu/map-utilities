@@ -266,7 +266,7 @@ export default {
     },
     updatePrevSubmissions: function () {
       if (this.offlineAnnotationEnabled) {
-        const offlineAnnotations = JSON.parse(sessionStorage.getItem('offline-annotation')) || [];
+        const offlineAnnotations = JSON.parse(sessionStorage.getItem('anonymous-annotation')) || [];
         this.prevSubs = offlineAnnotations.filter((offline) => {
           return (
             offline.resource === this.annotationEntry.resourceId &&
