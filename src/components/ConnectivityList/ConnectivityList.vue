@@ -26,13 +26,7 @@
         @mouseenter="onConnectivityHovered(origin)"
         @mouseleave="onConnectivityHovered()"
       >
-        <span>{{ capitalise(origin) }}</span>
-        <el-icon 
-          class="connectivity-search-icon" 
-          @click="onConnectivityClicked(entry.featureId[0], 'Origins', origin)"
-        >
-          <el-icon-search />
-        </el-icon>
+        {{ capitalise(origin) }}
       </div>
       <el-button
         v-show="
@@ -61,13 +55,7 @@
         @mouseenter="onConnectivityHovered(component)"
         @mouseleave="onConnectivityHovered()"
       >
-      <span>{{ capitalise(component) }}</span>
-        <el-icon 
-          class="connectivity-search-icon" 
-          @click="onConnectivityClicked(entry.featureId[0], 'Components', component)"
-        >
-          <el-icon-search />
-        </el-icon>
+      {{ capitalise(component) }}
       </div>
     </div>
     <div
@@ -98,13 +86,7 @@
         @mouseenter="onConnectivityHovered(destination)"
         @mouseleave="onConnectivityHovered()"
       >
-        <span>{{ capitalise(destination) }}</span>
-        <el-icon 
-          class="connectivity-search-icon" 
-          @click="onConnectivityClicked(entry.featureId[0], 'Destinations', destination)"
-        >
-          <el-icon-search />
-        </el-icon>
+        {{ capitalise(destination) }}
       </div>
       <el-button
         v-show="
@@ -362,26 +344,14 @@ export default {
 }
 
 .attribute-content {
-  display: flex;
-  justify-content: space-between;
   font-size: 14px;
   font-weight: 500;
   transition: color 0.25s ease;
   position: relative;
   cursor: default;
 
-  .connectivity-search-icon {
-    display: none;
-  }
-
   &:hover {
     color: $app-primary-color;
-
-    .connectivity-search-icon {
-      padding-top: 4px;
-      cursor: pointer;
-      display: block;
-    }
   }
 
   + .attribute-content {
