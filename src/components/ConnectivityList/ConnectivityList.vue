@@ -23,8 +23,8 @@
         class="attribute-content"
         :origin-item-label="origin"
         :key="origin"
-        @mouseenter="toggleConnectivityTooltip(origin, {show: true})"
-        @mouseleave="toggleConnectivityTooltip(origin, {show: false})"
+        @mouseenter="onConnectivityHovered(origin)"
+        @mouseleave="onConnectivityHovered()"
       >
         {{ capitalise(origin) }}
       </div>
@@ -52,10 +52,10 @@
         class="attribute-content"
         :component-item-label="component"
         :key="component"
-        @mouseenter="toggleConnectivityTooltip(component, {show: true})"
-        @mouseleave="toggleConnectivityTooltip(component, {show: false})"
+        @mouseenter="onConnectivityHovered(component)"
+        @mouseleave="onConnectivityHovered()"
       >
-        {{ capitalise(component) }}
+      {{ capitalise(component) }}
       </div>
     </div>
     <div
@@ -83,8 +83,8 @@
         class="attribute-content"
         :destination-item-label="destination"
         :key="destination"
-        @mouseenter="toggleConnectivityTooltip(destination, {show: true})"
-        @mouseleave="toggleConnectivityTooltip(destination, {show: false})"
+        @mouseenter="onConnectivityHovered(destination)"
+        @mouseleave="onConnectivityHovered()"
       >
         {{ capitalise(destination) }}
       </div>
@@ -229,11 +229,11 @@ export default {
     capitalise: function (text) {
       return capitalise(text)
     },
-    toggleConnectivityTooltip: function (name, option) {
-      this.$emit('toggle-connectivity-tooltip', {
-        name,
-        option
-      });
+    onConnectivityHovered: function (name) {
+      this.$emit('connectivity-hovered', name);
+    },
+    onConnectivityClicked: function (id, type, label) {
+      this.$emit('connectivity-clicked', { id, type, label });
     },
     // shouldShowExploreButton: Checks if the feature is in the list of available anatomy facets
     shouldShowExploreButton: function (features) {
