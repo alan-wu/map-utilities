@@ -573,8 +573,8 @@ export default {
   border-color: var(--el-color-primary-light-5);
   border-radius: 1rem;
   position: absolute;
-  right: calc(50vw - 100px);
-  bottom: 16px;
+  right: 30%;
+  bottom: 1rem;
   z-index: 10;
 }
 
