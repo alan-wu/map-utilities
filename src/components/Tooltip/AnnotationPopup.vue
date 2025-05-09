@@ -260,7 +260,10 @@ export default {
       return this.getUpdateCopyContent();
     },
     offlineAnnotationEnabled: function () {
-      return this.annotationEntry["offline"];
+      if (this.entry) {
+        return this.entry["offline"];
+      }
+      return false;
     },
   },
   methods: {
@@ -321,8 +324,8 @@ export default {
         const offlineAnnotations = JSON.parse(sessionStorage.getItem('anonymous-annotation')) || [];
         this.prevSubs = offlineAnnotations.filter((offline) => {
           return (
-            offline.resource === this.annotationEntry.resourceId &&
-            offline.item.id === this.annotationEntry.featureId
+            offline.resource === this.entry.resourceId &&
+            offline.item.id === this.entry.featureId
           )
         });
       } else if (this.$annotator && this.authenticated) {
