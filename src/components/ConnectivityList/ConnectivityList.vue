@@ -237,6 +237,10 @@ export default {
     },
     // shouldShowExploreButton: Checks if the feature is in the list of available anatomy facets
     shouldShowExploreButton: function (features) {
+      // facetList will not be available when there has no Sidebar's data
+      if (!this.facetList.length) {
+        return true
+      }
       for (let i = 0; i < features.length; i++) {
         if (this.facetList.includes(features[i].name.toLowerCase())) {
           return true
