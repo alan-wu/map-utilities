@@ -183,6 +183,17 @@ export default {
       return this.entry.hyperlinks;
     },
   },
+  watch: {
+    tooltipEntry: {
+      deep: true,
+      immediate: true,
+      handler: function (newVal, oldVal) {
+        if (newVal !== oldVal) {
+          this.entryIndex = 0;
+        }
+      },
+    },
+  },
   mounted: function () {
     this.loadAvailableAnatomyFacets();
   },

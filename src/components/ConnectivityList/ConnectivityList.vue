@@ -23,10 +23,16 @@
         class="attribute-content"
         :origin-item-label="origin"
         :key="origin"
-        @mouseenter="toggleConnectivityTooltip(origin, {show: true})"
-        @mouseleave="toggleConnectivityTooltip(origin, {show: false})"
+        @mouseenter="onConnectivityHovered(origin)"
+        @mouseleave="onConnectivityHovered()"
       >
-        {{ capitalise(origin) }}
+        <span>{{ capitalise(origin) }}</span>
+        <el-icon 
+          class="connectivity-search-icon" 
+          @click="onConnectivityClicked(origin)"
+        >
+          <el-icon-search />
+        </el-icon>
       </div>
       <el-button
         v-show="
@@ -52,10 +58,16 @@
         class="attribute-content"
         :component-item-label="component"
         :key="component"
-        @mouseenter="toggleConnectivityTooltip(component, {show: true})"
-        @mouseleave="toggleConnectivityTooltip(component, {show: false})"
+        @mouseenter="onConnectivityHovered(component)"
+        @mouseleave="onConnectivityHovered()"
       >
-        {{ capitalise(component) }}
+      <span>{{ capitalise(component) }}</span>
+        <el-icon 
+          class="connectivity-search-icon" 
+          @click="onConnectivityClicked(component)"
+        >
+          <el-icon-search />
+        </el-icon>
       </div>
     </div>
     <div
@@ -83,10 +95,16 @@
         class="attribute-content"
         :destination-item-label="destination"
         :key="destination"
-        @mouseenter="toggleConnectivityTooltip(destination, {show: true})"
-        @mouseleave="toggleConnectivityTooltip(destination, {show: false})"
+        @mouseenter="onConnectivityHovered(destination)"
+        @mouseleave="onConnectivityHovered()"
       >
-        {{ capitalise(destination) }}
+        <span>{{ capitalise(destination) }}</span>
+        <el-icon 
+          class="connectivity-search-icon" 
+          @click="onConnectivityClicked(destination)"
+        >
+          <el-icon-search />
+        </el-icon>
       </div>
       <el-button
         v-show="
@@ -130,6 +148,7 @@
 <script>
 import {
   Warning as ElIconWarning,
+  Search as ElIconSearch,
 } from '@element-plus/icons-vue'
 import {
   ElButton as Button,
@@ -145,6 +164,7 @@ export default {
     Container,
     Icon,
     ElIconWarning,
+    ElIconSearch
   },
   props: {
     entry: {
@@ -229,14 +249,18 @@ export default {
     capitalise: function (text) {
       return capitalise(text)
     },
-    toggleConnectivityTooltip: function (name, option) {
-      this.$emit('toggle-connectivity-tooltip', {
-        name,
-        option
-      });
+    onConnectivityHovered: function (name) {
+      this.$emit('connectivity-hovered', name);
+    },
+    onConnectivityClicked: function (name) {
+      this.$emit('connectivity-clicked', name);
     },
     // shouldShowExploreButton: Checks if the feature is in the list of available anatomy facets
     shouldShowExploreButton: function (features) {
+      // facetList will not be available when there has no Sidebar's data
+      if (!this.facetList.length) {
+        return true
+      }
       for (let i = 0; i < features.length; i++) {
         if (this.facetList.includes(features[i].name.toLowerCase())) {
           return true
@@ -344,14 +368,26 @@ export default {
 }
 
 .attribute-content {
+  display: flex;
+  justify-content: space-between;
   font-size: 14px;
   font-weight: 500;
   transition: color 0.25s ease;
   position: relative;
   cursor: default;
 
+  .connectivity-search-icon {
+    display: none;
+  }
+
   &:hover {
     color: $app-primary-color;
+
+    .connectivity-search-icon {
+      padding-top: 4px;
+      cursor: pointer;
+      display: block;
+    }
   }
 
   + .attribute-content {
