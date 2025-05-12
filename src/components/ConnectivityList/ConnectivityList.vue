@@ -29,7 +29,7 @@
         <span>{{ capitalise(origin) }}</span>
         <el-icon 
           class="connectivity-search-icon" 
-          @click="onConnectivityClicked(entry.featureId[0], 'Origins', origin)"
+          @click="onConnectivityClicked(origin)"
         >
           <el-icon-search />
         </el-icon>
@@ -64,7 +64,7 @@
       <span>{{ capitalise(component) }}</span>
         <el-icon 
           class="connectivity-search-icon" 
-          @click="onConnectivityClicked(entry.featureId[0], 'Components', component)"
+          @click="onConnectivityClicked(component)"
         >
           <el-icon-search />
         </el-icon>
@@ -101,7 +101,7 @@
         <span>{{ capitalise(destination) }}</span>
         <el-icon 
           class="connectivity-search-icon" 
-          @click="onConnectivityClicked(entry.featureId[0], 'Destinations', destination)"
+          @click="onConnectivityClicked(destination)"
         >
           <el-icon-search />
         </el-icon>
@@ -148,6 +148,7 @@
 <script>
 import {
   Warning as ElIconWarning,
+  Search as ElIconSearch,
 } from '@element-plus/icons-vue'
 import {
   ElButton as Button,
@@ -163,6 +164,7 @@ export default {
     Container,
     Icon,
     ElIconWarning,
+    ElIconSearch
   },
   props: {
     entry: {
@@ -250,8 +252,8 @@ export default {
     onConnectivityHovered: function (name) {
       this.$emit('connectivity-hovered', name);
     },
-    onConnectivityClicked: function (id, type, label) {
-      this.$emit('connectivity-clicked', { id, type, label });
+    onConnectivityClicked: function (name) {
+      this.$emit('connectivity-clicked', name);
     },
     // shouldShowExploreButton: Checks if the feature is in the list of available anatomy facets
     shouldShowExploreButton: function (features) {
