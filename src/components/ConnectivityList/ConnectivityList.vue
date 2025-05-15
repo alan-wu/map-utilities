@@ -254,11 +254,13 @@ export default {
     },
     onConnectivityClicked: function (name) {
       const connectivity = this.connectivityError?.errorConnectivities;
+      // Remove the invalid term while searching
       const label = connectivity
         ? name.replace(new RegExp(`\\s*,?\\s*${connectivity}\\s*,?\\s*`, 'gi'), '').trim()
         : name;
       this.$emit('connectivity-clicked', label);
     },
+    // validateConnectivity: Checks whether the hovered terms contain valid term or not
     validateConnectivity: function (features) {
       const connectivity = this.connectivityError?.errorConnectivities;
       return connectivity?.toLowerCase() !== features.toLowerCase();
