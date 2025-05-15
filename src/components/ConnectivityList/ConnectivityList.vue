@@ -29,6 +29,7 @@
         <span>{{ capitalise(origin) }}</span>
         <el-icon 
           class="connectivity-search-icon" 
+          v-show="validateConnectivity(origin)"
           @click="onConnectivityClicked(origin)"
         >
           <el-icon-search />
@@ -64,6 +65,7 @@
       <span>{{ capitalise(component) }}</span>
         <el-icon 
           class="connectivity-search-icon" 
+          v-show="validateConnectivity(component)"
           @click="onConnectivityClicked(component)"
         >
           <el-icon-search />
@@ -101,6 +103,7 @@
         <span>{{ capitalise(destination) }}</span>
         <el-icon 
           class="connectivity-search-icon" 
+          v-show="validateConnectivity(destination)"
           @click="onConnectivityClicked(destination)"
         >
           <el-icon-search />
@@ -135,10 +138,8 @@
     </div>
 
     <div class="connectivity-error-container">
-      <div class="connectivity-error" v-if="connectivityError">
-        <strong v-if="connectivityError.errorConnectivities">
-          {{ connectivityError.errorConnectivities }}
-        </strong>
+      <div class="connectivity-error" v-show="connectivityError.errorConnectivities">
+        <strong>{{ connectivityError.errorConnectivities }}</strong>
         {{ connectivityError.errorMessage }}
       </div>
     </div>
@@ -210,7 +211,7 @@ export default {
     },
     connectivityError: {
       type: Object,
-      default: () => null,
+      default: () => {},
     }
   },
   data: function () {
@@ -220,7 +221,6 @@ export default {
         sensory: 'is the location of the initial cell body in the PNS circuit',
       },
       facetList: [],
-      sckanVersion: '',
     }
   },
   watch: {
@@ -253,7 +253,15 @@ export default {
       this.$emit('connectivity-hovered', name);
     },
     onConnectivityClicked: function (name) {
-      this.$emit('connectivity-clicked', name);
+      const connectivity = this.connectivityError?.errorConnectivities;
+      const label = connectivity
+        ? name.replace(new RegExp(`\\s*,?\\s*${connectivity}\\s*,?\\s*`, 'gi'), '').trim()
+        : name;
+      this.$emit('connectivity-clicked', label);
+    },
+    validateConnectivity: function (features) {
+      const connectivity = this.connectivityError?.errorConnectivities;
+      return connectivity?.toLowerCase() !== features.toLowerCase();
     },
     // shouldShowExploreButton: Checks if the feature is in the list of available anatomy facets
     shouldShowExploreButton: function (features) {
