@@ -27,8 +27,8 @@
         @mouseleave="onConnectivityHovered()"
       >
         <el-icon 
-          class="connectivity-search-icon" 
-          v-show="validateConnectivity(origin)"
+          class="magnify-glass"
+          v-show="shouldShowMagnifyGlass(origin)"
           @click="onConnectivityClicked(origin)"
         >
           <el-icon-search />
@@ -63,8 +63,8 @@
         @mouseleave="onConnectivityHovered()"
       >
         <el-icon 
-          class="connectivity-search-icon" 
-          v-show="validateConnectivity(component)"
+          class="magnify-glass"
+          v-show="shouldShowMagnifyGlass(component)"
           @click="onConnectivityClicked(component)"
         >
           <el-icon-search />
@@ -101,8 +101,8 @@
         @mouseleave="onConnectivityHovered()"
       >
         <el-icon 
-          class="connectivity-search-icon" 
-          v-show="validateConnectivity(destination)"
+          class="magnify-glass"
+          v-show="shouldShowMagnifyGlass(destination)"
           @click="onConnectivityClicked(destination)"
         >
           <el-icon-search />
@@ -253,16 +253,16 @@ export default {
       this.$emit('connectivity-hovered', name);
     },
     onConnectivityClicked: function (name) {
-      const connectivity = this.connectivityError?.errorConnectivities;
+      const connectivity = this.connectivityError.errorConnectivities;
       // Remove the invalid term while searching
       const label = connectivity
         ? name.replace(new RegExp(`\\s*,?\\s*${connectivity}\\s*,?\\s*`, 'gi'), '').trim()
         : name;
       this.$emit('connectivity-clicked', label);
     },
-    // validateConnectivity: Checks whether the hovered terms contain valid term or not
-    validateConnectivity: function (features) {
-      const connectivity = this.connectivityError?.errorConnectivities;
+    // shouldShowMagnifyGlass: Checks whether the hovered terms contain valid term or not
+    shouldShowMagnifyGlass: function (features) {
+      const connectivity = this.connectivityError.errorConnectivities;
       return connectivity?.toLowerCase() !== features.toLowerCase();
     },
     // shouldShowExploreButton: Checks if the feature is in the list of available anatomy facets
@@ -378,25 +378,27 @@ export default {
 }
 
 .attribute-content {
-  display: flex;
   font-size: 14px;
   font-weight: 500;
   transition: color 0.25s ease;
   position: relative;
   cursor: default;
+  padding-left: 16px;
 
-  .connectivity-search-icon {
+  .magnify-glass {
     display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
   }
 
   &:hover {
     color: $app-primary-color;
 
-    .connectivity-search-icon {
-      margin-right: 4px;
+    .magnify-glass {
+      display: block;
       padding-top: 4px;
       cursor: pointer;
-      display: block;
     }
   }
 
