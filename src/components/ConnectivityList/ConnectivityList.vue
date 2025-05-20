@@ -26,13 +26,23 @@
         @mouseenter="onConnectivityHovered(origin)"
         @mouseleave="onConnectivityHovered()"
       >
-        <el-icon 
-          class="magnify-glass"
-          v-show="shouldShowMagnifyGlass(origin)"
-          @click="onConnectivityClicked(origin)"
+        <el-popover
+          width="150"
+          trigger="hover"
+          :teleported="false"
+          popper-class="popover-origin-help"
         >
-          <el-icon-search />
-        </el-icon>
+          <template #reference>
+            <el-icon 
+              class="magnify-glass"
+              v-show="shouldShowMagnifyGlass(origin)"
+              @click="onConnectivityClicked(origin)"
+            >
+              <el-icon-search />
+            </el-icon>
+          </template>
+          <span>Search connectivity</span>
+        </el-popover>
         <span>{{ capitalise(origin) }}</span>
       </div>
       <el-button
@@ -62,13 +72,23 @@
         @mouseenter="onConnectivityHovered(component)"
         @mouseleave="onConnectivityHovered()"
       >
-        <el-icon 
-          class="magnify-glass"
-          v-show="shouldShowMagnifyGlass(component)"
-          @click="onConnectivityClicked(component)"
+        <el-popover
+          width="150"
+          trigger="hover"
+          :teleported="false"
+          popper-class="popover-origin-help"
         >
-          <el-icon-search />
-        </el-icon>
+          <template #reference>
+            <el-icon 
+              class="magnify-glass"
+              v-show="shouldShowMagnifyGlass(component)"
+              @click="onConnectivityClicked(component)"
+            >
+              <el-icon-search />
+            </el-icon>
+          </template>
+          <span>Search connectivity</span>
+        </el-popover>
         <span>{{ capitalise(component) }}</span>
       </div>
     </div>
@@ -100,13 +120,23 @@
         @mouseenter="onConnectivityHovered(destination)"
         @mouseleave="onConnectivityHovered()"
       >
-        <el-icon 
-          class="magnify-glass"
-          v-show="shouldShowMagnifyGlass(destination)"
-          @click="onConnectivityClicked(destination)"
+        <el-popover
+          width="150"
+          trigger="hover"
+          :teleported="false"
+          popper-class="popover-origin-help"
         >
-          <el-icon-search />
-        </el-icon>
+          <template #reference>
+            <el-icon 
+              class="magnify-glass"
+              v-show="shouldShowMagnifyGlass(destination)"
+              @click="onConnectivityClicked(destination)"
+            >
+              <el-icon-search />
+            </el-icon>
+          </template>
+          <span>Search connectivity</span>
+        </el-popover>
         <span>{{ capitalise(destination) }}</span>
       </div>
       <el-button
