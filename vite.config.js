@@ -38,10 +38,11 @@ export default defineConfig({
       fileName: "map-utilities",
     },
     rollupOptions: {
-      external: ["vue"],
+      external: ["vue", "@element-plus/icons-vue"],
       output: {
         globals: {
           vue: "Vue",
+          "@element-plus/icons-vue": "@element-plus/icons-vue",
         },
       },
     },
