@@ -1,182 +1,195 @@
 <template>
-  <div class="connectivity-list">
-    {{ entry.paths }}
-    <div v-if="origins && origins.length > 0" class="block">
-      <div class="attribute-title-container">
-        <span class="attribute-title">Origin</span>
-        <el-popover
-          width="250"
-          trigger="hover"
-          :teleported="false"
-          popper-class="popover-origin-help"
-        >
-          <template #reference>
-            <el-icon class="info"><el-icon-warning /></el-icon>
-          </template>
-          <span style="word-break: keep-all">
-            <i>Origin</i> {{ originDescription }}
-          </span>
-        </el-popover>
-      </div>
-      <div
-        v-for="(origin, i) in origins"
-        class="attribute-content"
-        :origin-item-label="origin"
-        :key="origin"
-        @mouseenter="onConnectivityHovered(origin)"
-        @mouseleave="onConnectivityHovered()"
-      >
-        <el-popover
-          width="150"
-          trigger="hover"
-          :teleported="false"
-          popper-class="popover-origin-help"
-        >
-          <template #reference>
-            <el-icon 
-              class="magnify-glass"
-              v-show="shouldShowMagnifyGlass(origin)"
-              @click="onConnectivityClicked(origin)"
-            >
-              <el-icon-search />
-            </el-icon>
-          </template>
-          <span>Search connectivity</span>
-        </el-popover>
-        <span>{{ capitalise(origin) }}</span>
-      </div>
-      <el-button
-        v-show="
-          originsWithDatasets && originsWithDatasets.length > 0 &&
-          shouldShowExploreButton(originsWithDatasets)
-        "
-        class="button"
-        id="open-dendrites-button"
-        @click="openDendrites"
-      >
-        Explore origin data
-      </el-button>
-    </div>
-    <div
-      v-if="components && components.length > 0"
-      class="block"
+  <div ref="connectivityList" class="connectivity-list">
+    <el-popover
+      width="250"
+      :show-arrow="false"
+      trigger="manual"
+      :teleported="false"
+      placement="left-start"
+      :visible="(connectivityError.errorConnectivities ? true: false)"
+      popper-class="connectivity-error-container"
     >
-      <div class="attribute-title-container">
-        <span class="attribute-title">Components</span>
-      </div>
-      <div
-        v-for="(component, i) in components"
-        class="attribute-content"
-        :component-item-label="component"
-        :key="component"
-        @mouseenter="onConnectivityHovered(component)"
-        @mouseleave="onConnectivityHovered()"
-      >
-        <el-popover
-          width="150"
-          trigger="hover"
-          :teleported="false"
-          popper-class="popover-origin-help"
-        >
-          <template #reference>
-            <el-icon 
-              class="magnify-glass"
-              v-show="shouldShowMagnifyGlass(component)"
-              @click="onConnectivityClicked(component)"
-            >
-              <el-icon-search />
-            </el-icon>
-          </template>
-          <span>Search connectivity</span>
-        </el-popover>
-        <span>{{ capitalise(component) }}</span>
-      </div>
-    </div>
-    <div
-      v-if="destinations && destinations.length > 0"
-      class="block"
-    >
-      <div class="attribute-title-container">
-        <span class="attribute-title">Destination</span>
-        <el-popover
-          width="250"
-          trigger="hover"
-          :teleported="false"
-          popper-class="popover-origin-help"
-        >
-          <template #reference>
-            <el-icon class="info"><el-icon-warning /></el-icon>
-          </template>
-          <span style="word-break: keep-all">
-            <i>Destination</i> is where the axons terminate
-          </span>
-        </el-popover>
-      </div>
-      <div
-        v-for="(destination, i) in destinations"
-        class="attribute-content"
-        :destination-item-label="destination"
-        :key="destination"
-        @mouseenter="onConnectivityHovered(destination)"
-        @mouseleave="onConnectivityHovered()"
-      >
-        <el-popover
-          width="150"
-          trigger="hover"
-          :teleported="false"
-          popper-class="popover-origin-help"
-        >
-          <template #reference>
-            <el-icon 
-              class="magnify-glass"
-              v-show="shouldShowMagnifyGlass(destination)"
-              @click="onConnectivityClicked(destination)"
-            >
-              <el-icon-search />
-            </el-icon>
-          </template>
-          <span>Search connectivity</span>
-        </el-popover>
-        <span>{{ capitalise(destination) }}</span>
-      </div>
-      <el-button
-        v-show="
-          destinationsWithDatasets &&
-          destinationsWithDatasets.length > 0 &&
-          shouldShowExploreButton(destinationsWithDatasets)
-        "
-        class="button"
-        @click="openAxons"
-      >
-        Explore destination data
-      </el-button>
-    </div>
-    <div
-      v-show="
-        componentsWithDatasets &&
-        componentsWithDatasets.length > 0 &&
-        shouldShowExploreButton(componentsWithDatasets)
-      "
-      class="block"
-    >
-      <el-button
-        class="button"
-        @click="openAll"
-      >
-        Search for data on components
-      </el-button>
-    </div>
-
-    <div class="connectivity-error-container">
-      <div class="connectivity-error" v-show="connectivityError.errorConnectivities">
+      <template #reference>
+        <div class="connectivity-alert"
+          :style="{ top: alertTop + 'px' }">
+        </div>
+      </template>
+      <template #default>
         <strong>{{ connectivityError.errorConnectivities }}</strong>
         {{ connectivityError.errorMessage }}
+      </template>
+    </el-popover>
+      {{ entry.paths }}
+      <div v-if="origins && origins.length > 0" class="block">
+        <div class="attribute-title-container">
+          <span class="attribute-title">Origin</span>
+          <el-popover
+            width="250"
+            trigger="hover"
+            :teleported="false"
+            popper-class="popover-origin-help"
+          >
+            <template #reference>
+              <el-icon class="info"><el-icon-warning /></el-icon>
+            </template>
+            <span style="word-break: keep-all">
+              <i>Origin</i> {{ originDescription }}
+            </span>
+          </el-popover>
+        </div>
+        <div
+          v-for="(origin, i) in origins"
+          class="attribute-content"
+          :origin-item-label="origin"
+          :key="origin"
+          @mouseenter="onConnectivityHovered(origin, $event)"
+          @mouseleave="onConnectivityHovered()"
+        >
+          <el-popover
+            width="150"
+            trigger="hover"
+            :teleported="false"
+            popper-class="popover-origin-help"
+          >
+            <template #reference>
+              <el-icon 
+                class="magnify-glass"
+                v-show="shouldShowMagnifyGlass(origin,)"
+                @click="onConnectivityClicked(origin)"
+              >
+                <el-icon-search />
+              </el-icon>
+            </template>
+            <span>Search connectivity</span>
+          </el-popover>
+          <span>{{ capitalise(origin) }}</span>
+        </div>
+        <el-button
+          v-show="
+            originsWithDatasets && originsWithDatasets.length > 0 &&
+            shouldShowExploreButton(originsWithDatasets)
+          "
+          class="button"
+          id="open-dendrites-button"
+          @click="openDendrites"
+        >
+          Explore origin data
+        </el-button>
       </div>
-    </div>
+      <div
+        v-if="components && components.length > 0"
+        class="block"
+      >
+        <div class="attribute-title-container">
+          <span class="attribute-title">Components</span>
+        </div>
+        <div
+          v-for="(component, i) in components"
+          class="attribute-content"
+          :component-item-label="component"
+          :key="component"
+          @mouseenter="onConnectivityHovered(component, $event)"
+          @mouseleave="onConnectivityHovered()"
+        >
+          <el-popover
+            width="150"
+            trigger="hover"
+            :teleported="false"
+            popper-class="popover-origin-help"
+          >
+            <template #reference>
+              <el-icon 
+                class="magnify-glass"
+                v-show="shouldShowMagnifyGlass(component)"
+                @click="onConnectivityClicked(component)"
+              >
+                <el-icon-search />
+              </el-icon>
+            </template>
+            <span>Search connectivity</span>
+          </el-popover>
+          <span>{{ capitalise(component) }}</span>
+        </div>
+      </div>
+      <div
+        v-if="destinations && destinations.length > 0"
+        class="block"
+      >
+        <div class="attribute-title-container">
+          <span class="attribute-title">Destination</span>
+          <el-popover
+            width="250"
+            trigger="hover"
+            :teleported="false"
+            popper-class="popover-origin-help"
+          >
+            <template #reference>
+              <el-icon class="info"><el-icon-warning /></el-icon>
+            </template>
+            <span style="word-break: keep-all">
+              <i>Destination</i> is where the axons terminate
+            </span>
+          </el-popover>
+        </div>
+        <div
+          v-for="(destination, i) in destinations"
+          class="attribute-content"
+          :destination-item-label="destination"
+          :key="destination"
+          @mouseenter="onConnectivityHovered(destination, $event)"
+          @mouseleave="onConnectivityHovered()"
+        >
+          <el-popover
+            width="150"
+            trigger="hover"
+            :teleported="false"
+            popper-class="popover-origin-help"
+          >
+            <template #reference>
+              <el-icon 
+                class="magnify-glass"
+                v-show="shouldShowMagnifyGlass(destination)"
+                @click="onConnectivityClicked(destination)"
+              >
+                <el-icon-search />
+              </el-icon>
+            </template>
+            <span>Search connectivity</span>
+          </el-popover>
+          <span>{{ capitalise(destination) }}</span>
+        </div>
+        <el-button
+          v-show="
+            destinationsWithDatasets &&
+            destinationsWithDatasets.length > 0 &&
+            shouldShowExploreButton(destinationsWithDatasets)
+          "
+          class="button"
+          @click="openAxons"
+        >
+          Explore destination data
+        </el-button>
+      </div>
+      <div
+        v-show="
+          componentsWithDatasets &&
+          componentsWithDatasets.length > 0 &&
+          shouldShowExploreButton(componentsWithDatasets)
+        "
+        class="block"
+      >
+        <el-button
+          class="button"
+          @click="openAll"
+        >
+          Search for data on components
+        </el-button>
+      </div>
   </div>
 </template>
 
 <script>
+import { shallowRef } from 'vue';
 import {
   Warning as ElIconWarning,
   Search as ElIconSearch,
@@ -246,6 +259,7 @@ export default {
   },
   data: function () {
     return {
+      alertTop: 0,
       originDescriptions: {
         motor: 'is the location of the initial cell body of the circuit',
         sensory: 'is the location of the initial cell body in the PNS circuit',
@@ -279,8 +293,11 @@ export default {
     capitalise: function (text) {
       return capitalise(text)
     },
-    onConnectivityHovered: function (name) {
+    onConnectivityHovered: function (name, ele) {
       this.$emit('connectivity-hovered', name);
+      if (ele) {
+        this.alertTop = ele.srcElement.offsetParent.offsetTop + ele.srcElement.offsetTop;
+      }
     },
     onConnectivityClicked: function (name) {
       const connectivity = this.connectivityError.errorConnectivities;
@@ -336,7 +353,7 @@ export default {
         labels: this.originsWithDatasets.map((a) => a.name.toLowerCase()),
       })
     },
-  }
+  },
 }
 </script>
 
@@ -449,24 +466,20 @@ export default {
   }
 }
 
-.connectivity-error-container {
-  position: sticky;
-  bottom: 0.5rem;
-  width: 100%;
-  min-height: 31px; // placeholder
-  margin-top: -10px !important;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
+.connectivity-alert {
+  position: absolute;
+  width: 1px;
+  right:0px;
 }
 
-.connectivity-error {
-  width: fit-content;
-  font-size: 12px;
+:deep(.connectivity-error-container.el-popover) {
+  min-height: 31px; // placeholder
+  align-items: center;
+  justify-content: center;
   padding: 0.25rem 0.5rem;
   background-color: var(--el-color-error-light-9);
   border-radius: var(--el-border-radius-small);
   border: 1px solid var(--el-color-error);
+  pointer-events: none;
 }
 </style>
