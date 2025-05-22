@@ -87,6 +87,7 @@
           :componentsWithDatasets="componentsWithDatasets"
           :destinationsWithDatasets="destinationsWithDatasets"
           :availableAnatomyFacets="availableAnatomyFacets"
+          :connectivityError="connectivityError"
           @connectivity-action-click="onConnectivityActionClick"
         />
         <external-resource-card
@@ -134,6 +135,7 @@ export default {
       },
       entryIndex: 0,
       availableAnatomyFacets: [],
+      connectivityError: {},
     };
   },
   computed: {
