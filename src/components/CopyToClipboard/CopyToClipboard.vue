@@ -13,8 +13,9 @@
       :class="theme"
       size="small"
       @click="copyToClipboard"
+      :disabled ="!content"
     >
-      <el-icon :color="iconColor">
+      <el-icon :color="content ? '#8300bf' : '#dab3ec'">
         <el-icon-copy-document />
       </el-icon>
       <span class="visually-hidden">{{ textLabel }}</span>
@@ -25,7 +26,6 @@
 <script>
 const LABEL_BEFORE = 'Copy to clipboard';
 const LABEL_AFTER = 'Copied!';
-const APP_PRIMARY_COLOR = '#8300bf';
 
 export default {
   name: 'CopyToClipboard',
@@ -52,7 +52,6 @@ export default {
     return {
       textLabel: this.label,
       autoHideTimeout: 0,
-      iconColor: APP_PRIMARY_COLOR,
       tooltipContainer: null,
     };
   },
