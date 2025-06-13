@@ -499,7 +499,10 @@ export default {
       handler: function (newVal, oldVal) {
         if (newVal !== oldVal) {
           this.entryIndex = 0;
-          this.emitActiveItemChange();
+
+          if (newVal?.length) {
+            this.emitActiveItemChange();
+          }
         }
       },
     },
