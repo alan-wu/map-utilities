@@ -72,7 +72,7 @@
                 {{ sub.creator.name }}
               </el-row>
               <el-row class="dialog-text">
-                <strong>Evidence: </strong>
+                <strong>Evidence: &nbsp;</strong>
                 <el-row
                   v-for="(evidence, index) in processEvidences(sub)"
                   :key="evidence"
@@ -86,7 +86,7 @@
                 </el-row>
               </el-row>
               <el-row class="dialog-text">
-                <strong>Comment: </strong> {{ sub.body.comment }}
+                <strong>Comment: &nbsp;</strong> {{ sub.body.comment }}
               </el-row>
             </div>
           </template>
@@ -562,6 +562,9 @@ export default {
 
 .block {
   margin-bottom: 0.5em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 
   .main > &:first-of-type {
     margin-right: 0.5em;
@@ -640,7 +643,8 @@ export default {
 
 .dialog-spacer {
   border-bottom: 1px solid #e4e7ed;
-  margin-bottom: 10px;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .submit {
