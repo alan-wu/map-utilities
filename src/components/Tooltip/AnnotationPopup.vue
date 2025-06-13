@@ -72,13 +72,13 @@
                 {{ sub.creator.name }}
               </el-row>
               <el-row class="dialog-text">
-                <strong>Evidence: </strong>
+                <strong>Evidence: &nbsp;</strong>
                 <el-row
                   v-for="(evidence, index) in processEvidences(sub)"
                   :key="evidence"
                   class="dialog-text"
-                > 
-                  <a v-if="typeof evidence === 'object' ":href="Object.values(evidence)[0]" target="_blank"> 
+                >
+                  <a v-if="typeof evidence === 'object' ":href="Object.values(evidence)[0]" target="_blank">
                     {{ Object.keys(evidence)[0] }}
                   </a>
                   <span v-else> {{ evidence }}</span>
@@ -86,7 +86,7 @@
                 </el-row>
               </el-row>
               <el-row class="dialog-text">
-                <strong>Comment: </strong> {{ sub.body.comment }}
+                <strong>Comment: &nbsp;</strong> {{ sub.body.comment }}
               </el-row>
             </div>
           </template>
@@ -270,12 +270,21 @@ export default {
     previous: function () {
       if (this.entryIndex !== 0) {
         this.entryIndex = this.entryIndex - 1;
+        this.emitActiveItemChange();
       }
     },
     next: function () {
       if (this.entryIndex !== this.annotationEntry.length - 1) {
         this.entryIndex = this.entryIndex + 1;
+        this.emitActiveItemChange();
       }
+    },
+    emitActiveItemChange: function () {
+      const tabType = { tabType: "annotation" };
+      const data = this.annotationEntry[this.entryIndex];
+      const payload = {...tabType, ...data};
+
+      this.$emit('hover-changed', payload);
     },
     processEvidences: function(sub) {
       const evidences = [];
@@ -490,6 +499,7 @@ export default {
       handler: function (newVal, oldVal) {
         if (newVal !== oldVal) {
           this.entryIndex = 0;
+          this.emitActiveItemChange();
         }
       },
     },
@@ -523,6 +533,9 @@ export default {
 .toggle-button {
   display: flex;
   justify-content: space-between;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #e4e7ed;
 
   .is-disabled {
     color: #fff !important;
@@ -559,6 +572,9 @@ export default {
 
 .block {
   margin-bottom: 0.5em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 
   .main > &:first-of-type {
     margin-right: 0.5em;
@@ -637,7 +653,8 @@ export default {
 
 .dialog-spacer {
   border-bottom: 1px solid #e4e7ed;
-  margin-bottom: 10px;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .submit {
