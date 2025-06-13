@@ -77,8 +77,8 @@
                   v-for="(evidence, index) in processEvidences(sub)"
                   :key="evidence"
                   class="dialog-text"
-                > 
-                  <a v-if="typeof evidence === 'object' ":href="Object.values(evidence)[0]" target="_blank"> 
+                >
+                  <a v-if="typeof evidence === 'object' ":href="Object.values(evidence)[0]" target="_blank">
                     {{ Object.keys(evidence)[0] }}
                   </a>
                   <span v-else> {{ evidence }}</span>
@@ -523,6 +523,9 @@ export default {
 .toggle-button {
   display: flex;
   justify-content: space-between;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #e4e7ed;
 
   .is-disabled {
     color: #fff !important;
