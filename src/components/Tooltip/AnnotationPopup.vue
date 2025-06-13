@@ -270,12 +270,21 @@ export default {
     previous: function () {
       if (this.entryIndex !== 0) {
         this.entryIndex = this.entryIndex - 1;
+        this.emitActiveItemChange();
       }
     },
     next: function () {
       if (this.entryIndex !== this.annotationEntry.length - 1) {
         this.entryIndex = this.entryIndex + 1;
+        this.emitActiveItemChange();
       }
+    },
+    emitActiveItemChange: function () {
+      const tabType = { tabType: "annotation" };
+      const data = this.annotationEntry[this.entryIndex];
+      const payload = {...tabType, ...data};
+
+      this.$emit('hover-changed', payload);
     },
     processEvidences: function(sub) {
       const evidences = [];
