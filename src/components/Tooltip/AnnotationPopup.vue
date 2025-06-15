@@ -709,4 +709,8 @@ export default {
     }
   }
 }
+
+.annotation-popup :deep(.el-popover.el-popper) {
+  word-break: break-word;
+}
 </style>
