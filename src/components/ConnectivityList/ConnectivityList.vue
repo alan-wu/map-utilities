@@ -52,7 +52,7 @@
             popper-class="popover-origin-help"
           >
             <template #reference>
-              <el-icon 
+              <el-icon
                 class="magnify-glass"
                 v-show="shouldShowMagnifyGlass(origin,)"
                 @click="onConnectivityClicked(origin)"
@@ -98,7 +98,7 @@
             popper-class="popover-origin-help"
           >
             <template #reference>
-              <el-icon 
+              <el-icon
                 class="magnify-glass"
                 v-show="shouldShowMagnifyGlass(component)"
                 @click="onConnectivityClicked(component)"
@@ -146,7 +146,7 @@
             popper-class="popover-origin-help"
           >
             <template #reference>
-              <el-icon 
+              <el-icon
                 class="magnify-glass"
                 v-show="shouldShowMagnifyGlass(destination)"
                 @click="onConnectivityClicked(destination)"
@@ -472,7 +472,7 @@ export default {
   right:0px;
 }
 
-:deep(.connectivity-error-container.el-popover) {
+.connectivity-list :deep(.connectivity-error-container.el-popover) {
   min-height: 31px; // placeholder
   align-items: center;
   justify-content: center;
@@ -481,5 +481,6 @@ export default {
   border-radius: var(--el-border-radius-small);
   border: 1px solid var(--el-color-error);
   pointer-events: none;
+  word-break: break-word;
 }
 </style>
