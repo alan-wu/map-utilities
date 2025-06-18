@@ -42,8 +42,17 @@ export async function competencyQuery(options) {
     "value": sourceId,
   });
 
+  let queryIdStr;
+  if (typeof queryId === 'number') {
+    queryIdStr = queryId.toString();
+  } else if (typeof queryId === 'string') {
+    queryIdStr = queryId;
+  } else {
+    throw new TypeError('queryId must be a string or a number convertible to string.');
+  }
+
   const payload = {
-    "query_id": queryId,
+    "query_id": queryIdStr,
     "parameters": params,
   };
 
