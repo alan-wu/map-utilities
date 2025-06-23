@@ -1,13 +1,10 @@
 /**
- * Competency Query
+ * Competency Queries
  *
- * @param {Object} options - Query options.
- * @param {string} options.flatmapServer - Base URL of the flatmap server.
- * @param {string} options.sourceId - SCKAN source ID.
- * @param {string} options.queryId - Competency query ID.
- * @param {Array} options.parameters - Parameters specific to the query.
- * @param {string} [options.orderId] - Optional order ID for sorting.
- * @returns {Promise<any>} - JSON response.
+ * competencyQuery: base function
+ * query[functionName]: specific queries
+ *
+ * Note: use named-export for better tree-shaking.
  */
 
 async function postRequest(API_URL, payload) {
@@ -31,15 +28,26 @@ async function postRequest(API_URL, payload) {
   }
 }
 
+/**
+ * Competency Query
+ *
+ * @param {Object} options - Query options.
+ * @param {string} options.flatmapAPI - Base URL of the flatmap server.
+ * @param {string} options.knowledgeSource - SCKAN source ID.
+ * @param {string} options.queryId - Competency query ID.
+ * @param {Array} options.parameters - Parameters specific to the query.
+ * @param {string} [options.orderId] - Optional order ID for sorting.
+ * @returns {Promise<any>} - JSON response.
+ */
 export async function competencyQuery(options) {
-  const { flatmapServer, sourceId, queryId, parameters, orderId } = options;
-  const API_URL = `${flatmapServer}competency/query`;
+  const { flatmapAPI, knowledgeSource, queryId, parameters, orderId } = options;
+  const API_URL = `${flatmapAPI}competency/query`;
 
   const params = Array.isArray(parameters) ? [...parameters] : [];
 
   params.push({
     "column": "source_id",
-    "value": sourceId,
+    "value": knowledgeSource,
   });
 
   let queryIdStr;
@@ -62,4 +70,52 @@ export async function competencyQuery(options) {
   }
 
   return postRequest(API_URL, payload);
+}
+
+// Neuron populations associated with a location
+export async function queryAllConnectedPaths(flatmapAPI, knowledgeSource, featureId) {
+  const data = await competencyQuery({
+    flatmapAPI: flatmapAPI,
+    knowledgeSource: knowledgeSource,
+    queryId: 1,
+    parameters: [
+      {
+        column: 'feature_id',
+        value: featureId
+      },
+    ]
+  });
+  if (data?.results?.values) {
+    const paths = data.results.values.map((value) => {
+      // value => [ 'source_id', 'path_id', 'axon_terminal']
+      return value[1];
+    });
+    // remove duplicates
+    return [...new Set(paths)];
+  }
+  return [];
+}
+
+// Neuron populations terminating at a location
+export async function queryPathsByDestinations(flatmapAPI, knowledgeSource, featureId) {
+  const data = await competencyQuery({
+    flatmapAPI: flatmapAPI,
+    knowledgeSource: knowledgeSource,
+    queryId: 2,
+    parameters: [
+      {
+        column: 'feature_id',
+        value: featureId
+      },
+    ]
+  });
+  if (data?.results?.values) {
+    const paths = data.results.values.map((value) => {
+      // value => [ 'source_id', 'path_id', 'axon_terminal']
+      return value[1];
+    });
+    // remove duplicates
+    return [...new Set(paths)];
+  }
+  return [];
 }
