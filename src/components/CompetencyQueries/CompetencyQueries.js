@@ -72,12 +72,14 @@ async function competencyQuery(options) {
   return postRequest(API_URL, payload);
 }
 
-// Neuron populations associated with a location
+// Neuron populations associated with a location [query id => 1] (or)
+// Neuron populations that share at least one edge with another neuron population [query id => 23]
 async function queryAllConnectedPaths(flatmapAPI, knowledgeSource, featureId) {
+  const queryId = featureId.startsWith('ilxtr:') ? 23 : 1;
   const data = await competencyQuery({
     flatmapAPI: flatmapAPI,
     knowledgeSource: knowledgeSource,
-    queryId: 1,
+    queryId: queryId,
     parameters: [
       {
         column: 'feature_id',
