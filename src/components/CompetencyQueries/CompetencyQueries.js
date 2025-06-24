@@ -39,7 +39,7 @@ async function postRequest(API_URL, payload) {
  * @param {string} [options.orderId] - Optional order ID for sorting.
  * @returns {Promise<any>} - JSON response.
  */
-export async function competencyQuery(options) {
+async function competencyQuery(options) {
   const { flatmapAPI, knowledgeSource, queryId, parameters, orderId } = options;
   const API_URL = `${flatmapAPI}competency/query`;
 
@@ -73,7 +73,7 @@ export async function competencyQuery(options) {
 }
 
 // Neuron populations associated with a location
-export async function queryAllConnectedPaths(flatmapAPI, knowledgeSource, featureId) {
+async function queryAllConnectedPaths(flatmapAPI, knowledgeSource, featureId) {
   const data = await competencyQuery({
     flatmapAPI: flatmapAPI,
     knowledgeSource: knowledgeSource,
@@ -97,7 +97,7 @@ export async function queryAllConnectedPaths(flatmapAPI, knowledgeSource, featur
 }
 
 // Neuron populations terminating at a location
-export async function queryPathsByDestinations(flatmapAPI, knowledgeSource, featureId) {
+async function queryPathsByDestinations(flatmapAPI, knowledgeSource, featureId) {
   const data = await competencyQuery({
     flatmapAPI: flatmapAPI,
     knowledgeSource: knowledgeSource,
@@ -119,3 +119,9 @@ export async function queryPathsByDestinations(flatmapAPI, knowledgeSource, feat
   }
   return [];
 }
+
+export {
+  competencyQuery,
+  queryAllConnectedPaths,
+  queryPathsByDestinations,
+};
