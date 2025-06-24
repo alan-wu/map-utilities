@@ -11,6 +11,8 @@ import ExternalResourceCard from "./Tooltip/ExternalResourceCard.vue";
 import {
   competencyQuery,
   queryAllConnectedPaths,
+  queryPathsByOrigins,
+  queryPathsByVias,
   queryPathsByDestinations,
 } from "./CompetencyQueries/CompetencyQueries.js";
 
@@ -27,5 +29,7 @@ export {
   ExternalResourceCard,
   competencyQuery,
   queryAllConnectedPaths,
+  queryPathsByOrigins,
+  queryPathsByVias,
   queryPathsByDestinations,
 };
