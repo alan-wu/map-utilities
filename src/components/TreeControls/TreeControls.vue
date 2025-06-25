@@ -84,7 +84,6 @@
               :class="{ 'show-picker': showColourPicker }"
               v-model="data.activeColour"
               size="small"
-              :popper-class="myPopperClass"
               @change="setColour(data, $event)"
             />
             <div class="lastChildInItem">
@@ -157,7 +156,6 @@ export default {
     return {
       defaultExpandedKeys: ["All"],
       filterText: "",
-      myPopperClass: "hide-scaffold-colour-popup",
       tooltipVisible: false,
       tooltipLabel: "",
       tooltipAtBottom: false,
@@ -186,13 +184,6 @@ export default {
     },
   },
   watch: {
-    showColourPicker: {
-      immediate: true,
-      handler: function () {
-        if (this.showColourPicker) this.myPopperClass = "showPicker";
-        else this.myPopperClass = "hide-scaffold-colour-popup";
-      },
-    },
     filterText: {
       handler: function (value) {
         if (this.$refs.regionTree) this.$refs.regionTree.filter(value);
@@ -394,6 +385,7 @@ export default {
   width: 100%;
 
   :deep(.el-color-picker) {
+    pointer-events: none;
     height: 14px !important;
   }
 
@@ -412,14 +404,17 @@ export default {
 }
 
 :deep(.el-color-picker__icon) {
-  &.el-icon-arrow-down {
+  &.is-icon-arrow-down {
     display: none;
   }
 }
 
 :deep(.show-picker) {
+  &.el-color-picker {
+    pointer-events: auto;
+  }
   .el-color-picker__icon {
-    &.el-icon-arrow-down {
+    &.is-icon-arrow-down {
       display: block;
     }
   }
