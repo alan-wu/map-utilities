@@ -15,6 +15,11 @@ import {
   queryPathsByVias,
   queryPathsByDestinations,
 } from "./CompetencyQueries/CompetencyQueries.js";
+import {
+  filterOrigins,
+  filterDestinations,
+  filterVias,
+} from "./CompetencyQueries/knowledgeQueries.js";
 
 export {
   AnnotationPopup,
@@ -32,4 +37,7 @@ export {
   queryPathsByOrigins,
   queryPathsByVias,
   queryPathsByDestinations,
+  filterOrigins,
+  filterDestinations,
+  filterVias,
 };
