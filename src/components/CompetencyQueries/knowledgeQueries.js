@@ -117,6 +117,14 @@ function extractViaItems(knowledge) {
   );
 }
 
+function findPathsByOriginItem(knowledge, originItem) {
+  return knowledge.filter(obj => {
+    if (!Array.isArray(obj.connectivity) || obj.connectivity.length === 0) return false;
+    const origins = getPhenotypeItems(obj, "ilxtr:hasSomaLocatedIn");
+    return origins.some(item => JSON.stringify(item) === JSON.stringify(originItem));
+  });
+}
+
 export {
   filterOrigins,
   filterDestinations,
@@ -124,4 +132,5 @@ export {
   extractOriginItems,
   extractDestinationItems,
   extractViaItems,
+  findPathsByOriginItem,
 }
