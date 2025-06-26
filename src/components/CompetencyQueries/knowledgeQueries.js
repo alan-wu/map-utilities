@@ -125,6 +125,28 @@ function findPathsByOriginItem(knowledge, originItem) {
   });
 }
 
+function findPathsByDestinationItem(knowledge, destinationItem) {
+  return knowledge.filter(obj => {
+    if (!Array.isArray(obj.connectivity) || obj.connectivity.length === 0) return false;
+    const destinations = [
+      ...getPhenotypeItems(obj, "ilxtr:hasAxonPresynapticElementIn"),
+      ...getPhenotypeItems(obj, "ilxtr:hasAxonSensorySubcellularElementIn")
+    ];
+    return destinations.some(item => JSON.stringify(item) === JSON.stringify(destinationItem));
+  });
+}
+
+function findPathsByViaItem(knowledge, viaItem) {
+  return knowledge.filter(obj => {
+    if (!Array.isArray(obj.connectivity) || obj.connectivity.length === 0) return false;
+    const vias = [
+      ...getPhenotypeItems(obj, "ilxtr:hasAxonLeadingToSensorySubcellularElementIn"),
+      ...getPhenotypeItems(obj, "ilxtr:hasAxonLocatedIn")
+    ];
+    return vias.some(item => JSON.stringify(item) === JSON.stringify(viaItem));
+  });
+}
+
 export {
   filterOrigins,
   filterDestinations,
@@ -133,4 +155,6 @@ export {
   extractDestinationItems,
   extractViaItems,
   findPathsByOriginItem,
+  findPathsByDestinationItem,
+  findPathsByViaItem,
 }

@@ -23,6 +23,8 @@ import {
   extractDestinationItems,
   extractViaItems,
   findPathsByOriginItem,
+  findPathsByDestinationItem,
+  findPathsByViaItem,
 } from "./CompetencyQueries/knowledgeQueries.js";
 
 export {
@@ -48,4 +50,6 @@ export {
   extractDestinationItems,
   extractViaItems,
   findPathsByOriginItem,
+  findPathsByDestinationItem,
+  findPathsByViaItem,
 };
