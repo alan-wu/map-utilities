@@ -1,6 +1,6 @@
 // origins = ilxtr:hasSomaLocatedIn
 // destinations = ilxtr:hasAxonPresynapticElementIn, ilxtr:hasAxonSensorySubcellularElementIn
-// vias = ilxtr:hasAxonLeadingToSensorySubcellularElementIn, ilxtr:hasAxonLocatedIn
+// via = ilxtr:hasAxonLeadingToSensorySubcellularElementIn, ilxtr:hasAxonLocatedIn
 
 function filterOrigins(item) {
   const soma = item["node-phenotypes"]?.["ilxtr:hasSomaLocatedIn"];
@@ -21,7 +21,7 @@ function filterDestinations(item) {
     hasDest;
 }
 
-function filterVias(item) {
+function filterViaLocations(item) {
   if (!Array.isArray(item.connectivity) || item.connectivity.length === 0) return false;
 
   const origins = new Set(
@@ -120,7 +120,7 @@ function extractViaItems(knowledge) {
 export {
   filterOrigins,
   filterDestinations,
-  filterVias,
+  filterViaLocations,
   extractOriginItems,
   extractDestinationItems,
   extractViaItems,

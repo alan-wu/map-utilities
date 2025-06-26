@@ -100,7 +100,7 @@ async function queryAllConnectedPaths(flatmapAPI, knowledgeSource, featureId) {
 }
 
 // Neuron populations beginning at a location
-async function queryPathsByOrigins(flatmapAPI, knowledgeSource, featureId) {
+async function queryPathsByOrigin(flatmapAPI, knowledgeSource, featureId) {
   const data = await competencyQuery({
     flatmapAPI: flatmapAPI,
     knowledgeSource: knowledgeSource,
@@ -123,12 +123,12 @@ async function queryPathsByOrigins(flatmapAPI, knowledgeSource, featureId) {
   return [];
 }
 
-// Neuron populations vias a location
-async function queryPathsByVias(flatmapAPI, knowledgeSource, featureId) {
+// Neuron populations via a location
+async function queryPathsByViaLocation(flatmapAPI, knowledgeSource, featureId) {
   const data = await competencyQuery({
     flatmapAPI: flatmapAPI,
     knowledgeSource: knowledgeSource,
-    queryId: 1, // TODO: to update to a specific query ID for vias
+    queryId: 1, // TODO: to update to a specific query ID for via
     parameters: [
       {
         column: 'feature_id',
@@ -148,7 +148,7 @@ async function queryPathsByVias(flatmapAPI, knowledgeSource, featureId) {
 }
 
 // Neuron populations terminating at a location
-async function queryPathsByDestinations(flatmapAPI, knowledgeSource, featureId) {
+async function queryPathsByDestination(flatmapAPI, knowledgeSource, featureId) {
   const data = await competencyQuery({
     flatmapAPI: flatmapAPI,
     knowledgeSource: knowledgeSource,
@@ -174,7 +174,7 @@ async function queryPathsByDestinations(flatmapAPI, knowledgeSource, featureId) 
 export {
   competencyQuery,
   queryAllConnectedPaths,
-  queryPathsByOrigins,
-  queryPathsByVias,
-  queryPathsByDestinations,
+  queryPathsByOrigin,
+  queryPathsByViaLocation,
+  queryPathsByDestination,
 };
