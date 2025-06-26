@@ -66,7 +66,7 @@ function getPhenotypeItems(obj, prop) {
   return arr;
 }
 
-function getOriginItems(knowledge) {
+function extractOriginItems(knowledge) {
   const results = [];
   knowledge.forEach(obj => {
     if (!Array.isArray(obj.connectivity) || obj.connectivity.length === 0) return;
@@ -81,7 +81,7 @@ function getOriginItems(knowledge) {
   );
 }
 
-function getDestinationItems(knowledge) {
+function extractDestinationItems(knowledge) {
   const results = [];
   knowledge.forEach(obj => {
     if (!Array.isArray(obj.connectivity) || obj.connectivity.length === 0) return;
@@ -99,7 +99,7 @@ function getDestinationItems(knowledge) {
   );
 }
 
-function getViaItems(knowledge) {
+function extractViaItems(knowledge) {
   const results = [];
   knowledge.forEach(obj => {
     if (!Array.isArray(obj.connectivity) || obj.connectivity.length === 0) return;
@@ -121,7 +121,7 @@ export {
   filterOrigins,
   filterDestinations,
   filterVias,
-  getOriginItems,
-  getDestinationItems,
-  getViaItems,
+  extractOriginItems,
+  extractDestinationItems,
+  extractViaItems,
 }
