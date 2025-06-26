@@ -19,6 +19,9 @@ import {
   filterOrigins,
   filterDestinations,
   filterVias,
+  getOriginItems,
+  getDestinationItems,
+  getViaItems,
 } from "./CompetencyQueries/knowledgeQueries.js";
 
 export {
@@ -40,4 +43,7 @@ export {
   filterOrigins,
   filterDestinations,
   filterVias,
+  getOriginItems,
+  getDestinationItems,
+  getViaItems,
 };

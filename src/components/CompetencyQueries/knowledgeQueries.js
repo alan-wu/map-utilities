@@ -1,6 +1,6 @@
 // origins = ilxtr:hasSomaLocatedIn
 // destinations = ilxtr:hasAxonPresynapticElementIn, ilxtr:hasAxonSensorySubcellularElementIn
-// vias (components) = none of the above
+// vias = ilxtr:hasAxonLeadingToSensorySubcellularElementIn, ilxtr:hasAxonLocatedIn
 
 function filterOrigins(item) {
   const soma = item["node-phenotypes"]?.["ilxtr:hasSomaLocatedIn"];
@@ -43,8 +43,85 @@ function filterVias(item) {
   });
 }
 
+function getConnectivityItems(obj) {
+  if (!Array.isArray(obj.connectivity)) return [];
+  const items = new Set();
+
+  obj.connectivity.forEach((pair) => {
+    if (Array.isArray(pair) && pair.length) {
+      pair.forEach((endpoint) => {
+        if (Array.isArray(endpoint) && typeof endpoint[0] === 'string') {
+          const stringifyEndpoint = JSON.stringify(endpoint);
+          items.add(stringifyEndpoint);
+        }
+      });
+    }
+  });
+  return Array.from(items);
+}
+
+function getPhenotypeItems(obj, prop) {
+  const arr = obj["node-phenotypes"]?.[prop];
+  if (!Array.isArray(arr)) return [];
+  return arr;
+}
+
+function getOriginItems(knowledge) {
+  const results = [];
+  knowledge.forEach(obj => {
+    if (!Array.isArray(obj.connectivity) || obj.connectivity.length === 0) return;
+    const connectivityItems = new Set(getConnectivityItems(obj));
+    getPhenotypeItems(obj, "ilxtr:hasSomaLocatedIn").forEach((item) => {
+      const stringifyItem = JSON.stringify(item);
+      if (connectivityItems.has(stringifyItem)) results.push(item);
+    });
+  });
+  return Array.from(
+    new Map(results.map(item => [JSON.stringify(item), item])).values()
+  );
+}
+
+function getDestinationItems(knowledge) {
+  const results = [];
+  knowledge.forEach(obj => {
+    if (!Array.isArray(obj.connectivity) || obj.connectivity.length === 0) return;
+    const connectivityItems = new Set(getConnectivityItems(obj));
+    [
+      ...getPhenotypeItems(obj, "ilxtr:hasAxonPresynapticElementIn"),
+      ...getPhenotypeItems(obj, "ilxtr:hasAxonSensorySubcellularElementIn")
+    ].forEach(item => {
+      const stringifyItem = JSON.stringify(item);
+      if (connectivityItems.has(stringifyItem)) results.push(item);
+    });
+  });
+  return Array.from(
+    new Map(results.map(item => [JSON.stringify(item), item])).values()
+  );
+}
+
+function getViaItems(knowledge) {
+  const results = [];
+  knowledge.forEach(obj => {
+    if (!Array.isArray(obj.connectivity) || obj.connectivity.length === 0) return;
+    const connectivityItems = new Set(getConnectivityItems(obj));
+    [
+      ...getPhenotypeItems(obj, "ilxtr:hasAxonLeadingToSensorySubcellularElementIn"),
+      ...getPhenotypeItems(obj, "ilxtr:hasAxonLocatedIn")
+    ].forEach(item => {
+      const stringifyItem = JSON.stringify(item);
+      if (connectivityItems.has(stringifyItem)) results.push(item);
+    });
+  });
+  return Array.from(
+    new Map(results.map(item => [JSON.stringify(item), item])).values()
+  );
+}
+
 export {
   filterOrigins,
   filterDestinations,
   filterVias,
+  getOriginItems,
+  getDestinationItems,
+  getViaItems,
 }
