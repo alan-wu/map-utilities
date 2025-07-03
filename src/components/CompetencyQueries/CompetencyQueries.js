@@ -171,10 +171,56 @@ async function queryPathsByDestination(flatmapAPI, knowledgeSource, featureId) {
   return [];
 }
 
+// Neuron populations from origin node(s) to destination node(s), via node(s)
+// API Label: Neuron populations that have source, via, and destination nodes
+async function queryPathsByRoute(flatmapAPI, knowledgeSource, origins, destinations, vias) {
+  const originParam = {
+    column: 'source_node_id',
+    value: origins
+  };
+  const viaParam = {
+    column: 'via_node_id',
+    value: vias
+  };
+  const destinationParam = {
+    column: 'dest_node_id',
+    value: destinations
+  };
+  if (!origins.length) {
+    originParam['negate'] = true;
+  }
+  if (!vias.length) {
+    viaParam['negate'] = true;
+  }
+  if (!destinations.length) {
+    destinationParam['negate'] = true;
+  }
+  const data = await competencyQuery({
+    flatmapAPI: flatmapAPI,
+    knowledgeSource: knowledgeSource,
+    queryId: 24,
+    parameters: [
+      originParam,
+      viaParam,
+      destinationParam,
+    ]
+  });
+  if (data?.results?.values) {
+    const paths = data.results.values.map((value) => {
+      // value => [ 'source_id', 'path_id', 'axon_terminal']
+      return value[1];
+    });
+    // remove duplicates
+    return [...new Set(paths)];
+  }
+  return [];
+}
+
 export {
   competencyQuery,
   queryAllConnectedPaths,
   queryPathsByOrigin,
   queryPathsByViaLocation,
   queryPathsByDestination,
+  queryPathsByRoute,
 };
