@@ -117,33 +117,33 @@ function extractViaItems(knowledge) {
   );
 }
 
-function findPathsByOriginItem(knowledge, originItem) {
+function findPathsByOriginItem(knowledge, originItems) {
   return knowledge.filter(obj => {
     if (!Array.isArray(obj.connectivity) || obj.connectivity.length === 0) return false;
     const origins = getPhenotypeItems(obj, "ilxtr:hasSomaLocatedIn");
-    return origins.some(item => JSON.stringify(item) === JSON.stringify(originItem));
+    return origins.some(item => originItems.map(i => JSON.stringify(i)).includes(JSON.stringify(item)));
   });
 }
 
-function findPathsByDestinationItem(knowledge, destinationItem) {
+function findPathsByDestinationItem(knowledge, destinationItems) {
   return knowledge.filter(obj => {
     if (!Array.isArray(obj.connectivity) || obj.connectivity.length === 0) return false;
     const destinations = [
       ...getPhenotypeItems(obj, "ilxtr:hasAxonPresynapticElementIn"),
       ...getPhenotypeItems(obj, "ilxtr:hasAxonSensorySubcellularElementIn")
     ];
-    return destinations.some(item => JSON.stringify(item) === JSON.stringify(destinationItem));
+    return destinations.some(item => destinationItems.map(i => JSON.stringify(i)).includes(JSON.stringify(item)));
   });
 }
 
-function findPathsByViaItem(knowledge, viaItem) {
+function findPathsByViaItem(knowledge, viaItems) {
   return knowledge.filter(obj => {
     if (!Array.isArray(obj.connectivity) || obj.connectivity.length === 0) return false;
     const vias = [
       ...getPhenotypeItems(obj, "ilxtr:hasAxonLeadingToSensorySubcellularElementIn"),
       ...getPhenotypeItems(obj, "ilxtr:hasAxonLocatedIn")
     ];
-    return vias.some(item => JSON.stringify(item) === JSON.stringify(viaItem));
+    return vias.some(item => viaItems.map(i => JSON.stringify(i)).includes(JSON.stringify(item)));
   });
 }
 
