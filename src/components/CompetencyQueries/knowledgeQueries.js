@@ -147,6 +147,22 @@ function findPathsByViaItem(knowledge, viaItems) {
   });
 }
 
+async function queryPathsByRouteFromKnowledge({ knowledge, origins, destinations, vias }) {
+  let results = knowledge;
+
+  if (origins.length) {
+    results = findPathsByOriginItem(results, origins);
+  }
+  if (destinations.length) {
+    results = findPathsByDestinationItem(results, destinations);
+  }
+  if (vias.length) {
+    results = findPathsByViaItem(results, vias);
+  }
+
+  return results;
+}
+
 export {
   filterOrigins,
   filterDestinations,
@@ -157,4 +173,5 @@ export {
   findPathsByOriginItem,
   findPathsByDestinationItem,
   findPathsByViaItem,
+  queryPathsByRouteFromKnowledge,
 }

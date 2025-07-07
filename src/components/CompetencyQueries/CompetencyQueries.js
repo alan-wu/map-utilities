@@ -173,7 +173,7 @@ async function queryPathsByDestination(flatmapAPI, knowledgeSource, featureId) {
 
 // Neuron populations from origin node(s) to destination node(s), via node(s)
 // API Label: Neuron populations that have source, via, and destination nodes
-async function queryPathsByRoute(flatmapAPI, knowledgeSource, origins, destinations, vias) {
+async function queryPathsByRoute({ flatmapAPI, knowledgeSource, origins, destinations, vias }) {
   const originParam = {
     column: 'source_node_id',
     value: origins
