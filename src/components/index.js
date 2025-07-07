@@ -27,6 +27,7 @@ import {
   findPathsByDestinationItem,
   findPathsByViaItem,
   queryPathsByRouteFromKnowledge,
+  fetchLabels,
 } from "./CompetencyQueries/knowledgeQueries.js";
 
 export {
@@ -56,4 +57,5 @@ export {
   findPathsByDestinationItem,
   findPathsByViaItem,
   queryPathsByRouteFromKnowledge,
+  fetchLabels,
 };

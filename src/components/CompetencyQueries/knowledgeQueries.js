@@ -2,6 +2,46 @@
 // destinations = ilxtr:hasAxonPresynapticElementIn, ilxtr:hasAxonSensorySubcellularElementIn
 // via = ilxtr:hasAxonLeadingToSensorySubcellularElementIn, ilxtr:hasAxonLocatedIn
 
+async function query(flatmapAPI, sql, params) {
+  const url = `${flatmapAPI}knowledge/query/`;
+  const query = { sql, params };
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        "Accept": "application/json; charset=utf-8",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(query)
+    });
+
+    if (!response.ok) {
+      throw new Error(`Cannot access ${url}`);
+    }
+
+    return await response.json();
+  } catch {
+    return {
+      values: []
+    };
+  }
+}
+
+async function fetchLabels(flatmapAPI, labelledTerms) {
+  if (!labelledTerms.length) return [];
+
+  const data = await query(
+    flatmapAPI,
+    `select entity, knowledge from knowledge
+      where entity in (?${', ?'.repeat(labelledTerms.length - 1)})
+      order by source desc`,
+    [...labelledTerms]
+  );
+
+  return await data.values;
+}
+
 function filterOrigins(item) {
   const soma = item["node-phenotypes"]?.["ilxtr:hasSomaLocatedIn"];
   return Array.isArray(item.connectivity) &&
@@ -66,7 +106,13 @@ function getPhenotypeItems(obj, prop) {
   return arr;
 }
 
-function extractOriginItems(knowledge) {
+function transformResults(results) {
+  return Array.from(
+    new Map(results.map(item => [JSON.stringify(item), item])).values()
+  ).map((item) => ({ key: item }));
+}
+
+async function extractOriginItems(flatmapAPI, knowledge) {
   const results = [];
   knowledge.forEach(obj => {
     if (!Array.isArray(obj.connectivity) || obj.connectivity.length === 0) return;
@@ -76,12 +122,10 @@ function extractOriginItems(knowledge) {
       if (connectivityItems.has(stringifyItem)) results.push(item);
     });
   });
-  return Array.from(
-    new Map(results.map(item => [JSON.stringify(item), item])).values()
-  );
+  return transformResults(results);
 }
 
-function extractDestinationItems(knowledge) {
+async function extractDestinationItems(flatmapAPI, knowledge) {
   const results = [];
   knowledge.forEach(obj => {
     if (!Array.isArray(obj.connectivity) || obj.connectivity.length === 0) return;
@@ -94,12 +138,10 @@ function extractDestinationItems(knowledge) {
       if (connectivityItems.has(stringifyItem)) results.push(item);
     });
   });
-  return Array.from(
-    new Map(results.map(item => [JSON.stringify(item), item])).values()
-  );
+  return transformResults(results);
 }
 
-function extractViaItems(knowledge) {
+async function extractViaItems(flatmapAPI, knowledge) {
   const results = [];
   knowledge.forEach(obj => {
     if (!Array.isArray(obj.connectivity) || obj.connectivity.length === 0) return;
@@ -112,9 +154,7 @@ function extractViaItems(knowledge) {
       if (connectivityItems.has(stringifyItem)) results.push(item);
     });
   });
-  return Array.from(
-    new Map(results.map(item => [JSON.stringify(item), item])).values()
-  );
+  return transformResults(results);
 }
 
 function findPathsByOriginItem(knowledge, originItems) {
@@ -174,4 +214,5 @@ export {
   findPathsByDestinationItem,
   findPathsByViaItem,
   queryPathsByRouteFromKnowledge,
+  fetchLabels,
 }
