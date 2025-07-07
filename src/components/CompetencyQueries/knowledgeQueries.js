@@ -106,10 +106,29 @@ function getPhenotypeItems(obj, prop) {
   return arr;
 }
 
-function transformResults(results) {
-  return Array.from(
+async function transformResults(flatmapAPI, results) {
+  const baseResults = Array.from(
     new Map(results.map(item => [JSON.stringify(item), item])).values()
-  ).map((item) => ({ key: item }));
+  );
+  const terms = baseResults.flat(Infinity);
+  const uniqueTerms = [...new Set(terms)];
+  const fetchResults = await fetchLabels(flatmapAPI, uniqueTerms);
+  const objectResults = fetchResults.map((item) => JSON.parse(item[1]));
+  const formattedResults = baseResults.map((item) => {
+    const itemPair = item.flat();
+    const labels = [];
+    for (let i = 0; i < itemPair.length; i++) {
+      const foundObj = objectResults.find((obj) => obj.id === itemPair[i])
+      if (foundObj) {
+        labels.push(foundObj.label);
+      }
+    }
+    return {
+      key: item,
+      label: labels.join(', '),
+    };
+  });
+  return formattedResults;
 }
 
 async function extractOriginItems(flatmapAPI, knowledge) {
@@ -122,7 +141,7 @@ async function extractOriginItems(flatmapAPI, knowledge) {
       if (connectivityItems.has(stringifyItem)) results.push(item);
     });
   });
-  return transformResults(results);
+  return await transformResults(flatmapAPI, results);
 }
 
 async function extractDestinationItems(flatmapAPI, knowledge) {
@@ -138,7 +157,7 @@ async function extractDestinationItems(flatmapAPI, knowledge) {
       if (connectivityItems.has(stringifyItem)) results.push(item);
     });
   });
-  return transformResults(results);
+  return await transformResults(flatmapAPI, results);
 }
 
 async function extractViaItems(flatmapAPI, knowledge) {
@@ -154,7 +173,7 @@ async function extractViaItems(flatmapAPI, knowledge) {
       if (connectivityItems.has(stringifyItem)) results.push(item);
     });
   });
-  return transformResults(results);
+  return await transformResults(flatmapAPI, results);
 }
 
 function findPathsByOriginItem(knowledge, originItems) {
