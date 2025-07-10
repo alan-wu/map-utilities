@@ -106,14 +106,23 @@ function getPhenotypeItems(obj, prop) {
   return arr;
 }
 
-async function transformResults(flatmapAPI, results) {
+async function transformResults(flatmapAPI, knowledgeSource, results) {
   const baseResults = Array.from(
     new Map(results.map(item => [JSON.stringify(item), item])).values()
   );
   const terms = baseResults.flat(Infinity);
   const uniqueTerms = [...new Set(terms)];
   const fetchResults = await fetchLabels(flatmapAPI, uniqueTerms);
-  const objectResults = fetchResults.map((item) => JSON.parse(item[1]));
+  // const objectResults = fetchResults.map((item) => JSON.parse(item[1]));
+  const objectResults = fetchResults.reduce((arr, item) => {
+    const id = item[0];
+    const valObj = JSON.parse(item[1]);
+    if (valObj.source === knowledgeSource) {
+      arr.push({ id, label: valObj.label });
+    }
+    return arr;
+  }, []);
+  const nodes = [];
   const formattedResults = baseResults.map((item) => {
     const itemPair = item.flat();
     const labels = [];
@@ -121,6 +130,12 @@ async function transformResults(flatmapAPI, results) {
       const foundObj = objectResults.find((obj) => obj.id === itemPair[i])
       if (foundObj) {
         labels.push(foundObj.label);
+        if (i > 0) {
+          nodes.push({
+            key: [itemPair[i], []],
+            label: foundObj.label,
+          });
+        }
       }
     }
     return {
@@ -128,10 +143,15 @@ async function transformResults(flatmapAPI, results) {
       label: labels.join(', '),
     };
   });
-  return formattedResults;
+  // unique results by combining formattedResults and nodes
+  // but filter out duplicates based on the labels
+  const uniqueResults = [...formattedResults, ...nodes].filter((result, index, self) =>
+    index === self.findIndex((r) => r.label === result.label)
+  );
+  return uniqueResults;
 }
 
-async function extractOriginItems(flatmapAPI, knowledge) {
+async function extractOriginItems(flatmapAPI, knowledgeSource, knowledge) {
   const results = [];
   knowledge.forEach(obj => {
     if (!Array.isArray(obj.connectivity) || obj.connectivity.length === 0) return;
@@ -141,10 +161,10 @@ async function extractOriginItems(flatmapAPI, knowledge) {
       if (connectivityItems.has(stringifyItem)) results.push(item);
     });
   });
-  return await transformResults(flatmapAPI, results);
+  return await transformResults(flatmapAPI, knowledgeSource, results);
 }
 
-async function extractDestinationItems(flatmapAPI, knowledge) {
+async function extractDestinationItems(flatmapAPI, knowledgeSource, knowledge) {
   const results = [];
   knowledge.forEach(obj => {
     if (!Array.isArray(obj.connectivity) || obj.connectivity.length === 0) return;
@@ -157,10 +177,10 @@ async function extractDestinationItems(flatmapAPI, knowledge) {
       if (connectivityItems.has(stringifyItem)) results.push(item);
     });
   });
-  return await transformResults(flatmapAPI, results);
+  return await transformResults(flatmapAPI, knowledgeSource, results);
 }
 
-async function extractViaItems(flatmapAPI, knowledge) {
+async function extractViaItems(flatmapAPI, knowledgeSource, knowledge) {
   const results = [];
   knowledge.forEach(obj => {
     if (!Array.isArray(obj.connectivity) || obj.connectivity.length === 0) return;
@@ -173,7 +193,7 @@ async function extractViaItems(flatmapAPI, knowledge) {
       if (connectivityItems.has(stringifyItem)) results.push(item);
     });
   });
-  return await transformResults(flatmapAPI, results);
+  return await transformResults(flatmapAPI, knowledgeSource, results);
 }
 
 function findPathsByOriginItem(knowledge, originItems) {

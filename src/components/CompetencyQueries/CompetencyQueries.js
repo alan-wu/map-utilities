@@ -171,49 +171,105 @@ async function queryPathsByDestination(flatmapAPI, knowledgeSource, featureId) {
   return [];
 }
 
-// Neuron populations from origin node(s) to destination node(s), via node(s)
-// API Label: Neuron populations that have source, via, and destination nodes
+function extractFeatureIds(inputArray) {
+  const result = [];
+
+  for (const itemString of inputArray) {
+    const item = JSON.parse(itemString);
+
+    if (Array.isArray(item) && item.length >= 2) {
+      if (Array.isArray(item[1]) && item[1].length === 0) {
+        result.push(item[0]);
+      }
+    }
+  }
+  return result;
+}
+
+// Neuron populations from origin to destination, via
+// Query 24: Neuron populations that have source, via, and destination nodes
+// Query 25: Neuron populations that have source, via, and destination locations
 async function queryPathsByRoute({ flatmapAPI, knowledgeSource, origins, destinations, vias }) {
-  const originParam = {
-    column: 'source_node_id',
-    value: origins
-  };
-  const viaParam = {
-    column: 'via_node_id',
-    value: vias
-  };
-  const destinationParam = {
-    column: 'dest_node_id',
-    value: destinations
-  };
-  if (!origins.length) {
-    originParam['negate'] = true;
+  const originFeatureIds = extractFeatureIds(origins);
+  const destinationFeatureIds = extractFeatureIds(destinations);
+  const viaFeatureIds = extractFeatureIds(vias);
+
+  const paramsF = [
+    {
+      column: 'source_feature_id',
+      value: originFeatureIds,
+      ...(originFeatureIds.length === 0 && { negate: true })
+    },
+    {
+      column: 'via_feature_id',
+      value: viaFeatureIds,
+      ...(viaFeatureIds.length === 0 && { negate: true })
+    },
+    {
+      column: 'dest_feature_id',
+      value: destinationFeatureIds,
+      ...(destinationFeatureIds.length === 0 && { negate: true })
+    }
+  ];
+
+  const params = [
+    {
+      column: 'source_node_id',
+      value: origins,
+      ...(origins.length === 0 && { negate: true })
+    },
+    {
+      column: 'via_node_id',
+      value: vias,
+      ...(vias.length === 0 && { negate: true })
+    },
+    {
+      column: 'dest_node_id',
+      value: destinations,
+      ...(destinations.length === 0 && { negate: true })
+    }
+  ];
+
+  const shouldCallDataF = paramsF.some(param =>
+    Array.isArray(param.value) && param.value.length > 0);
+
+  const promises = [
+    competencyQuery({
+      flatmapAPI,
+      knowledgeSource,
+      queryId: 24,
+      parameters: params
+    })
+  ];
+
+  if (shouldCallDataF) {
+    promises.push(
+      competencyQuery({
+        flatmapAPI,
+        knowledgeSource,
+        queryId: 25,
+        parameters: paramsF
+      })
+    );
   }
-  if (!vias.length) {
-    viaParam['negate'] = true;
+
+  const results = await Promise.all(promises);
+
+  let pathsF = [];
+  let data;
+  if (shouldCallDataF) {
+    const dataF = results[0];
+    data = results[1];
+    // value => [ 'source_id', 'path_id', 'axon_terminal']
+    pathsF = dataF?.results?.values?.map(value => value[1]) || [];
+  } else {
+    data = results[0];
   }
-  if (!destinations.length) {
-    destinationParam['negate'] = true;
-  }
-  const data = await competencyQuery({
-    flatmapAPI: flatmapAPI,
-    knowledgeSource: knowledgeSource,
-    queryId: 24,
-    parameters: [
-      originParam,
-      viaParam,
-      destinationParam,
-    ]
-  });
-  if (data?.results?.values) {
-    const paths = data.results.values.map((value) => {
-      // value => [ 'source_id', 'path_id', 'axon_terminal']
-      return value[1];
-    });
-    // remove duplicates
-    return [...new Set(paths)];
-  }
-  return [];
+  // value => [ 'source_id', 'path_id', 'axon_terminal']
+  const paths = data?.results?.values?.map(value => value[1]) || [];
+  const combined = [...new Set([...pathsF, ...paths])];
+
+  return combined;
 }
 
 export {
