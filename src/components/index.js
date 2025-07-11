@@ -15,6 +15,7 @@ import {
   queryPathsByViaLocation,
   queryPathsByDestination,
   queryPathsByRoute,
+  queryForwardBackwardConnections,
 } from "./CompetencyQueries/CompetencyQueries.js";
 import {
   filterOrigins,
@@ -47,6 +48,7 @@ export {
   queryPathsByViaLocation,
   queryPathsByDestination,
   queryPathsByRoute,
+  queryForwardBackwardConnections,
   filterOrigins,
   filterDestinations,
   filterViaLocations,

@@ -186,6 +186,31 @@ function extractFeatureIds(inputArray) {
   return result;
 }
 
+// Neuron populations as forward or backward connections of a neuron population
+async function queryForwardBackwardConnections(flatmapAPI, knowledgeSource, pathIds) {
+  const data = await competencyQuery({
+    flatmapAPI,
+    knowledgeSource,
+    queryId: 26,
+    parameters: [
+      {
+        column: 'path_id',
+        value: pathIds
+      },
+    ]
+  });
+  if (data?.results?.values) {
+    const paths = data.results.values.map((value) => {
+      // value => ["source_id", "base_path_id", "dest_path_id", "distance"]
+      // return dest_path_id
+      return value[2];
+    });
+    // remove duplicates
+    return [...new Set(paths)];
+  }
+  return [];
+}
+
 // Neuron populations from origin to destination, via
 // Query 24: Neuron populations that have source, via, and destination nodes
 // Query 25: Neuron populations that have source, via, and destination locations
@@ -269,7 +294,11 @@ async function queryPathsByRoute({ flatmapAPI, knowledgeSource, origins, destina
   const paths = data?.results?.values?.map(value => value[1]) || [];
   const combined = [...new Set([...pathsF, ...paths])];
 
-  return combined;
+  // Continue to forward and backward connections
+  const additionalPaths = await queryForwardBackwardConnections(flatmapAPI, knowledgeSource, combined);
+  const total = [...new Set([...combined, ...additionalPaths])];
+
+  return total;
 }
 
 export {
@@ -279,4 +308,5 @@ export {
   queryPathsByViaLocation,
   queryPathsByDestination,
   queryPathsByRoute,
+  queryForwardBackwardConnections,
 };
