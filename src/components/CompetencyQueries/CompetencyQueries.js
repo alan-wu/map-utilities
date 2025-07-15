@@ -1,4 +1,5 @@
 /**
+ * @private
  * Competency Queries
  *
  * competencyQuery: base function
@@ -6,8 +7,7 @@
  *
  * Note: use named-export for better tree-shaking.
  */
-
-async function postRequest(API_URL, payload) {
+async function _postRequest(API_URL, payload) {
   try {
     const response = await fetch(API_URL, {
       method: "POST",
@@ -30,7 +30,7 @@ async function postRequest(API_URL, payload) {
 
 /**
  * Competency Query
- *
+ * @public
  * @param {Object} options - Query options.
  * @param {string} options.flatmapAPI - Base URL of the flatmap server.
  * @param {string} options.knowledgeSource - SCKAN source ID.
@@ -69,9 +69,16 @@ async function competencyQuery(options) {
     payload.order = [orderId];
   }
 
-  return postRequest(API_URL, payload);
+  return _postRequest(API_URL, payload);
 }
 
+/**
+ * @public
+ * @param {*} flatmapAPI
+ * @param {*} knowledgeSource
+ * @param {*} featureId
+ * @returns
+ */
 // Neuron populations associated with a location [query id => 1] (or)
 // Neuron populations that share at least one edge with another neuron population [query id => 23]
 async function queryAllConnectedPaths(flatmapAPI, knowledgeSource, featureId) {
@@ -99,6 +106,13 @@ async function queryAllConnectedPaths(flatmapAPI, knowledgeSource, featureId) {
   return [];
 }
 
+/**
+ * @public
+ * @param {*} flatmapAPI
+ * @param {*} knowledgeSource
+ * @param {*} featureId
+ * @returns
+ */
 // Neuron populations beginning at a location
 async function queryPathsByOrigin(flatmapAPI, knowledgeSource, featureId) {
   const data = await competencyQuery({
@@ -123,6 +137,13 @@ async function queryPathsByOrigin(flatmapAPI, knowledgeSource, featureId) {
   return [];
 }
 
+/**
+ * @public
+ * @param {*} flatmapAPI
+ * @param {*} knowledgeSource
+ * @param {*} featureId
+ * @returns
+ */
 // Neuron populations via a location
 async function queryPathsByViaLocation(flatmapAPI, knowledgeSource, featureId) {
   const data = await competencyQuery({
@@ -147,6 +168,13 @@ async function queryPathsByViaLocation(flatmapAPI, knowledgeSource, featureId) {
   return [];
 }
 
+/**
+ * @public
+ * @param {*} flatmapAPI
+ * @param {*} knowledgeSource
+ * @param {*} featureId
+ * @returns
+ */
 // Neuron populations terminating at a location
 async function queryPathsByDestination(flatmapAPI, knowledgeSource, featureId) {
   const data = await competencyQuery({
@@ -171,7 +199,12 @@ async function queryPathsByDestination(flatmapAPI, knowledgeSource, featureId) {
   return [];
 }
 
-function extractFeatureIds(inputArray) {
+/**
+ * @private
+ * @param {*} inputArray
+ * @returns
+ */
+function _extractFeatureIds(inputArray) {
   const result = [];
 
   for (const itemString of inputArray) {
@@ -186,6 +219,13 @@ function extractFeatureIds(inputArray) {
   return result;
 }
 
+/**
+ * @public
+ * @param {*} flatmapAPI
+ * @param {*} knowledgeSource
+ * @param {*} pathIds
+ * @returns
+ */
 // Neuron populations as forward or backward connections of a neuron population
 async function queryForwardBackwardConnections(flatmapAPI, knowledgeSource, pathIds) {
   const data = await competencyQuery({
@@ -211,13 +251,18 @@ async function queryForwardBackwardConnections(flatmapAPI, knowledgeSource, path
   return [];
 }
 
+/**
+ * @public
+ * @param {*} options
+ * @returns
+ */
 // Neuron populations from origin to destination, via
 // Query 24: Neuron populations that have source, via, and destination nodes
 // Query 25: Neuron populations that have source, via, and destination locations
 async function queryPathsByRoute({ flatmapAPI, knowledgeSource, origins, destinations, vias }) {
-  const originFeatureIds = extractFeatureIds(origins);
-  const destinationFeatureIds = extractFeatureIds(destinations);
-  const viaFeatureIds = extractFeatureIds(vias);
+  const originFeatureIds = _extractFeatureIds(origins);
+  const destinationFeatureIds = _extractFeatureIds(destinations);
+  const viaFeatureIds = _extractFeatureIds(vias);
 
   const paramsF = [
     {
