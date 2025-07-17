@@ -83,7 +83,9 @@ async function competencyQuery(options) {
 // Neuron populations that share at least one edge with another neuron population [query id => 23]
 async function queryAllConnectedPaths(flatmapAPI, knowledgeSource, featureId) {
   const featureIds = Array.isArray(featureId) ? featureId : [featureId];
-  const queryId = featureIds[0].startsWith('ilxtr:') ? 23 : 1;
+  const isPath = featureIds[0].startsWith('ilxtr:');
+  const queryId = isPath ? 23 : 1;
+  const originalPaths = isPath ? featureIds : [];
   const data = await competencyQuery({
     flatmapAPI: flatmapAPI,
     knowledgeSource: knowledgeSource,
@@ -95,15 +97,16 @@ async function queryAllConnectedPaths(flatmapAPI, knowledgeSource, featureId) {
       },
     ]
   });
-  if (data?.results?.values) {
-    const paths = data.results.values.map((value) => {
-      // value => [ 'source_id', 'path_id', 'axon_terminal']
-      return value[1];
-    });
-    // remove duplicates
-    return [...new Set(paths)];
-  }
-  return [];
+
+  // value => [ 'source_id', 'path_id', 'axon_terminal']
+  const paths = data?.results?.values?.map(value => value[1]) || [];
+  const combined = [...new Set([...originalPaths, ...paths])];
+
+  // Continue to forward and backward connections
+  const additionalPaths = await queryForwardBackwardConnections(flatmapAPI, knowledgeSource, combined);
+  const total = [...new Set([...combined, ...additionalPaths])];
+
+  return total;
 }
 
 /**
