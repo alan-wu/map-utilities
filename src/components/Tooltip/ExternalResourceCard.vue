@@ -405,7 +405,7 @@ export default {
       return citation && !citation[this.citationType] && !citation.error;
     },
     isCitationError: function (citation) {
-      return citation && citation.error;
+      return citation && citation.error && citation.error.type === this.citationType;
     },
     updateCopyContents: function () {
       const citationTypeObj = this.citationOptions.find((item) => item.value === this.citationType);
