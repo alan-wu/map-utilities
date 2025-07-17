@@ -98,7 +98,7 @@ const CITATION_OPTIONS = [
   },
   {
     label: 'Chicago',
-    value: 'chicago-note-bibliography',
+    value: 'chicago-author-date',
   },
   {
     label: 'IEEE',
