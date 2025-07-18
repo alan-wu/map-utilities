@@ -85,6 +85,7 @@ async function queryAllConnectedPaths(flatmapAPI, knowledgeSource, featureId) {
   const featureIds = Array.isArray(featureId) ? featureId : [featureId];
   const isPath = featureIds[0].startsWith('ilxtr:');
   const queryId = isPath ? 23 : 1;
+  const columnId = isPath ? 'path_id' : 'feature_id';
   const originalPaths = isPath ? featureIds : [];
   const data = await competencyQuery({
     flatmapAPI: flatmapAPI,
@@ -92,7 +93,7 @@ async function queryAllConnectedPaths(flatmapAPI, knowledgeSource, featureId) {
     queryId: queryId,
     parameters: [
       {
-        column: 'feature_id',
+        column: columnId,
         value: featureIds
       },
     ]
