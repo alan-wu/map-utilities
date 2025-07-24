@@ -272,17 +272,14 @@ async function queryPathsByRoute({ flatmapAPI, knowledgeSource, origins, destina
     {
       column: 'source_feature_id',
       value: originFeatureIds,
-      ...(originFeatureIds.length === 0 && { negate: true })
     },
     {
       column: 'via_feature_id',
       value: viaFeatureIds,
-      ...(viaFeatureIds.length === 0 && { negate: true })
     },
     {
       column: 'dest_feature_id',
       value: destinationFeatureIds,
-      ...(destinationFeatureIds.length === 0 && { negate: true })
     }
   ];
 
@@ -290,17 +287,14 @@ async function queryPathsByRoute({ flatmapAPI, knowledgeSource, origins, destina
     {
       column: 'source_node_id',
       value: origins,
-      ...(origins.length === 0 && { negate: true })
     },
     {
       column: 'via_node_id',
       value: vias,
-      ...(vias.length === 0 && { negate: true })
     },
     {
       column: 'dest_node_id',
       value: destinations,
-      ...(destinations.length === 0 && { negate: true })
     }
   ];
 
