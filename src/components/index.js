@@ -29,6 +29,7 @@ import {
   findPathsByViaItem,
   queryPathsByRouteFromKnowledge,
   fetchLabels,
+  getFlatmapFilterOptions,
 } from "./CompetencyQueries/knowledgeQueries.js";
 
 export {
@@ -60,4 +61,5 @@ export {
   findPathsByViaItem,
   queryPathsByRouteFromKnowledge,
   fetchLabels,
+  getFlatmapFilterOptions,
 };
