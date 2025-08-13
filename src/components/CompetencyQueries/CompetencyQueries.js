@@ -104,7 +104,10 @@ async function queryAllConnectedPaths(flatmapAPI, knowledgeSource, featureId) {
   const combined = [...new Set([...originalPaths, ...paths])];
 
   // Continue to forward and backward connections
-  const additionalPaths = await queryForwardBackwardConnections(flatmapAPI, knowledgeSource, combined);
+  let additionalPaths = [];
+  if (combined.length) {
+    additionalPaths = await queryForwardBackwardConnections(flatmapAPI, knowledgeSource, combined);
+  }
   const total = [...new Set([...combined, ...additionalPaths])];
 
   return total;
@@ -338,7 +341,10 @@ async function queryPathsByRoute({ flatmapAPI, knowledgeSource, origins, destina
   const combined = [...new Set([...pathsF, ...paths])];
 
   // Continue to forward and backward connections
-  const additionalPaths = await queryForwardBackwardConnections(flatmapAPI, knowledgeSource, combined);
+  let additionalPaths = [];
+  if (combined.length) {
+    additionalPaths = await queryForwardBackwardConnections(flatmapAPI, knowledgeSource, combined);
+  }
   const total = [...new Set([...combined, ...additionalPaths])];
 
   return total;
