@@ -30,7 +30,7 @@
       <el-row class="info-field">
         <div class="title">Feature Annotations</div>
         <div class="title-buttons">
-          <copy-to-clipboard :content="updatedCopyContent" />
+          <copy-to-clipboard  @copied="onCopied" :content="updatedCopyContent" />
         </div>
       </el-row>
       <template v-if="entry">
@@ -491,6 +491,21 @@ export default {
 
       return contentArray.join('\n\n<br>');
     },
+    onCopied: function () {
+      const data = {
+        'event_name': `portal_maps_annotation`,
+        'category': 'copy_content',
+      };
+      this.trackEvent(data);
+    },
+    trackEvent: function (data) {
+      const taggingData = {
+        'event': 'interaction_event',
+        'location': 'map_annotation',
+        ...data,
+      };
+      this.$emit('trackEvent', taggingData);
+    }
   },
   watch: {
     annotationEntry: {
