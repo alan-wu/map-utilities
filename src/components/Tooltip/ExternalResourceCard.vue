@@ -154,6 +154,15 @@ export default {
   methods: {
     showRelatedConnectivities: function (resource) {
       this.$emit('show-reference-connectivities', resource);
+
+      const taggingData = {
+        'event': 'interaction_event',
+        'event_name': `portal_maps_show_related_connectivities`,
+        'category': resource,
+        'location': 'map_connectivity_references',
+      };
+
+      this.$emit('trackEvent', taggingData);
     },
     formatReferences: function (references) {
       const nonPubMedReferences = this.extractNonPubMedReferences(references);
