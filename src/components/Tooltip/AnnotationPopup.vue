@@ -271,12 +271,26 @@ export default {
       if (this.entryIndex !== 0) {
         this.entryIndex = this.entryIndex - 1;
         this.emitActiveItemChange();
+
+        const data = this.annotationEntry[this.entryIndex];
+        const taggingData = {
+          'event_name': `portal_maps_annotation_previous`,
+          'category': String(data?.featureId || ''),
+        };
+        this.trackEvent(taggingData);
       }
     },
     next: function () {
       if (this.entryIndex !== this.annotationEntry.length - 1) {
         this.entryIndex = this.entryIndex + 1;
         this.emitActiveItemChange();
+
+        const data = this.annotationEntry[this.entryIndex];
+        const taggingData = {
+          'event_name': `portal_maps_annotation_next`,
+          'category': String(data?.featureId || ''),
+        };
+        this.trackEvent(taggingData);
       }
     },
     emitActiveItemChange: function () {
@@ -492,11 +506,13 @@ export default {
       return contentArray.join('\n\n<br>');
     },
     onCopied: function () {
-      const data = {
-        'event_name': `portal_maps_annotation`,
-        'category': 'copy_content',
+      const data = this.annotationEntry[this.entryIndex];
+      const taggingData = {
+        'event_name': `portal_maps_annotation_copy_content`,
+        'category': String(data?.featureId || ''),
       };
-      this.trackEvent(data);
+
+      this.trackEvent(taggingData);
     },
     trackEvent: function (data) {
       const taggingData = {
