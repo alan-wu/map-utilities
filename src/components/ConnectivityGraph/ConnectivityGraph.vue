@@ -279,8 +279,10 @@ export default {
             this.showGraph(this.entry);
           } else if (res?.error) {
             this.loadingError = res.error;
+            this.hideSpinner();
           } else {
             this.loadingError = 'Loading error!';
+            this.hideSpinner();
           }
         })
         .catch((error) => {
