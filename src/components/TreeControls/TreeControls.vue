@@ -81,13 +81,26 @@
             @mouseenter="displayTooltip(node.label, true, $event)"
             @mouseleave="displayTooltip('', false, $event)"
           >
-            <el-color-picker
-              v-if="data.isPrimitives"
-              :class="{ 'show-picker': showColourPicker }"
-              v-model="data.activeColour"
-              size="small"
-              @change="setColour(data, $event)"
-            />
+            <template v-if="data.isPrimitives">
+              <!-- A colour picker per item is slow to mount in large regions,
+                   show a swatch and only mount the picker once it is clicked. -->
+              <el-color-picker
+                v-if="openedPickers[data.id]"
+                :ref="(el) => setPickerRef(data.id, el)"
+                :persistent="false"
+                :class="{ 'show-picker': showColourPicker }"
+                v-model="data.activeColour"
+                size="small"
+                @change="setColour(data, $event)"
+              />
+              <span
+                v-else
+                class="colour-swatch"
+                :class="{ 'show-picker': showColourPicker }"
+                :style="{ background: data.activeColour }"
+                @click.stop="openColourPicker(data)"
+              />
+            </template>
             <div class="lastChildInItem">
               <span>{{ node.label }}</span>
               <span v-if="data.isTextureSlides" class="node-options">(Texture)</span>
@@ -166,6 +179,7 @@ export default {
       tooltipVisible: false,
       tooltipLabel: '',
       tooltipAtBottom: false,
+      openedPickers: {},
     };
   },
   computed: {
@@ -209,6 +223,14 @@ export default {
     },
   },
   methods: {
+    setPickerRef: function (id, el) {
+      if (el) this.pickerRefs[id] = el;
+      else delete this.pickerRefs[id];
+    },
+    openColourPicker: function (data) {
+      this.openedPickers[data.id] = true;
+      this.$nextTick(() => this.pickerRefs[data.id]?.show());
+    },
     /**
      * With render-after-expand, el-tree only picks up children added to the
      * data after mount through the components of rendered nodes, nodes inside
@@ -330,6 +352,9 @@ export default {
       this.tooltipLabel = tooltipLabel;
       this.tooltipAtBottom = 0.5 > e.layerY / this.$refs.treeContainer.clientHeight ? true : false;
     },
+  },
+  created: function () {
+    this.pickerRefs = {};
   },
   unmounted: function () {
     clearTimeout(this.filterTimeout);
@@ -464,6 +489,35 @@ export default {
     height: 14px;
     width: 14px;
     border: 0px;
+  }
+
+  .colour-swatch {
+    position: relative;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    margin-left: 8px;
+    margin-right: 2px;
+    height: 14px;
+    width: 14px;
+    border: 1px solid $app-primary-color;
+    border-radius: 2px;
+    pointer-events: none;
+
+    &.show-picker {
+      pointer-events: auto;
+      cursor: pointer;
+      &::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 4px;
+        height: 4px;
+        border-right: 1px solid #fff;
+        border-bottom: 1px solid #fff;
+        transform: translate(-50%, -75%) rotate(45deg);
+      }
+    }
   }
 }
 
