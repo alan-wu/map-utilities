@@ -45,7 +45,7 @@
         :check-on-click-leaf="checkOnClickNode"
         :check-strictly="false"
         :expand-on-click-node="false"
-        :render-after-expand="false"
+        :render-after-expand="true"
         :default-expanded-keys="expandedKeys"
         @check="checkChanged"
         :indent="8"
@@ -100,6 +100,9 @@
 </template>
 
 <script>
+//Maximum number of regions expanded automatically by the filter
+const MAX_FILTER_EXPAND = 50;
+
 export default {
   name: 'TreeControls',
   props: {
@@ -190,13 +193,74 @@ export default {
     },
   },
   watch: {
+    treeData: {
+      deep: true,
+      flush: 'post',
+      handler: function () {
+        this.syncTreeNodes();
+      },
+    },
     filterText: {
       handler: function (value) {
-        if (this.$refs.regionTree) this.$refs.regionTree.filter(value);
+        //Filtering a large tree is expensive, only filter once typing pauses
+        clearTimeout(this.filterTimeout);
+        this.filterTimeout = setTimeout(() => this.applyFilter(value), 300);
       },
     },
   },
   methods: {
+    /**
+     * With render-after-expand, el-tree only picks up children added to the
+     * data after mount through the components of rendered nodes, nodes inside
+     * collapsed regions would be missing from the tree. Update them the same
+     * way a rendered node does. Runs after the rendered nodes have updated and
+     * before any nextTick callbacks, e.g. setChecked on newly added items.
+     */
+    syncTreeNodes: function () {
+      const tree = this.$refs.regionTree;
+      if (!tree) return;
+      const key = tree.store.props?.children || 'children';
+      const visit = (node) => {
+        //Read without node.getChildren(), it writes to the data
+        const children = node.data?.[key];
+        if ((children ? children.length : 0) !== node.childNodes.length) {
+          node.updateChildren();
+          node.reInitChecked();
+        }
+        node.childNodes.forEach(visit);
+      };
+      tree.store.root.childNodes.forEach(visit);
+    },
+    /**
+     * Filter the tree in a single pass. The el-tree filter runs asynchronously,
+     * overlaps when called repeatedly and expands every visible region, which
+     * freezes the page for large trees. Only regions containing a match are
+     * expanded here, and only when there are not too many of them.
+     */
+    applyFilter: function (value) {
+      const tree = this.$refs.regionTree;
+      if (!tree) return;
+      const text = value ? value.trim() : '';
+      if (text === this.appliedFilterText) return;
+      this.appliedFilterText = text;
+      const toExpand = [];
+      const visit = (node) => {
+        let childVisible = false;
+        node.childNodes.forEach((child) => {
+          if (visit(child)) childVisible = true;
+        });
+        const visible = childVisible || this.filterNode(text, node.data);
+        if (node.visible !== visible) node.visible = visible;
+        if (text && childVisible && !node.expanded) toExpand.push(node);
+        return visible;
+      };
+      tree.store.root.childNodes.forEach(visit);
+      //Each expanded region runs a collapse transition which forces a layout,
+      //broad queries are filtered but left collapsed until the query narrows.
+      if (toExpand.length <= MAX_FILTER_EXPAND) {
+        toExpand.forEach((node) => node.expand());
+      }
+    },
     filterNode: function (value, data) {
       if (!value) return true;
       return data.label ? data.label.toLowerCase().includes(value.toLowerCase()) : false;
@@ -268,10 +332,11 @@ export default {
     },
   },
   unmounted: function () {
+    clearTimeout(this.filterTimeout);
     this.sortedPrimitiveGroups = undefined;
   },
   mounted: function () {
-    if (this.$refs.regionTree) this.$refs.regionTree.filter(this.filterText);
+    this.applyFilter(this.filterText);
   },
 };
 </script>
